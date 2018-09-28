@@ -10,10 +10,10 @@ uniform mat4 projection;
 uniform mat4 modelview;
 uniform mat3 normalMatrix;
 
-smooth out vec3 N;
+smooth out float normalColor;
 
 void main(void)  {
     vec4 view_vertex = modelview * vec4(vertex, 1);
-    N = normalize(normal);
+    normalColor = (normalize(normalMatrix*normal).z);
     gl_Position = projection * view_vertex;
 }

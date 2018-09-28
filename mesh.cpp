@@ -21,16 +21,17 @@ void Mesh::addTriangle(int v0, int v1, int v2)
 
 void Mesh::buildCube()
 {
-    GLfloat vertices[] = {-1, -1, -1,
-                          1, -1, -1,
-                          1,  1, -1,
-                         -1,  1, -1,
+    GLfloat vertices[] = {-1, -1, -2,
+                          1, -1, -2,
+                          1,  1, -2,
+                         -1,  1, -2,
                          -1, -1,  1,
                           1, -1,  1,
                           1,  1,  1,
                          -1,  1,  1
                         };
 
+    /*
     GLuint faces[] = {3, 1, 0,
                       3, 2, 1,
                     5, 6, 7,
@@ -44,10 +45,26 @@ void Mesh::buildCube()
                     2, 3, 7,
                       7, 6, 2
                   };
+    */
+    GLuint faces[] = {0, 1, 3,
+                      1, 2, 3,
+                    7, 6, 5,
+                      7, 5, 4,
+                    0, 3, 7,
+                      7, 4, 0,
+                    6, 2, 1,
+                      1, 5, 6,
+                    4, 1, 0,
+                      1, 4, 5,
+                    7, 3, 2,
+                      2, 6, 7
+                  };
 
     int i;
+    float cubeSize = 2.2f;
+
     for(i=0; i<8; i+=1)
-        addVertex(0.5f * vertices[3*i], 0.5f * vertices[3*i+1], 0.5f * vertices[3*i+2]);
+        addVertex(cubeSize * vertices[3*i], cubeSize * vertices[3*i+1], cubeSize * vertices[3*i+2]);
     for(i=0; i<12; i++)
         addTriangle(faces[3*i], faces[3*i+1], faces[3*i+2]);
 }
@@ -106,37 +123,48 @@ bool Mesh::init(QOpenGLShaderProgram *program)
 
     program->bind();
 
+    //My Uniforms
+    color = QVector3D (0.8, 0.8, 0.8);
+    program->setUniformValue("color", color);
+
+    //My Buffers
     VAO.destroy();
     VAO.create();
     if (!VAO.isCreated()) return false;
     VAO.bind();
 
-    coordBuffer.destroy();
-    coordBuffer.create();
-    if (!coordBuffer.isCreated()) return false;
-    if (!coordBuffer.bind()) return false;
-    coordBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    coordBuffer.allocate(&vertices[0], 3 * sizeof(float) * vertices.size());
+    coordBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+
+    coordBuffer->destroy();
+    coordBuffer->create();
+    if (!coordBuffer->isCreated()) return false;
+    if (!coordBuffer->bind()) return false;
+    coordBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    coordBuffer->allocate(&vertices[0], 3 * sizeof(float) * vertices.size());
 
     program->enableAttributeArray(0);
     program->setAttributeBuffer(0, GL_FLOAT, 0, 3, 0);
 
-    normBuffer.destroy();
-    normBuffer.create();
-    if (!normBuffer.isCreated()) return false;
-    if (!normBuffer.bind()) return false;
-    normBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    normBuffer.allocate(&normals[0], 3 * sizeof(float) * normals.size());
+    normBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+
+    normBuffer->destroy();
+    normBuffer->create();
+    if (!normBuffer->isCreated()) return false;
+    if (!normBuffer->bind()) return false;
+    normBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    normBuffer->allocate(&normals[0], 3 * sizeof(float) * normals.size());
 
     program->enableAttributeArray(1);
     program->setAttributeBuffer(1, GL_FLOAT, 0, 3, 0);
 
-    indexBuffer.destroy();
-    indexBuffer.create();
-    if (!indexBuffer.isCreated()) return false;
-    if (!indexBuffer.bind()) return false;
-    indexBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
-    indexBuffer.allocate(&triangles[0], sizeof(int) * triangles.size());
+    indexBuffer = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+
+    indexBuffer->destroy();
+    indexBuffer->create();
+    if (!indexBuffer->isCreated()) return false;
+    if (!indexBuffer->bind()) return false;
+    indexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    indexBuffer->allocate(&triangles[0], sizeof(int) * triangles.size());
 
     VAO.release();
     program->release();

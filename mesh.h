@@ -10,17 +10,22 @@
 
 class Mesh {
 public:
-    void buildCube();
     bool init(QOpenGLShaderProgram *program);
+
     //GL VAO n VBO
     QOpenGLVertexArrayObject VAO;
-    QOpenGLBuffer coordBuffer, indexBuffer, normBuffer;
+    QOpenGLBuffer* coordBuffer;
+    QOpenGLBuffer* indexBuffer;
+    QOpenGLBuffer* normBuffer;
+
+    QVector3D color;
+
     void render(QOpenGLFunctions &gl);
 
 private:
     void addVertex(float v0, float v1, float v2);
     void addTriangle(int v0, int v1, int v2);
-    void fillVBOs();
+    void buildCube();
     void buildNormals();
 
     std::vector<float> vertices;
