@@ -67,7 +67,7 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
 
 public:
-    GLWidget(QWidget *parent);
+    GLWidget(QWidget *parent = 0);
     ~GLWidget();
 
 protected:

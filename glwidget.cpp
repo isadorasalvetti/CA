@@ -41,9 +41,7 @@ void GLWidget::initializeGL()
             cout << "Shader program has not linked" << endl << endl << "Log: " << endl << endl << program->log().toStdString();
             QApplication::quit();
     }
-    program->bind();
 
-    mesh.buildCube();
     if(!mesh.init(program))
     {
             cout << "Could not create vbo" << endl;
@@ -51,7 +49,12 @@ void GLWidget::initializeGL()
     }
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    //Default render flags.
+    glEnable(GL_NORMALIZE);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     glEnable(GL_DEPTH_TEST);
+    cout << "OpenGL initialized" << endl;
 }
 
 void GLWidget::resizeGL(int w, int h)
@@ -64,15 +67,8 @@ void GLWidget::resizeGL(int w, int h)
 void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     program->bind();
-    glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(0.5f, 1.0f);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    mesh.render(*this);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    glDisable(GL_POLYGON_OFFSET_FILL);
-
+    //Rendering
     mesh.render(*this);
     program->release();
 }

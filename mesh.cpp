@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <QOpenGLFunctions>
+#include <QDebug>
 
 
 void Mesh::addVertex(float v0, float v1, float v2)
@@ -69,7 +70,7 @@ void Mesh::buildNormals() {
     QVector3D normal = QVector3D::crossProduct(v1v2, v1v3);
 
     normal.normalize();
-    for (int j = 0; j < 3; ++j) face_normals[i + j] += normal[j];
+    for (int j = 0; j < 3; ++j) face_normals[i + j] = normal[j];
 }
   const int kVertices = vertices.size();
   normals.resize(kVertices, 0);
@@ -105,12 +106,17 @@ bool Mesh::init(QOpenGLShaderProgram *program)
 
     program->bind();
 
+    VAO.destroy();
+    VAO.create();
+    if (!VAO.isCreated()) return false;
+    VAO.bind();
+
     coordBuffer.destroy();
     coordBuffer.create();
     if (!coordBuffer.isCreated()) return false;
-    coordBuffer.bind();
-    coordBuffer.allocate(&vertices[0], 3 * sizeof(float) * vertices.size());
+    if (!coordBuffer.bind()) return false;
     coordBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    coordBuffer.allocate(&vertices[0], 3 * sizeof(float) * vertices.size());
 
     program->enableAttributeArray(0);
     program->setAttributeBuffer(0, GL_FLOAT, 0, 3, 0);
@@ -118,9 +124,9 @@ bool Mesh::init(QOpenGLShaderProgram *program)
     normBuffer.destroy();
     normBuffer.create();
     if (!normBuffer.isCreated()) return false;
-    normBuffer.bind();
-    normBuffer.allocate(&normals[0], 3 * sizeof(float) * normals.size());
+    if (!normBuffer.bind()) return false;
     normBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    normBuffer.allocate(&normals[0], 3 * sizeof(float) * normals.size());
 
     program->enableAttributeArray(1);
     program->setAttributeBuffer(1, GL_FLOAT, 0, 3, 0);
@@ -128,20 +134,18 @@ bool Mesh::init(QOpenGLShaderProgram *program)
     indexBuffer.destroy();
     indexBuffer.create();
     if (!indexBuffer.isCreated()) return false;
-    indexBuffer.bind();
-    indexBuffer.allocate(&triangles[0], sizeof(int) * triangles.size());
+    if (!indexBuffer.bind()) return false;
     indexBuffer.setUsagePattern(QOpenGLBuffer::StaticDraw);
+    indexBuffer.allocate(&triangles[0], sizeof(int) * triangles.size());
 
     VAO.release();
     program->release();
-
     return true;
 }
 
 void Mesh::render(QOpenGLFunctions &gl)
 {
     VAO.bind();
-    indexBuffer.bind();
     gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, 0);
     VAO.release();
 }
