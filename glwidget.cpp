@@ -6,20 +6,19 @@
 #include <QMouseEvent>
 
 #include "mesh.h"
+#include "particlespawner.h"
 
 
 using namespace std;
-
 
 const float rotationFactor = 0.5f;
 const float maxRotationCamera = 75.0f;
 const float minDistanceCamera = 1.0f;
 const float maxDistanceCamera = 3.0f;
 
-
 GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), angleX(0.0f), angleY(0.0f), distance(2.0f)
 {
-    program = NULL;
+    program = nullptr;
 }
 
 GLWidget::~GLWidget()
@@ -36,7 +35,13 @@ void GLWidget::initializeGL()
     program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/basic.vert");
     program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/basic.frag");
     program->link();
-    if(!program->isLinked())
+
+    program_particle = new QOpenGLShaderProgram();
+    program_particle->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/particle.vert");
+    program_particle->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/particle.frag");
+    program_particle->link();
+
+    if(!program->isLinked() || !program_particle->isLinked())
     {
             cout << "Shader program has not linked" << endl << endl << "Log: " << endl << endl << program->log().toStdString();
             QApplication::quit();
@@ -47,6 +52,8 @@ void GLWidget::initializeGL()
             cout << "Could not create vbo" << endl;
             QApplication::quit();
     }
+
+    particleSpawner spawner(1, program_particle);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     //Default render flags.
@@ -71,6 +78,10 @@ void GLWidget::paintGL()
     //Rendering
     mesh.render(*this);
     program->release();
+
+    program_particle->bind();
+    //render that particle
+    program_particle->release();
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
@@ -106,10 +117,13 @@ void GLWidget::setProjection(float aspect)
 {
     QMatrix4x4 projectionMatrix;
 
-    projectionMatrix.perspective(60, aspect, 0.01, 100.0);
+    projectionMatrix.perspective(60, aspect, 0.01f, 100.0);
     program->bind();
     program->setUniformValue("projection", projectionMatrix);
     program->release();
+    program_particle->bind();
+    program_particle->setUniformValue("projection", projectionMatrix);
+    program_particle->release();
 }
 
 void GLWidget::setModelview()
@@ -117,11 +131,18 @@ void GLWidget::setModelview()
     QMatrix4x4 modelviewMatrix;
 
     modelviewMatrix.translate(0, 0, -distance);
+    //Set particle model view with distance only.
+    program_particle->bind();
+    program_particle->setUniformValue("modelview", modelviewMatrix);
+    program_particle->setUniformValue("normalMatrix", modelviewMatrix.normalMatrix());
+    program_particle->release();
+
     modelviewMatrix.rotate(angleX, 1.0f, 0.0f, 0.0f);
     modelviewMatrix.rotate(angleY, 0.0f, 1.0f, 0.0f);
-
+    //Set cube model view with rotation also.
     program->bind();
     program->setUniformValue("modelview", modelviewMatrix);
     program->setUniformValue("normalMatrix", modelviewMatrix.normalMatrix());
     program->release();
+
 }

@@ -1,4 +1,5 @@
 #include "mesh.h"
+#include <math.h>
 #include <fstream>
 #include <iostream>
 #include <QOpenGLFunctions>
@@ -124,7 +125,7 @@ bool Mesh::init(QOpenGLShaderProgram *program)
     program->bind();
 
     //My Uniforms
-    color = QVector3D (0.8, 0.8, 0.8);
+    color = QVector3D (0.8f, 0.8f, 0.8f);
     program->setUniformValue("color", color);
 
     //My Buffers
@@ -174,6 +175,6 @@ bool Mesh::init(QOpenGLShaderProgram *program)
 void Mesh::render(QOpenGLFunctions &gl)
 {
     VAO.bind();
-    gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, 0);
+    gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, nullptr);
     VAO.release();
 }

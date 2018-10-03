@@ -81,12 +81,15 @@ protected:
 private:
     void setProjection(float aspect);
     void setModelview();
+    //QMatrix4x4 projectionMatrix;
+    //QMatrix4x4 modelviewMatrix;
 
 private:
     float angleX, angleY, distance;
     QPoint lastMousePos;
 
     QOpenGLShaderProgram *program;
+    QOpenGLShaderProgram *program_particle;
     Mesh mesh;
 };
 
