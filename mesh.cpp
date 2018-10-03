@@ -21,14 +21,14 @@ void Mesh::addTriangle(int v0, int v1, int v2)
 
 void Mesh::buildCube()
 {
-    GLfloat vertices[] = {-1, -1, -2,
-                          1, -1, -2,
-                          1,  1, -2,
-                         -1,  1, -2,
-                         -1, -1,  1,
-                          1, -1,  1,
-                          1,  1,  1,
-                         -1,  1,  1
+    GLfloat vertices[] = {-1, -.5, -1,
+                          1, -.5, -1,
+                          1,  .5, -1,
+                         -1,  .5, -1,
+                         -1, -.5,  1,
+                          1, -.5,  1,
+                          1,  .5,  1,
+                         -1,  .5,  1
                         };
 
     /*
@@ -61,7 +61,7 @@ void Mesh::buildCube()
                   };
 
     int i;
-    float cubeSize = 2.2f;
+    float cubeSize = 2.8f;
 
     for(i=0; i<8; i+=1)
         addVertex(cubeSize * vertices[3*i], cubeSize * vertices[3*i+1], cubeSize * vertices[3*i+2]);

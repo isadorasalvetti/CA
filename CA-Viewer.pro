@@ -1,7 +1,8 @@
 HEADERS = \
     mesh.h \
     glwidget.h \
-    mainwindow.h
+    mainwindow.h \
+    plarticle.h
 
 SOURCES = \
           main.cpp \
