@@ -16,8 +16,8 @@ void Particle::mUpdate(float timeElapsed){
 //****************************************************
 
 bool Particle::BuildPlane(QOpenGLShaderProgram *program){
-    GLfloat vertices[] = {-0.5f, 0.5f, 0, -0.5f, -0.5f, 0, 0.5f, 0.5f, 0, 0.5f, -0.5f, 0};
-    GLint faces[] = {0, 1, 2, 2, 1, 3};
+    GLfloat vertices[] = {-0.5f, -0.5f, 0, 0.5f, -0.5f, 0, 0.5f, 0.5f, 0, -0.5f, 0.5f, 0};
+    GLuint faces[] = {0, 1, 3, 1, 2, 3};
 
     //adjust vertices by size/ position
     for (unsigned int i = 0; i < sizeof(vertices)/sizeof(GLfloat); i++){
@@ -59,7 +59,7 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
 void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
     VAO.bind();
     program->setUniformValue("color", m_Color);
-    gl.glDrawElements(GL_TRIANGLES, 2, GL_UNSIGNED_INT, nullptr);
+    gl.glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     VAO.release();
 }
 

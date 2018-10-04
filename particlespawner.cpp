@@ -2,8 +2,8 @@
 
 
 void particleSpawner::init(int amount, QOpenGLShaderProgram *prog){
-    QVector3D position = QVector3D(.5, 0, 0);
-    float radius = 1;
+    QVector3D position = QVector3D(0, 0, -2);
+    float radius = .05;
     QVector3D color = QVector3D(1, 0, 0);
     QVector3D velocity = QVector3D(0, 0, 0);
     Particle *p = new Particle(position, radius, color, velocity, prog);
@@ -14,4 +14,10 @@ void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram
     for(int i = 0; i<particles.size(); i++){
         particles[i]->Render(gl, prog);
     }
+    QVector3D position = QVector3D(.5, 0, 0);
+    float radius = 1;
+    QVector3D color = QVector3D(1, 0, 0);
+    QVector3D velocity = QVector3D(0, 0, 0);
+    Particle p1(position, radius, color, velocity, prog);
+    p1.Render(gl, prog);
 }
