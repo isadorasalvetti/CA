@@ -21,6 +21,8 @@ public:
     QVector3D color;
 
     void render(QOpenGLFunctions &gl);
+    bool checkColision(QVector3D pos0, QVector3D pos1);
+    QVector3D correctPosition();
 
 private:
     void addVertex(float v0, float v1, float v2);

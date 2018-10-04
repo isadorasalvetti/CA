@@ -8,8 +8,11 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
+#include <QTimer>
 
-class Particle{
+#include "glwidget.h"
+
+class Particle: public QObject{
 public:
     Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog);
     QVector3D  m_Position; // Center point of particle
@@ -19,13 +22,20 @@ public:
 
     void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
 
+public slots:
+    void mUpdate();
+
 private:
-    void mUpdate(float timeElapsed);
     bool BuildPlane(QOpenGLShaderProgram *program);
+
+
+    QMatrix4x4 modelMatrix;
 
     QOpenGLVertexArrayObject VAO;
     QOpenGLBuffer* coordBuffer;
     QOpenGLBuffer* indexBuffer;
+
+    QTimer *timer;
 
 };
 

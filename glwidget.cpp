@@ -53,7 +53,7 @@ void GLWidget::initializeGL()
             QApplication::quit();
     }
 
-    spawner.init(1, program_particle);
+    spawner.init(50, program_particle);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     //Default render flags.
@@ -61,6 +61,8 @@ void GLWidget::initializeGL()
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     cout << "OpenGL initialized" << endl;
 }
 
@@ -130,21 +132,20 @@ void GLWidget::setProjection(float aspect)
 
 void GLWidget::setModelview()
 {
-    QMatrix4x4 modelviewMatrix;
+    QMatrix4x4 viewMatrix;
 
-    modelviewMatrix.translate(0, 0, -distance);
+    viewMatrix.translate(0, 0, -distance);
+    viewMatrix.rotate(angleX, 1.0f, 0.0f, 0.0f);
+    viewMatrix.rotate(angleY, 0.0f, 1.0f, 0.0f);
     //Set particle model view with distance only.
     program_particle->bind();
-    program_particle->setUniformValue("modelview", modelviewMatrix);
-    program_particle->setUniformValue("normalMatrix", modelviewMatrix.normalMatrix());
+    program_particle->setUniformValue("view", viewMatrix);
     program_particle->release();
 
-    modelviewMatrix.rotate(angleX, 1.0f, 0.0f, 0.0f);
-    modelviewMatrix.rotate(angleY, 0.0f, 1.0f, 0.0f);
     //Set cube model view with rotation also.
     program->bind();
-    program->setUniformValue("modelview", modelviewMatrix);
-    program->setUniformValue("normalMatrix", modelviewMatrix.normalMatrix());
+    program->setUniformValue("modelview", viewMatrix);
+    program->setUniformValue("normalMatrix", viewMatrix.normalMatrix());
     program->release();
 
 }

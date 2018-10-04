@@ -163,3 +163,10 @@ void Mesh::render(QOpenGLFunctions &gl)
     gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, nullptr);
     VAO.release();
 }
+
+// Collision
+//**************************************
+
+bool Mesh::checkColision(QVector3D pos0, QVector3D pos1){
+    return false;
+}
