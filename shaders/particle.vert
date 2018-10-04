@@ -1,15 +1,14 @@
 #version 330 core
-layout (location = 0) in vec4 vertex; // <vec2 position, vec2 texCoords>
-
-smooth out vec2 TexCoords;
-smooth out vec3 ParticleColor;
+layout (location = 0) in vec3 vertex;
 
 uniform mat4 projection;
-uniform vec3 color;
+uniform mat4 modelview;
+uniform mat3 normalMatrix;
+
+smooth out vec2 TexCoords;
 
 void main(){
-    float scale = 10.0f;
-    TexCoords = vertex.zw;
-    ParticleColor = color;
-    gl_Position = projection * vec4((vertex.xy * scale), 0.0, 1.0);
+    TexCoords = vertex.xz;
+    vec4 view_vertex = modelview * vec4(vertex, 1);
+    gl_Position = projection * view_vertex;
 }

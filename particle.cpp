@@ -25,7 +25,6 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     }
 
     program->bind();
-    program->setUniformValue("color", m_Color);
 
     //My Buffers
     VAO.destroy();
@@ -39,7 +38,10 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     if (!coordBuffer->isCreated()) return false;
     if (!coordBuffer->bind()) return false;
     coordBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    coordBuffer->allocate(&vertices[0], sizeof(float) * sizeof(vertices)/sizeof(GLfloat));
+    coordBuffer->allocate(&vertices[0], sizeof(vertices));
+
+    program->enableAttributeArray(0);
+    program->setAttributeBuffer(0, GL_FLOAT, 0, 3, 0);
 
     indexBuffer = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
     indexBuffer->destroy();
@@ -47,16 +49,17 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     if (!indexBuffer->isCreated()) return false;
     if (!indexBuffer->bind()) return false;
     indexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    indexBuffer->allocate(&vertices[0], sizeof(int) * sizeof(faces)/sizeof(GLint));
+    indexBuffer->allocate(&faces[0], sizeof(faces));
 
     VAO.release();
     program->release();
     return true;
-};
+}
 
-void Particle::Render(QOpenGLFunctions &gl){
+void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
     VAO.bind();
-    gl.glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+    program->setUniformValue("color", m_Color);
+    gl.glDrawElements(GL_TRIANGLES, 2, GL_UNSIGNED_INT, nullptr);
     VAO.release();
 }
 
@@ -68,7 +71,9 @@ Particle::Particle(QVector3D position, float radius, QVector3D color, QVector3D 
     m_Radius = radius;
     m_Color = color;
 
-    BuildPlane(prog);
+    if(!BuildPlane(prog)){
+        std::cout << "Could not create particle" << std::endl;
+    };
 }
 
 

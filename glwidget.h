@@ -55,6 +55,7 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
 #include "mesh.h"
+#include "particlespawner.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -91,6 +92,7 @@ private:
     QOpenGLShaderProgram *program;
     QOpenGLShaderProgram *program_particle;
     Mesh mesh;
+    particleSpawner spawner;
 };
 
 #endif

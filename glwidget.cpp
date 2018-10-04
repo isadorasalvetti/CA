@@ -53,7 +53,7 @@ void GLWidget::initializeGL()
             QApplication::quit();
     }
 
-    particleSpawner spawner(1, program_particle);
+    spawner.init(1, program_particle);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     //Default render flags.
@@ -76,11 +76,13 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     program->bind();
     //Rendering
-    mesh.render(*this);
+    //mesh.render(*this);
     program->release();
 
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
     program_particle->bind();
-    //render that particle
+    spawner.renderParticles(*this, program_particle);
     program_particle->release();
 }
 
