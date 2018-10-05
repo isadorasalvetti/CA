@@ -12,7 +12,7 @@
 
 #include "glwidget.h"
 
-class Particle: public QObject{
+class Particle{
 public:
     Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog);
     QVector3D  m_Position; // Center point of particle
@@ -34,9 +34,6 @@ private:
     QOpenGLVertexArrayObject VAO;
     QOpenGLBuffer* coordBuffer;
     QOpenGLBuffer* indexBuffer;
-
-    QTimer *timer;
-
 };
 
 #endif // PLARTICLE_H

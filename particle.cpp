@@ -80,8 +80,4 @@ Particle::Particle(QVector3D position, float radius, QVector3D color, QVector3D 
     if(!BuildPlane(prog)){
         std::cout << "Could not create particle" << std::endl;
     };
-
-    timer= new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &Particle::mUpdate);
-    timer->start(1000);
 }
