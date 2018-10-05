@@ -7,6 +7,7 @@
 
 #include "mesh.h"
 #include "particlespawner.h"
+#include "timer.h"
 
 
 using namespace std;
@@ -54,6 +55,7 @@ void GLWidget::initializeGL()
     }
 
     spawner.init(50, program_particle);
+    Timer *timer = new Timer(this);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     //Default render flags.

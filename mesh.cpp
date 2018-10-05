@@ -1,4 +1,5 @@
 #include "mesh.h"
+#include "collider.h"
 #include <math.h>
 #include <fstream>
 #include <iostream>
@@ -126,7 +127,7 @@ bool Mesh::init(QOpenGLShaderProgram *program)
     if (!coordBuffer->isCreated()) return false;
     if (!coordBuffer->bind()) return false;
     coordBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    coordBuffer->allocate(&vertices[0], 3 * sizeof(float) * vertices.size());
+    coordBuffer->allocate(&vertices[0], sizeof(float) * vertices.size());
 
     program->enableAttributeArray(0);
     program->setAttributeBuffer(0, GL_FLOAT, 0, 3, 0);
@@ -138,7 +139,7 @@ bool Mesh::init(QOpenGLShaderProgram *program)
     if (!normBuffer->isCreated()) return false;
     if (!normBuffer->bind()) return false;
     normBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    normBuffer->allocate(&normals[0], 3 * sizeof(float) * normals.size());
+    normBuffer->allocate(&normals[0], sizeof(float) * normals.size());
 
     program->enableAttributeArray(1);
     program->setAttributeBuffer(1, GL_FLOAT, 0, 3, 0);
@@ -167,6 +168,9 @@ void Mesh::render(QOpenGLFunctions &gl)
 // Collision
 //**************************************
 
-bool Mesh::checkColision(QVector3D pos0, QVector3D pos1){
-    return false;
+void Mesh::addColision(){
+    for (unsigned int i=0; i<normals.size()/3; i++){
+        QVector3D normal = QVector3D(normals[3*i+0], normals[3*i+1], normals[3*i+2]);
+        planeCollider pl(normal, 0.1f);
+    }
 }

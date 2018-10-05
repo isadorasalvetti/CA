@@ -3,7 +3,9 @@ HEADERS = \
     glwidget.h \
     mainwindow.h \
     particle.h \
-    particlespawner.h
+    particlespawner.h \
+    timer.h \
+    collider.h
 
 SOURCES = \
           main.cpp \
@@ -11,7 +13,9 @@ SOURCES = \
     glwidget.cpp \
     mainwindow.cpp \
     particle.cpp \
-    particlespawner.cpp
+    particlespawner.cpp \
+    timer.cpp \
+    collider.cpp
 
 QT += gui opengl
 

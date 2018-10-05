@@ -2,7 +2,6 @@
 #define MESH_H
 
 #include <vector>
-#include <QVector3D>
 #include <QOpenGLFunctions>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLShaderProgram>
@@ -21,7 +20,7 @@ public:
     QVector3D color;
 
     void render(QOpenGLFunctions &gl);
-    bool checkColision(QVector3D pos0, QVector3D pos1);
+    void addColision();
     QVector3D correctPosition();
 
 private:

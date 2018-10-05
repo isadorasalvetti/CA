@@ -1,4 +1,3 @@
-#pragma once
 #include "particle.h"
 #include <QOpenGLFunctions>
 
@@ -6,9 +5,12 @@
 //****************************************************
 const QVector3D G(0, -9.8f, 0);
 
-void Particle::mUpdate(){
+void Particle::mUpdate(double elapsedTime){
+    //solver
     m_Velocity += G;
-    m_Position += m_Velocity;
+    m_Position += elapsedTime/(double)100 * m_Velocity;
+
+    //collision check
 }
 
 
@@ -58,8 +60,10 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     return true;
 }
 
-void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
-    modelMatrix.translate(m_Position[0], m_Position[1], m_Position[2]);
+void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, double elpsdTime){
+    mUpdate(elpsdTime);
+    QMatrix4x4 modelMatrix;
+    modelMatrix.translate(m_Position);
 
     VAO.bind();
     program->setUniformValue("color", m_Color);

@@ -10,8 +10,6 @@
 #include <QOpenGLBuffer>
 #include <QTimer>
 
-#include "glwidget.h"
-
 class Particle{
 public:
     Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog);
@@ -20,16 +18,11 @@ public:
     QVector3D  m_Color;    // Particle color
     float m_Radius; //size of the particle
 
-    void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
-
-public slots:
-    void mUpdate();
+    void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, double elpsdTime);
+    void mUpdate(double elapsedTime);
 
 private:
     bool BuildPlane(QOpenGLShaderProgram *program);
-
-
-    QMatrix4x4 modelMatrix;
 
     QOpenGLVertexArrayObject VAO;
     QOpenGLBuffer* coordBuffer;

@@ -15,10 +15,13 @@ void particleSpawner::init(int amount, QOpenGLShaderProgram *prog){
         Particle *p = new Particle(position, radius, color, velocity, prog);
         particles.push_back(p);
     }
+
+    timer.start();
 }
 
 void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog){
     for(int i = 0; i<particles.size(); i++){
-        particles[i]->Render(gl, prog);
+        particles[i]->Render(gl, prog, timer.elapsed()/(double)1000);
     }
+    timer.start();
 }
