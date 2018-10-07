@@ -54,6 +54,8 @@ void GLWidget::initializeGL()
             QApplication::quit();
     }
 
+    mesh.addColision(planeColliders);
+
     spawner.init(50, program_particle);
     Timer *timer = new Timer(this);
 
@@ -85,7 +87,7 @@ void GLWidget::paintGL()
 
     glDisable(GL_DEPTH_TEST);
     program_particle->bind();
-    spawner.renderParticles(*this, program_particle);
+    spawner.renderParticles(*this, program_particle, planeColliders);
     program_particle->release();
     glEnable(GL_DEPTH_TEST);
 }

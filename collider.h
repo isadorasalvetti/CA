@@ -3,21 +3,20 @@
 
 #include <vector>
 #include <QVector3D>
-#include "particle.h"
 
 class planeCollider{
 public:
     QVector3D n;
     float d;
     planeCollider(QVector3D N, float D): n(N), d(D) {}
-
+    planeCollider() {}
 };
 
 class Collider{
 public:
-    static void pointPlaneCollision
-        (QVector3D p1, QVector3D p2, QVector3D v2, planeCollider plane, Particle &particle);
+    static bool pointPlaneCollision(QVector3D p1, QVector3D p2, planeCollider plane);
     static void pointSphereCollision();
+    static std::pair<QVector3D, QVector3D> updateParticle(QVector3D p2, QVector3D v2, planeCollider plane);
 };
 
 #endif // COLLIDER_H

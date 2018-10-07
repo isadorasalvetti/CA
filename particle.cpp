@@ -5,12 +5,21 @@
 //****************************************************
 const QVector3D G(0, -9.8f, 0);
 
-void Particle::mUpdate(double elapsedTime){
+void Particle::mUpdate(double elapsedTime, QVector<planeCollider> &planes){
+    QVector3D lastPosition = m_Position;
+
     //solver
     m_Velocity += G;
-    m_Position += elapsedTime/(double)100 * m_Velocity;
+    m_Position += elapsedTime/100 * m_Velocity;
 
     //collision check
+    for (int i = 0; i<planes.size(); i++){
+        bool check = Collider::pointPlaneCollision(lastPosition, m_Position, planes[i]);
+        if (check) {
+            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, planes[i]);
+            m_Position = nD.first; m_Velocity = nD.second;
+        }
+    }
 }
 
 
@@ -60,8 +69,7 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     return true;
 }
 
-void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, double elpsdTime){
-    mUpdate(elpsdTime);
+void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
     QMatrix4x4 modelMatrix;
     modelMatrix.translate(m_Position);
 

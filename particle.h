@@ -9,6 +9,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 #include <QTimer>
+#include "collider.h"
 
 class Particle{
 public:
@@ -18,8 +19,8 @@ public:
     QVector3D  m_Color;    // Particle color
     float m_Radius; //size of the particle
 
-    void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, double elpsdTime);
-    void mUpdate(double elapsedTime);
+    void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
+    void mUpdate(double elapsedTime, QVector<planeCollider> &planes);
 
 private:
     bool BuildPlane(QOpenGLShaderProgram *program);

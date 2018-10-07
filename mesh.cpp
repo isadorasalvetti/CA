@@ -33,17 +33,17 @@ void Mesh::buildCube()
                          -1,  .5,  1
                         };
 
-    GLuint faces[] = {0, 1, 3,
+    GLuint faces[] = {0, 1, 3, //z pos
                       1, 2, 3,
-                    7, 6, 5,
+                    7, 6, 5, //z neg
                       7, 5, 4,
-                    0, 3, 7,
+                    0, 3, 7, //x pos
                       7, 4, 0,
-                    6, 2, 1,
+                    6, 2, 1, //x neg
                       1, 5, 6,
-                    4, 1, 0,
+                    4, 1, 0, //y pos
                       1, 4, 5,
-                    7, 3, 2,
+                    7, 3, 2, //y neg
                       2, 6, 7
                   };
 
@@ -168,9 +168,21 @@ void Mesh::render(QOpenGLFunctions &gl)
 // Collision
 //**************************************
 
-void Mesh::addColision(){
-    for (unsigned int i=0; i<normals.size()/3; i++){
-        QVector3D normal = QVector3D(normals[3*i+0], normals[3*i+1], normals[3*i+2]);
-        planeCollider pl(normal, 0.1f);
+void Mesh::addColision(QVector<planeCollider> &vec){
+    for (unsigned int i=0; i+2<triangles.size(); i+= 6){
+        QVector3D v1(vertices[triangles[i] * 3], vertices[triangles[i] * 3 + 1],
+                           vertices[triangles[i] * 3 + 2]);
+        QVector3D v2(vertices[triangles[i + 1] * 3],
+                           vertices[triangles[i + 1] * 3 + 1],
+                           vertices[triangles[i + 1] * 3 + 2]);
+        QVector3D v3(vertices[triangles[i + 2] * 3],
+                           vertices[triangles[i + 2] * 3 + 1],
+                           vertices[triangles[i + 2] * 3 + 2]);
+        QVector3D v1v2 = v2 - v1;
+        QVector3D v1v3 = v3 - v1;
+        QVector3D normal = QVector3D::crossProduct(v1v2, v1v3).normalized();
+        float d = QVector3D::dotProduct(normal, v1);
+        planeCollider pl(normal, d);
+        vec.push_back(pl);
     }
 }

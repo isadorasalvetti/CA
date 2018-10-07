@@ -9,7 +9,7 @@ class particleSpawner
 public:
     QVector<Particle*> particles;
     void init(int amount, QOpenGLShaderProgram *prog);
-    void renderParticles(QOpenGLFunctions &gl,QOpenGLShaderProgram *prog);
+    void renderParticles(QOpenGLFunctions &gl,QOpenGLShaderProgram *prog, QVector<planeCollider> &ps);
 private:
     QElapsedTimer timer;
 

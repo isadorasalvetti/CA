@@ -6,6 +6,7 @@
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
+#include "collider.h"
 
 class Mesh {
 public:
@@ -20,7 +21,7 @@ public:
     QVector3D color;
 
     void render(QOpenGLFunctions &gl);
-    void addColision();
+    void addColision(QVector<planeCollider> &vec);
     QVector3D correctPosition();
 
 private:

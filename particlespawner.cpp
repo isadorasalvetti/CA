@@ -19,9 +19,11 @@ void particleSpawner::init(int amount, QOpenGLShaderProgram *prog){
     timer.start();
 }
 
-void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog){
+void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog, QVector<planeCollider> &ps){
     for(int i = 0; i<particles.size(); i++){
-        particles[i]->Render(gl, prog, timer.elapsed()/(double)1000);
+        particles[i]->mUpdate(timer.elapsed()/1000.0, ps);
+        particles[i]->Render(gl, prog);
+
     }
     timer.start();
 }
