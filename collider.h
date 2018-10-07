@@ -8,7 +8,8 @@ class planeCollider{
 public:
     QVector3D n;
     float d;
-    planeCollider(QVector3D N, float D): n(N), d(D) {}
+    float b; //bounciness
+    planeCollider(QVector3D N, float D, float B): n(N), d(D), b(B) {}
     planeCollider() {}
 };
 

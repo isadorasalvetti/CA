@@ -23,7 +23,6 @@ void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram
     for(int i = 0; i<particles.size(); i++){
         particles[i]->mUpdate(timer.elapsed()/1000.0, ps);
         particles[i]->Render(gl, prog);
-
     }
     timer.start();
 }

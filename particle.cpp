@@ -9,13 +9,26 @@ void Particle::mUpdate(double elapsedTime, QVector<planeCollider> &planes){
     QVector3D lastPosition = m_Position;
 
     //solver
-    m_Velocity += G;
-    m_Position += elapsedTime/100 * m_Velocity;
+//    m_Velocity += G*elapsedTime;
+//    m_Position += elapsedTime * m_Velocity;
+
+    //Verlet
+    if (!lp){
+        m_Position += elapsedTime*m_Velocity + 0.5*G*elapsedTime*elapsedTime;
+        m_Velocity += G*elapsedTime;
+        lp = true;
+    } else {
+        m_Position += (m_Position - m_LastPosition) + G*elapsedTime*elapsedTime;
+        m_Velocity += G*elapsedTime;
+    }
+    m_LastPosition = lastPosition;
+
 
     //collision check
     for (int i = 0; i<planes.size(); i++){
-        bool check = Collider::pointPlaneCollision(lastPosition, m_Position, planes[i]);
+        bool check = Collider::pointPlaneCollision(m_LastPosition, m_Position, planes[i]);
         if (check) {
+            lp = false;
             std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, planes[i]);
             m_Position = nD.first; m_Velocity = nD.second;
         }

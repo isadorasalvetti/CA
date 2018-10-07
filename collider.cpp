@@ -8,8 +8,8 @@ bool Collider::pointPlaneCollision(QVector3D p1, QVector3D p2, planeCollider pla
 }
 
 std::pair<QVector3D, QVector3D> Collider::updateParticle(QVector3D p2, QVector3D v2, planeCollider plane){
-    QVector3D pC = p2 - 2*(QVector3D::dotProduct(plane.n,p2)+plane.d)*plane.n;
-    QVector3D vC = v2 - 2*(QVector3D::dotProduct(plane.n,v2))*plane.n;
+    QVector3D pC = p2 - (1+plane.b)*(QVector3D::dotProduct(plane.n,p2)+plane.d)*plane.n;
+    QVector3D vC = v2 - (1+plane.b)*(QVector3D::dotProduct(plane.n,v2))*plane.n;
 
     std::pair<QVector3D, QVector3D> update(pC, vC);
     return update;
