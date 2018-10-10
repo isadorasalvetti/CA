@@ -5,7 +5,8 @@ HEADERS = \
     particle.h \
     particlespawner.h \
     timer.h \
-    collider.h
+    collider.h \
+    objects.h
 
 SOURCES = \
           main.cpp \
@@ -15,7 +16,8 @@ SOURCES = \
     particle.cpp \
     particlespawner.cpp \
     timer.cpp \
-    collider.cpp
+    collider.cpp \
+    objects.cpp
 
 QT += gui opengl
 

@@ -7,6 +7,7 @@
 #include "mesh.h"
 #include "particlespawner.h"
 #include "collider.h"
+#include "objects.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -44,6 +45,7 @@ private:
     QOpenGLShaderProgram *program;
     QOpenGLShaderProgram *program_particle;
     Mesh mesh;
+    Objects objectColliders;
     particleSpawner spawner;
 };
 

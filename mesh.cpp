@@ -6,6 +6,7 @@
 #include <QOpenGLFunctions>
 #include <QDebug>
 
+//renders ONLY the surrounding cube
 
 void Mesh::addVertex(float v0, float v1, float v2)
 {

@@ -48,7 +48,7 @@ void GLWidget::initializeGL()
             QApplication::quit();
     }
 
-    if(!mesh.init(program))
+    if(!mesh.init(program) || !objectColliders.Init(program))
     {
             cout << "Could not create vbo" << endl;
             QApplication::quit();
@@ -83,6 +83,7 @@ void GLWidget::paintGL()
     program->bind();
     //Rendering
     mesh.render(*this);
+    objectColliders.render(*this);
     program->release();
 
     glDisable(GL_DEPTH_TEST);
