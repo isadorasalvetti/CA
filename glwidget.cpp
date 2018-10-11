@@ -82,15 +82,14 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     program->bind();
     //Rendering
-    mesh.render(*this);
-    objectColliders.render(*this);
+    mesh.render(*this, program);
+    objectColliders.render(*this, program);
     program->release();
 
-    glDisable(GL_DEPTH_TEST);
     program_particle->bind();
     spawner.renderParticles(*this, program_particle, planeColliders);
     program_particle->release();
-    glEnable(GL_DEPTH_TEST);
+
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)

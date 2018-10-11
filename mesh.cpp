@@ -113,7 +113,6 @@ bool Mesh::init(QOpenGLShaderProgram *program)
 
     //My Uniforms
     color = QVector3D (0.8f, 0.8f, 0.8f);
-    program->setUniformValue("color", color);
 
     //My Buffers
     VAO.destroy();
@@ -159,8 +158,9 @@ bool Mesh::init(QOpenGLShaderProgram *program)
     return true;
 }
 
-void Mesh::render(QOpenGLFunctions &gl)
+void Mesh::render(QOpenGLFunctions &gl,QOpenGLShaderProgram *program)
 {
+    program->setUniformValue("color", color);
     VAO.bind();
     gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, nullptr);
     VAO.release();

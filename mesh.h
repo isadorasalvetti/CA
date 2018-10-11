@@ -20,7 +20,7 @@ public:
 
     QVector3D color;
 
-    void render(QOpenGLFunctions &gl);
+    void render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
     void addColision(QVector<planeCollider> &vec);
     QVector3D correctPosition();
 

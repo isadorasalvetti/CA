@@ -8,21 +8,21 @@ const QVector3D G(0, -9.8f, 0);
 void Particle::mUpdate(double elapsedTime, QVector<planeCollider> &planes){
     QVector3D lastPosition = m_Position;
 
-    //solver
-//    m_Velocity += G*elapsedTime;
-//    m_Position += elapsedTime * m_Velocity;
-
-    //Verlet
-    if (!lp){
-        m_Position += elapsedTime*m_Velocity + 0.5*G*elapsedTime*elapsedTime;
+    bool solver = true;
+    if (solver){
         m_Velocity += G*elapsedTime;
-        lp = true;
-    } else {
-        m_Position += (m_Position - m_LastPosition) + G*elapsedTime*elapsedTime;
-        m_Velocity += G*elapsedTime;
+        m_Position += elapsedTime * m_Velocity;
     }
-    m_LastPosition = lastPosition;
-
+    else {
+        if (!lp){
+            m_Position += elapsedTime*m_Velocity + 0.5*G*elapsedTime*elapsedTime;
+            lp = true;
+        } else {
+            m_Position += (m_Position - m_LastPosition) + G*elapsedTime*elapsedTime;
+            m_Velocity += (m_Position - m_LastPosition);
+        }
+        m_LastPosition = lastPosition;
+    }
 
     //collision check
     for (int i = 0; i<planes.size(); i++){

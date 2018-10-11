@@ -6,7 +6,7 @@ uniform vec3 color;
 
 
 void main(){
-    if (pow(texCoords.x, 2) + pow(texCoords.y, 2) < pow(.5, 2)) {
+    if (pow(texCoords.x, 2.0f) + pow(texCoords.y, 2.0f) < pow(.5, 2.0f)) {
         frag_color = vec4(1, 0, 0, 1);
     }
     else {frag_color = vec4(1, 1, 1, 0);}

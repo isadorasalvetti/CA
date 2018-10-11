@@ -11,12 +11,12 @@
 class Obj {
 public:
     //GL VAO n VBO
-    QOpenGLVertexArrayObject VAO;
+    QOpenGLVertexArrayObject* VAO;
     QOpenGLBuffer* coordBuffer;
     QOpenGLBuffer* indexBuffer;
     QOpenGLBuffer* normBuffer;
     float radius; // -1 = triangle mesh/ > 1 = sphere
-    //QVector3D color;
+    QVector3D color;
     std::vector<float> vertices;
     std::vector<float> normals;
     std::vector<int> triangles;
@@ -25,14 +25,15 @@ public:
 class Objects {
 public:
     std::vector<Obj> myObjs;
+    QVector<triangleCollider> triangleColliders;
     Obj sphere;
     Obj triangleMesh;
 
     bool Init(QOpenGLShaderProgram *program);
-    void render(QOpenGLFunctions &gl);
+    void render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
     bool LoadObj(const char *path);
     bool buildBuffers(QOpenGLShaderProgram *program, Obj *m);
-    void addTriCollision(QVector<planeCollider> &vec);
+    void addColision(QVector<triangleCollider> &vec);
 
 };
 
