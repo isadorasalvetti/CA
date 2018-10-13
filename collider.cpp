@@ -20,6 +20,10 @@ bool Collider::pointTriCollision(QVector3D p1, QVector3D p2, triangleCollider tr
     return false;
 }
 
+bool Collider::pointSphereCollision(QVector3D p1, float radius){
+
+}
+
 std::pair<QVector3D, QVector3D> Collider::updateParticle(QVector3D p2, QVector3D v2, planeCollider plane){
     QVector3D pC = p2 - (1+plane.b)*(QVector3D::dotProduct(plane.n,p2)+plane.d)*plane.n;
     QVector3D vC = v2 - (1+plane.b)*(QVector3D::dotProduct(plane.n,v2))*plane.n;

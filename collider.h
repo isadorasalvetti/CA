@@ -31,9 +31,9 @@ public:
     QVector3D c;
     float radius;
     float b; //bounciness
-    triangleCollider(QVector3D C, float R, float B):
+    sphereCollider(QVector3D C, float R, float B):
         c(C), radius(R), b(B) {}
-    triangleCollider() {}
+    sphereCollider() {}
 };
 
 class Collider{
