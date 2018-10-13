@@ -22,7 +22,7 @@ public:
     float m_Radius; //size of the particle
 
     void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
-    void mUpdate(double elapsedTime, QVector<planeCollider> &planes);
+    void mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles);
 
 private:
     bool BuildPlane(QOpenGLShaderProgram *program);

@@ -1,12 +1,12 @@
 #include "particlespawner.h"
 
-const float max = 1.4;
+const float max = 0.3;
 
 void particleSpawner::init(int amount, QOpenGLShaderProgram *prog){
     for (int i =0; i < amount; i++){
-        float x = max - 2*max * static_cast<float>(rand())/static_cast<float>(RAND_MAX);
-        float y = max - 2*max * static_cast<float>(rand())/static_cast<float>(RAND_MAX);
-        float z = max - 2*max * static_cast<float>(rand())/static_cast<float>(RAND_MAX);
+        float x = max - 2 * max * static_cast<float>(rand())/static_cast<float>(RAND_MAX);
+        float y = .7f;
+        float z = max - 2 * max * static_cast<float>(rand())/static_cast<float>(RAND_MAX);
 
         QVector3D position = QVector3D(x, y, z);
         float radius = .05f;
@@ -16,13 +16,23 @@ void particleSpawner::init(int amount, QOpenGLShaderProgram *prog){
         particles.push_back(p);
     }
 
-    timer.start();
+    //timer.start();
 }
 
-void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog, QVector<planeCollider> &ps){
+void particleSpawner::updateColliders(QVector<planeCollider> &p, QVector<triangleCollider> &ts){
+    planes = p;
+    tris = ts;
+}
+
+void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog){
     for(int i = 0; i<particles.size(); i++){
-        particles[i]->mUpdate(timer.elapsed()/1000.0, ps);
         particles[i]->Render(gl, prog);
     }
-    timer.start();
+    //timer.start();
+}
+
+void particleSpawner::updateParticles(){
+    for(int i = 0; i<particles.size(); i++){
+        particles[i]->mUpdate(planes, tris);
+    }
 }

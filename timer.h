@@ -4,12 +4,14 @@
 #include <QTimer>
 #include <QObject>
 #include <QOpenGLWidget>
+#include "particlespawner.h"
 
 class Timer: public QObject{
     Q_OBJECT
 
 public:
     Timer(QOpenGLWidget *s);
+    particleSpawner spawner;
 private:
     QOpenGLWidget* widget;
 public slots:

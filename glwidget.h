@@ -20,11 +20,13 @@ class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
 
 public:
-    GLWidget(QWidget *parent = 0);
+    GLWidget(QWidget *parent = nullptr);
     ~GLWidget();
 
     //Scene management
+    //colliders
     QVector<planeCollider> planeColliders;
+    QVector<triangleCollider> triColliders;
 
 protected:
     void initializeGL();

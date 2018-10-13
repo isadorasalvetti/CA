@@ -8,5 +8,6 @@ Timer::Timer(QOpenGLWidget *s){
 }
 
 void Timer::update(){
+   spawner.updateParticles();
    widget->update();
 }

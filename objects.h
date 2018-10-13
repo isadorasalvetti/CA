@@ -20,6 +20,7 @@ public:
     std::vector<float> vertices;
     std::vector<float> normals;
     std::vector<int> triangles;
+    QMatrix4x4 modelMatrix;
 };
 
 class Objects {

@@ -55,9 +55,12 @@ void GLWidget::initializeGL()
     }
 
     mesh.addColision(planeColliders);
+    objectColliders.addColision(triColliders);
 
-    spawner.init(50, program_particle);
+    spawner.init(2, program_particle);
+    spawner.updateColliders(planeColliders, triColliders);
     Timer *timer = new Timer(this);
+    timer->spawner = spawner;
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     //Default render flags.
@@ -87,7 +90,7 @@ void GLWidget::paintGL()
     program->release();
 
     program_particle->bind();
-    spawner.renderParticles(*this, program_particle, planeColliders);
+    spawner.renderParticles(*this, program_particle);
     program_particle->release();
 
 }

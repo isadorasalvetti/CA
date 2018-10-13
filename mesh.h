@@ -18,6 +18,7 @@ public:
     QOpenGLBuffer* indexBuffer;
     QOpenGLBuffer* normBuffer;
 
+    QMatrix4x4 modelMatrix;
     QVector3D color;
 
     void render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);

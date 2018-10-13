@@ -72,10 +72,10 @@ bool Objects::Init(QOpenGLShaderProgram *program){
         2, 1, 3,
         3, 1, 5,
         5, 1, 0,
-        2, 4, 0,
-        3, 4, 2,
-        5, 4, 3,
-        0, 4, 5,
+//        2, 4, 0,
+//        3, 4, 2,
+//        5, 4, 3,
+//        0, 4, 5,
     };
 
 
@@ -88,12 +88,24 @@ bool Objects::Init(QOpenGLShaderProgram *program){
         0, 0, -1
     };
 
-    for (int i=0; i<sizeof(triVertices)/sizeof(float); i++){
-        triangleMesh.vertices.push_back(triVertices[i]);
-        triangleMesh.normals.push_back(normal[i]);
-    } for (int i=0; i<sizeof(faces)/sizeof(float); i++){
+    //Mesh translation
+    triangleMesh.modelMatrix.translate(0, -1.4f, 0);
+
+    for (int i=0; i<sizeof(triVertices)/sizeof(float); i+=3){
+
+        //change vertex position
+        QVector4D vert (triVertices[i], triVertices[i+1], triVertices[i+2], 1);
+        vert = triangleMesh.modelMatrix * vert;
+
+        //push back vertices and normals
+        triangleMesh.vertices.push_back(vert[0]); triangleMesh.vertices.push_back(vert[1]); triangleMesh.vertices.push_back(vert[2]);
+        triangleMesh.normals.push_back(normal[i]); triangleMesh.normals.push_back(normal[i+1]); triangleMesh.normals.push_back(normal[i+2]);
+    }
+
+    for (int i=0; i<sizeof(faces)/sizeof(float); i++){
         triangleMesh.triangles.push_back(faces[i]);
     }
+
     buildBuffers(program, &triangleMesh);
     addColision(triangleColliders);
 
@@ -102,6 +114,7 @@ bool Objects::Init(QOpenGLShaderProgram *program){
 }
 
 bool Objects::buildBuffers(QOpenGLShaderProgram *program, Obj *m){
+
     //My Uniforms
     m->color = QVector3D (0.8f, 0.0f, 0.8f);
 
@@ -151,7 +164,7 @@ bool Objects::buildBuffers(QOpenGLShaderProgram *program, Obj *m){
     return true;
 }
 
-void Objects::render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
+void Objects::render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){   
     program->setUniformValue("color", triangleMesh.color);
     triangleMesh.VAO->bind();
     gl.glDrawElements(GL_TRIANGLES, triangleMesh.triangles.size(), GL_UNSIGNED_INT, nullptr);
@@ -171,10 +184,16 @@ void Objects::addColision(QVector<triangleCollider> &vec){
                            m.vertices[m.triangles[i + 2] * 3 + 2]);
         QVector3D v1v2 = v2 - v1;
         QVector3D v1v3 = v3 - v1;
+
+        //construct plane
         QVector3D normal = QVector3D::crossProduct(v1v2, v1v3).normalized();
-        float d = QVector3D::dotProduct(normal, v1);
-        QVector3D triCoords (m.triangles[i], m.triangles[i+1], m.triangles[i+2]);
-        triangleCollider pl(normal, triCoords, d, 1);
+        float d = - QVector3D::dotProduct(normal, v1);
+
+        //pass triangle coordinates
+        QVector3D tri0 (m.vertices[m.triangles[i]*3], m.vertices[m.triangles[i]*3+1], m.vertices[m.triangles[i]*3+2]);
+        QVector3D tri1 (m.vertices[m.triangles[i+1]*3], m.vertices[m.triangles[i+1]*3+1], m.vertices[m.triangles[i+1]*3+2]);
+        QVector3D tri2 (m.vertices[m.triangles[i+2]*3], m.vertices[m.triangles[i+2]*3+1], m.vertices[m.triangles[i+2]*3+2]);
+        triangleCollider pl(normal, tri0, tri1, tri2, d, 1);
         vec.push_back(pl);
     }
 }
