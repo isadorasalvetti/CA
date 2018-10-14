@@ -55,12 +55,11 @@ void GLWidget::initializeGL()
     }
 
     mesh.addColision(planeColliders);
-    objectColliders.addColision(triColliders);
+    objectColliders.addColision(triColliders, sphereColliders);
 
-    spawner.init(2, program_particle);
-    spawner.updateColliders(planeColliders, triColliders);
-    Timer *timer = new Timer(this);
-    timer->spawner = spawner;
+    spawner.init(program_particle);
+    spawner.updateColliders(planeColliders, triColliders, sphereColliders);
+    Timer *timer = new Timer(this, &spawner);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     //Default render flags.

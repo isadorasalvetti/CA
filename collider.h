@@ -4,6 +4,15 @@
 #include <vector>
 #include <QVector3D>
 
+class sphereCollider{
+public:
+    QVector3D c;
+    float r;
+    float b; //bounciness
+    sphereCollider(QVector3D C, float R, float B): c(C), r(R), b(B) {}
+    sphereCollider() {}
+};
+
 class planeCollider{
 public:
     QVector3D n;
@@ -26,23 +35,14 @@ public:
     triangleCollider() {}
 };
 
-class sphereCollider{
-public:
-    QVector3D c;
-    float radius;
-    float b; //bounciness
-    sphereCollider(QVector3D C, float R, float B):
-        c(C), radius(R), b(B) {}
-    sphereCollider() {}
-};
-
 class Collider{
 public:
     static bool pointPlaneCollision(QVector3D p1, QVector3D p2, planeCollider plane);
     static bool pointTriCollision(QVector3D p1, QVector3D p2, triangleCollider tri);
-    static bool pointSphereCollision(QVector3D p1, float radius);
+    static bool pointSphereCollision(QVector3D p1, sphereCollider sphere);
     static std::pair<QVector3D, QVector3D> updateParticle(QVector3D p2, QVector3D v2, planeCollider plane);
     static std::pair<QVector3D, QVector3D> updateParticle(QVector3D p2, QVector3D v2, triangleCollider tri);
+    static std::pair<QVector3D, QVector3D> updateParticle(QVector3D p2, QVector3D v2, sphereCollider tri);
 
     static float triangleArea(QVector3D a, QVector3D b, QVector3D c);
 };

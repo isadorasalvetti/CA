@@ -10,8 +10,8 @@ class Timer: public QObject{
     Q_OBJECT
 
 public:
-    Timer(QOpenGLWidget *s);
-    particleSpawner spawner;
+    Timer(QOpenGLWidget *s, particleSpawner *sp);
+    particleSpawner* spawner;
 private:
     QOpenGLWidget* widget;
 public slots:

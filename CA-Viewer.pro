@@ -6,7 +6,8 @@ HEADERS = \
     particlespawner.h \
     timer.h \
     collider.h \
-    objects.h
+    objects.h \
+    mainwindow.h
 
 SOURCES = \
           main.cpp \
@@ -30,4 +31,5 @@ DISTFILES += \
     shaders/particle.frag
 
 FORMS += \
+mainwindow.ui \
     mainwindow.ui

@@ -27,6 +27,7 @@ public:
     //colliders
     QVector<planeCollider> planeColliders;
     QVector<triangleCollider> triColliders;
+    QVector<sphereCollider> sphereColliders;
 
 protected:
     void initializeGL();

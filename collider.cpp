@@ -2,26 +2,42 @@
 
 bool Collider::pointPlaneCollision(QVector3D p1, QVector3D p2, planeCollider plane){
     //test if a collision happened
-    float p1Direction = plane.n[0]*p1[0] + plane.n[1]*p1[1] + plane.n[2]*p1[2] + plane.d;
-    float p2Direction = plane.n[0]*p2[0] + plane.n[1]*p2[1] + plane.n[2]*p2[2] + plane.d;
+    float p1Direction = QVector3D::dotProduct(plane.n,p1) + plane.d;
+    float p2Direction = QVector3D::dotProduct(plane.n,p2) + plane.d;
     return p1Direction * p2Direction < 0;
 }
 
 bool Collider::pointTriCollision(QVector3D p1, QVector3D p2, triangleCollider tri){
-    float p1Direction = tri.n[0]*p1[0] + tri.n[1]*p1[1] + tri.n[2]*p1[2] + tri.d;
-    float p2Direction = tri.n[0]*p2[0] + tri.n[1]*p2[1] + tri.n[2]*p2[2] + tri.d;
+    float p1Direction = QVector3D::dotProduct(tri.n,p1) + tri.d;
+    float p2Direction = QVector3D::dotProduct(tri.n,p2) + tri.d;
+    QVector3D pProj = p2 -  QVector3D::dotProduct(p2 - tri.p1, tri.n)*tri.n;
     if (p1Direction * p2Direction < 0){
-        float a1 = triangleArea(tri.p1, tri.p2, p2);
-        float a2 = triangleArea(p2, tri.p2, tri.p3);
-        float a3 = triangleArea(tri.p1, p2, tri.p3);
+        float a1 = triangleArea(tri.p1, tri.p2, pProj);
+        float a2 = triangleArea(pProj, tri.p2, tri.p3);
+        float a3 = triangleArea(tri.p1, pProj, tri.p3);
         float a = triangleArea(tri.p1, tri.p2, tri.p3);
-        return a1 + a2 + a3 - a>=0;
+        float tArea = a1 + a2 + a3 - a;
+        return tArea < 0.01;
     }
     return false;
 }
 
-bool Collider::pointSphereCollision(QVector3D p1, float radius){
+bool Collider::pointSphereCollision(QVector3D p1, sphereCollider sphere){
+    float dist = p1.distanceToPoint(sphere.c);
+    return dist*dist <= sphere.r*sphere.r;
+}
 
+std::pair<QVector3D, QVector3D> Collider::updateParticle(QVector3D p2, QVector3D v2, sphereCollider sphere){
+    //Compute contact point
+    QVector3D normal = sphere.c - p2;
+    normal.normalize();
+    float d = -QVector3D::dotProduct(p2, normal);
+
+    QVector3D pC = p2 - (1+sphere.b)*(QVector3D::dotProduct(normal,p2)+d)*normal;
+    QVector3D vC = v2 - (1+sphere.b)*(QVector3D::dotProduct(normal,v2))*normal;
+
+    std::pair<QVector3D, QVector3D> update(pC, vC);
+    return update;
 }
 
 std::pair<QVector3D, QVector3D> Collider::updateParticle(QVector3D p2, QVector3D v2, planeCollider plane){
@@ -43,5 +59,5 @@ std::pair<QVector3D, QVector3D> Collider::updateParticle(QVector3D p2, QVector3D
 float Collider::triangleArea(QVector3D a, QVector3D b, QVector3D c){
     QVector3D ab = a - b;
     QVector3D ac = a - c;
-    return QVector3D::dotProduct(ab, ac)/2.0f;
+    return QVector3D::crossProduct(ab, ac).length()/2.0f;
 }

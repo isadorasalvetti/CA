@@ -5,10 +5,13 @@
 //****************************************************
 const QVector3D G(0, -9.8f, 0);
 
-void Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles){
-    float  elapsedTime = .03;
+bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres){
+    float  elapsedTime = .03f;
     QVector3D lastPosition = m_Position;
-    bool solver = false;
+    bool solver = true;
+
+    //lifespan -= elapsedTime;
+    if (lifespan < 0) return false;
 
     if (solver){
         m_Velocity += G*elapsedTime;
@@ -33,19 +36,29 @@ void Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider>
             lp = false;
             std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, planes[i]);
             m_Position = nD.first; m_Velocity = nD.second;
-            return;
         }
     }
     //triangles
-//    for (int i = 0; i<triangles.size(); i++){
-//        bool check = Collider::pointTriCollision(m_LastPosition, m_Position, triangles[i]);
-//        if (check) {
-//            lp = false;
-//            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, triangles[i]);
-//            m_Position = nD.first; m_Velocity = nD.second;
-//            return;
-//        }
-//    }
+    for (int i = 0; i<triangles.size(); i++){
+        bool check = Collider::pointTriCollision(m_LastPosition, m_Position, triangles[i]);
+        if (check) {
+            lp = false;
+            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, triangles[i]);
+            m_Position = nD.first; m_Velocity = nD.second;
+        }
+    }
+
+    //sphere
+    for (int i = 0; i<spheres.size(); i++){
+        bool check = Collider::pointSphereCollision(m_Position, spheres[i]);
+        if (check) {
+            lp = false;
+            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, spheres[i]);
+            m_Position = nD.first; m_Velocity = nD.second;
+        }
+    }
+
+    return true;
 }
 
 
@@ -110,6 +123,8 @@ void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
 //****************************************************
 
 Particle::Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog){
+    i_Position = position;
+
     m_Velocity = velocity;
     m_Position = position;
     m_Radius = radius;

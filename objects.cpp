@@ -1,63 +1,58 @@
 #include "objects.h"
+#include <math.h>
 
-//bool Objects::LoadObj(const char *path){
-//    Obj loadedObj;
-//    std::vector<QVector3D> temp_verts;
-//    std::vector<QVector3D> temp_normals;
-//    std::vector<int> vertexIndices;
+void buildNormals(Obj &m) {
+  const int kFaces = m.triangles.size();
+  std::vector<float> face_normals(kFaces, 0);
 
-//    FILE *file = fopen(path, "r");
-//    if( file == NULL ){
-//        printf("Impossible to open the file !\n");
-//        return false;
-//    }
-//    while(true){
-//        char lineHeader[128];
-//        // read the first word of the line
-//        int res = fscanf(file, "%s", lineHeader);
-//        if (res == EOF) break; // EOF = End Of File. Quit the loop.
-//        if ( strcmp( lineHeader, "v" ) == 0 ){
-//            float x, y, z;
-//            fscanf(file, "%f %f %f\n", &x, &y, &z );
-//            QVector3D vertex(x, y, z);
-//            temp_verts.push_back(vertex);
-//        }
-//        else if ( strcmp( lineHeader, "vn" ) == 0 ){
-//            float x, y, z;
-//            fscanf(file, "%f %f %f\n", &x, &y, &z );
-//            QVector3D normal(x, y, z);
-//            temp_normals.push_back(normal);
-//        }
-//        else if ( strcmp( lineHeader, "f" ) == 0 ){
-//            std::string vertex1, vertex2, vertex3;
-//            int vertexIndex[3];
-//            fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &vertexIndex[1], &vertexIndex[2]);
-//            vertexIndices.push_back(vertexIndex[0]);
-//            vertexIndices.push_back(vertexIndex[1]);
-//            vertexIndices.push_back(vertexIndex[2]);
-//        }
-//        else if ( strcmp( lineHeader, "t" ) == 0 ){
-//            float tp;
-//            fscanf(file, "%f %f %f\n", &tp);
-//        }
-//    }
-//    loadedObj.Indices = vertexIndices;
-//    for (unsigned int i = 0; i < temp_verts.size(); i++){
-//        loadedObj.verts.push_back(temp_verts[i][0]);
-//        loadedObj.verts.push_back(temp_verts[i][1]);
-//        loadedObj.verts.push_back(temp_verts[i][2]);
-//    }
-//    for (unsigned int i = 0; i < temp_normals.size(); i++){
-//        loadedObj.normals.push_back(temp_normals[i][0]);
-//        loadedObj.normals.push_back(temp_normals[i][1]);
-//        loadedObj.normals.push_back(temp_normals[i][2]);
-//    }
-//    return  true;
-//}
+  for (int i = 0; i < kFaces; i += 3) {
+    QVector3D v1(m.vertices[m.triangles[i] * 3], m.vertices[m.triangles[i] * 3 + 1],
+                       m.vertices[m.triangles[i] * 3 + 2]);
+    QVector3D v2(m.vertices[m.triangles[i + 1] * 3],
+                       m.vertices[m.triangles[i + 1] * 3 + 1],
+                       m.vertices[m.triangles[i + 1] * 3 + 2]);
+    QVector3D v3(m.vertices[m.triangles[i + 2] * 3],
+                       m.vertices[m.triangles[i + 2] * 3 + 1],
+                       m.vertices[m.triangles[i + 2] * 3 + 2]);
+    QVector3D v1v2 = v2 - v1;
+    QVector3D v1v3 = v3 - v1;
+    QVector3D normal = QVector3D::crossProduct(v1v2, v1v3);
 
+    normal.normalize();
+    for (int j = 0; j < 3; ++j) face_normals[i + j] = normal[j];
+}
+  const int kVertices = m.vertices.size();
+  m.normals.resize(kVertices, 0);
+  for (int i = 0; i < kFaces; i += 3) {
+    for (int j = 0; j < 3; ++j) {
+      int idx = m.triangles[i + j];
+      QVector3D v1(m.vertices[m.triangles[i + j] * 3],
+                         m.vertices[m.triangles[i + j] * 3 + 1],
+                         m.vertices[m.triangles[i + j] * 3 + 2]);
+      QVector3D v2(m.vertices[m.triangles[i + (j + 1) % 3] * 3],
+                         m.vertices[m.triangles[i + (j + 1) % 3] * 3 + 1],
+                         m.vertices[m.triangles[i + (j + 1) % 3] * 3 + 2]);
+      QVector3D v3(m.vertices[m.triangles[i + (j + 2) % 3] * 3],
+                         m.vertices[m.triangles[i + (j + 2) % 3] * 3 + 1],
+                         m.vertices[m.triangles[i + (j + 2) % 3] * 3 + 2]);
+
+      QVector3D v1v2 = v2 - v1;
+      QVector3D v1v3 = v3 - v1;
+      double angle = acos(QVector3D::dotProduct(v1v2, v1v3) / (v1v2.length() * v1v3.length()));
+
+      for (int k = 0; k < 3; ++k) {
+      m.normals[idx * 3 + k] += face_normals[i + k] * angle;
+      }
+    }
+  }
+}
 
 bool Objects::Init(QOpenGLShaderProgram *program){
+
+    //*************************************
     //Tri Mesh
+    //*************************************
+
     float triVertices[] {
         .5, 0, 0,
         0, .5, 0,
@@ -90,6 +85,7 @@ bool Objects::Init(QOpenGLShaderProgram *program){
 
     //Mesh translation
     triangleMesh.modelMatrix.translate(0, -1.4f, 0);
+    triangleMesh.color = QVector3D (0.8f, 0.0f, 0.8f);
 
     for (int i=0; i<sizeof(triVertices)/sizeof(float); i+=3){
 
@@ -102,22 +98,62 @@ bool Objects::Init(QOpenGLShaderProgram *program){
         triangleMesh.normals.push_back(normal[i]); triangleMesh.normals.push_back(normal[i+1]); triangleMesh.normals.push_back(normal[i+2]);
     }
 
-    for (int i=0; i<sizeof(faces)/sizeof(float); i++){
+    for (int i=0; i<sizeof(faces)/sizeof(int); i++){
         triangleMesh.triangles.push_back(faces[i]);
     }
 
     buildBuffers(program, &triangleMesh);
-    addColision(triangleColliders);
+
+    //*************************************
+    //Sphere mesh
+    //*************************************
+    sphereMesh.radius = .5f;
+
+    const float X=.525731112119133606f;
+    const float Z=.850650808352039932f;
+    const float N=0.f;
+
+    float sVerts[] {-X,N,Z,  X,N,Z,  -X,N,-Z,
+            X,N,-Z,  N,Z,X,  N,Z,-X,
+            N,-Z,X,  N,-Z,-X,  Z,X,N,
+            -Z,X, N,  Z,-X,N,  -Z,-X, N};
+
+
+     int triangles[] {1,4,0,  4,9,0,  4,5,9,  8,5,4,  1,8,4,
+        1,10,8,  10,3,8,  8,3,5,  3,2,5,  3,7,2,
+        3,10,7,  10,6,7,  6,11,7,  6,0,11,  6,1,0,
+        10,1,6,  11,0,9,  2,11,9,  5,2,9,  11,2,7};
+
+     //Mesh translation (-1.4f, -0.5f, -1.4f)
+     sphereMesh.modelMatrix.translate(0,-0.2f,0);
+     sphereMesh.modelMatrix.scale(sphereMesh.radius);
+
+     sphereMesh.color = QVector3D (0.0f, 0.8f, 0.8f);
+     sphereMesh.center = QVector3D (0,-0.2f,0);
+
+     for (int i=0; i<sizeof(sVerts)/sizeof(float); i+=3){
+
+         //change vertex position
+         QVector4D vert (sVerts[i], sVerts[i+1], sVerts[i+2], 1);
+         vert = sphereMesh.modelMatrix * vert;
+
+         //push back vertices and normals
+         sphereMesh.vertices.push_back(vert[0]); sphereMesh.vertices.push_back(vert[1]); sphereMesh.vertices.push_back(vert[2]);
+     }
+
+     for (int i=0; i<sizeof(triangles)/sizeof(int); i++){
+         sphereMesh.triangles.push_back(triangles[i]);
+     }
+     buildNormals(sphereMesh);
+     buildBuffers(program, &sphereMesh);
+
+     addColision(triangleColliders, sphereColliders);
 
     return true;
     //Sphere
 }
 
 bool Objects::buildBuffers(QOpenGLShaderProgram *program, Obj *m){
-
-    //My Uniforms
-    m->color = QVector3D (0.8f, 0.0f, 0.8f);
-
     //My Buffers
     m->VAO = new QOpenGLVertexArrayObject;
 
@@ -165,14 +201,23 @@ bool Objects::buildBuffers(QOpenGLShaderProgram *program, Obj *m){
 }
 
 void Objects::render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){   
+    //Triangles
     program->setUniformValue("color", triangleMesh.color);
     triangleMesh.VAO->bind();
     gl.glDrawElements(GL_TRIANGLES, triangleMesh.triangles.size(), GL_UNSIGNED_INT, nullptr);
     triangleMesh.VAO->release();
+
+    //Sphere
+    program->setUniformValue("color", sphereMesh.color);
+    sphereMesh.VAO->bind();
+    gl.glDrawElements(GL_TRIANGLES, sphereMesh.triangles.size(), GL_UNSIGNED_INT, nullptr);
+    sphereMesh.VAO->release();
 }
 
-void Objects::addColision(QVector<triangleCollider> &vec){
+void Objects::addColision(QVector<triangleCollider> &vec, QVector<sphereCollider> &spc){
     Obj m = triangleMesh;
+    Obj s = sphereMesh;
+
     for (unsigned int i=0; i+2<m.triangles.size(); i+= 3){
         QVector3D v1(m.vertices[m.triangles[i] * 3], m.vertices[m.triangles[i] * 3 + 1],
                            m.vertices[m.triangles[i] * 3 + 2]);
@@ -196,4 +241,8 @@ void Objects::addColision(QVector<triangleCollider> &vec){
         triangleCollider pl(normal, tri0, tri1, tri2, d, 1);
         vec.push_back(pl);
     }
+
+    sphereCollider sColl(sphereMesh.center, sphereMesh.radius, 1);
+    spc.push_back(sColl);
+
 }
