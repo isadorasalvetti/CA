@@ -17,7 +17,7 @@ bool Collider::pointTriCollision(QVector3D p1, QVector3D p2, triangleCollider tr
         float a3 = triangleArea(tri.p1, pProj, tri.p3);
         float a = triangleArea(tri.p1, tri.p2, tri.p3);
         float tArea = a1 + a2 + a3 - a;
-        return tArea < 0.01;
+        return tArea < 0.01f;
     }
     return false;
 }

@@ -5,10 +5,9 @@
 //****************************************************
 const QVector3D G(0, -9.8f, 0);
 
-bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres){
+bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres, bool solver){
     float  elapsedTime = .03f;
     QVector3D lastPosition = m_Position;
-    bool solver = true;
 
     //lifespan -= elapsedTime;
     if (lifespan < 0) return false;
@@ -53,7 +52,7 @@ bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider>
         bool check = Collider::pointSphereCollision(m_Position, spheres[i]);
         if (check) {
             lp = false;
-            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, spheres[i]);
+            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_LastPosition, m_Velocity, spheres[i]);
             m_Position = nD.first; m_Velocity = nD.second;
         }
     }

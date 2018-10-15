@@ -8,6 +8,7 @@
 #include "particlespawner.h"
 #include "collider.h"
 #include "objects.h"
+#include "timer.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -28,6 +29,9 @@ public:
     QVector<planeCollider> planeColliders;
     QVector<triangleCollider> triColliders;
     QVector<sphereCollider> sphereColliders;
+
+    void changeSolver(bool status);
+    void Reset();
 
 protected:
     void initializeGL();
@@ -50,6 +54,8 @@ private:
     Mesh mesh;
     Objects objectColliders;
     particleSpawner spawner;
+
+    Timer *timer;
 };
 
 #endif

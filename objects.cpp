@@ -203,6 +203,7 @@ bool Objects::buildBuffers(QOpenGLShaderProgram *program, Obj *m){
 void Objects::render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){   
     //Triangles
     program->setUniformValue("color", triangleMesh.color);
+    program->setUniformValue("amICube", false);
     triangleMesh.VAO->bind();
     gl.glDrawElements(GL_TRIANGLES, triangleMesh.triangles.size(), GL_UNSIGNED_INT, nullptr);
     triangleMesh.VAO->release();

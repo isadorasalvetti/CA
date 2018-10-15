@@ -53,6 +53,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPushButton>
+#include "glwidget.h"
 
 namespace Ui {
 class MainWindow;
@@ -63,11 +65,16 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+public slots:
+    void clickButton();
 
 private:
     Ui::MainWindow *ui;
+    GLWidget *gl;
+    bool solverStatus = false;
 };
 
 #endif // MAINWINDOW_H

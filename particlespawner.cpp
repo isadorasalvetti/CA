@@ -3,8 +3,13 @@
 const float max = 0.2;
 
 void particleSpawner::init(QOpenGLShaderProgram *prog){
+    //Delete old particles
+    for(int i = 0; i<particles.size(); i++) delete particles[i];
+    particles.clear();
+
+    //generate new ones
     program = prog;
-    for (unsigned int i = 0; i< 25; i++){
+    for (unsigned int i = 0; i< 30; i++){
         genParticle();
     }
 
@@ -43,17 +48,6 @@ void particleSpawner::updateParticles(){
     QVector<int> indicesToRemove;
 
     for(int i = 0; i<particles.size(); i++){
-        if(!particles[i]->mUpdate(planes, tris, spheres)) indicesToRemove.append(i);
+        particles[i]->mUpdate(planes, tris, spheres, solver);
     }
-    for(int i = 0; i<indicesToRemove.size(); i++){
-//        QVector<Particle*>::iterator nth = particles.begin() + i;
-//        particles.erase(nth);
-        particles[i]->m_Position = particles[i]->i_Position;
-        particles[i]->m_Velocity = QVector3D(0,0,0);
-        particles[i]->lp = false;
-        particles[i]->lifespan = 6 * static_cast<float>(rand())/static_cast<float>(RAND_MAX);
-    }
-
-    indicesToRemove.clear();
-
 }

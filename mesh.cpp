@@ -161,6 +161,7 @@ bool Mesh::init(QOpenGLShaderProgram *program)
 void Mesh::render(QOpenGLFunctions &gl,QOpenGLShaderProgram *program)
 {
     program->setUniformValue("color", color);
+    program->setUniformValue("amICube", true);
     VAO.bind();
     gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, nullptr);
     VAO.release();

@@ -12,6 +12,7 @@ class Timer: public QObject{
 public:
     Timer(QOpenGLWidget *s, particleSpawner *sp);
     particleSpawner* spawner;
+    QTimer *t;
 private:
     QOpenGLWidget* widget;
 public slots:

@@ -7,7 +7,6 @@
 
 #include "mesh.h"
 #include "particlespawner.h"
-#include "timer.h"
 
 
 using namespace std;
@@ -45,6 +44,7 @@ void GLWidget::initializeGL()
     if(!program->isLinked() || !program_particle->isLinked())
     {
             cout << "Shader program has not linked" << endl << endl << "Log: " << endl << endl << program->log().toStdString();
+            cout << "Shader program has not linked" << endl << endl << "Log: " << endl << endl << program_particle->log().toStdString();
             QApplication::quit();
     }
 
@@ -59,7 +59,7 @@ void GLWidget::initializeGL()
 
     spawner.init(program_particle);
     spawner.updateColliders(planeColliders, triColliders, sphereColliders);
-    Timer *timer = new Timer(this, &spawner);
+    timer = new Timer(this, &spawner);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     //Default render flags.
@@ -143,15 +143,33 @@ void GLWidget::setModelview()
     viewMatrix.translate(0, 0, -distance);
     viewMatrix.rotate(angleX, 1.0f, 0.0f, 0.0f);
     viewMatrix.rotate(angleY, 0.0f, 1.0f, 0.0f);
-    //Set particle model view with distance only.
+
     program_particle->bind();
     program_particle->setUniformValue("view", viewMatrix);
     program_particle->release();
 
-    //Set cube model view with rotation also.
     program->bind();
     program->setUniformValue("modelview", viewMatrix);
     program->setUniformValue("normalMatrix", viewMatrix.normalMatrix());
     program->release();
+
+}
+
+//************************************
+//Interface
+//************************************
+
+void GLWidget::changeSolver(bool status){
+    spawner.solver = status;
+}
+
+void GLWidget::Reset(){
+    timer->t->stop();
+
+    particleSpawner S;
+    spawner = S;
+    spawner.init(program_particle);
+    spawner.updateColliders(planeColliders, triColliders, sphereColliders);
+    timer = new Timer(this, &spawner);
 
 }

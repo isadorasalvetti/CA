@@ -14,6 +14,6 @@ smooth out float normalColor;
 
 void main(void)  {
     vec4 view_vertex = modelview * vec4(vertex, 1);
-    normalColor = (normalize(normalMatrix*normal).z);
+    normalColor = normalize(normalMatrix*normal).z;
     gl_Position = projection * view_vertex;
 }
