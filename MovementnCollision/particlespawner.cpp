@@ -40,7 +40,7 @@ void particleSpawner::genParticle(){
                                 static_cast<float>(rand())/static_cast<float>(RAND_MAX));
     QVector3D velocity = QVector3D(0, 0, 0);
     Particle *p = new Particle(position, radius, color, velocity, program);
-    p->lifespan = 6 * static_cast<float>(rand())/static_cast<float>(RAND_MAX);
+    //p->lifespan = 6 * static_cast<float>(rand())/static_cast<float>(RAND_MAX);
     particles.push_back(p);
 }
 

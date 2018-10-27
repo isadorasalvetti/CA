@@ -10,7 +10,7 @@ bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider>
     QVector3D lastPosition = m_Position;
 
     //lifespan -= elapsedTime;
-    if (lifespan < 0) return false;
+    //if (lifespan < 0) return false;
 
     if (solver){
         m_Velocity += G*elapsedTime;
@@ -71,7 +71,6 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     //adjust vertices by size/ position
     for (unsigned int i = 0; i < sizeof(vertices)/sizeof(GLfloat); i++){
         vertices[i] *= m_Radius;
-        //vertices[i] += m_Position[i%3];
     }
 
     program->bind();

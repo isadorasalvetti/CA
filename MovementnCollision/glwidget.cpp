@@ -19,11 +19,13 @@ const float maxDistanceCamera = 3.0f;
 GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), angleX(0.0f), angleY(0.0f), distance(2.0f)
 {
     program = nullptr;
+    program_particle = nullptr;
 }
 
 GLWidget::~GLWidget()
 {
     if(program) delete program;
+    if(program_particle) delete program_particle;
 }
 
 
@@ -81,16 +83,18 @@ void GLWidget::resizeGL(int w, int h)
 
 void GLWidget::paintGL()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     program->bind();
     //Rendering
     mesh.render(*this, program);
     objectColliders.render(*this, program);
     program->release();
 
+    glDisable(GL_CULL_FACE);
     program_particle->bind();
     spawner.renderParticles(*this, program_particle);
     program_particle->release();
+    glEnable(GL_CULL_FACE);
 
 }
 
@@ -172,4 +176,5 @@ void GLWidget::Reset(){
     spawner.updateColliders(planeColliders, triColliders, sphereColliders);
     timer = new Timer(this, &spawner);
 
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
