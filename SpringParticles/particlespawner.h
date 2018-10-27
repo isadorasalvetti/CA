@@ -8,7 +8,7 @@ class particleSpawner
 {
 public:
     QVector<Particle*> particles;
-    void init(QOpenGLShaderProgram *prog, int dimension);
+    void init(QOpenGLShaderProgram *prog);
     void genParticle();
     void updateColliders(QVector<planeCollider> &p, QVector<triangleCollider> &ts, QVector<sphereCollider> &ss);
     void renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog);
@@ -16,21 +16,14 @@ public:
 
     bool solver; //true = euler, false= verlet
 
-    //Rope Simulation
-    int lenght = 10;
-
-    //Cloth simulation
-    std::pair<int, int > size = std::pair<int, int> (6, 4);
-    float spacing = 0.05f;
-
 private:
     int count = 0;
-    int dim = 0;
 
-    QVector<planeCollider> planes;
-    QVector<triangleCollider> tris;
-    QVector<sphereCollider> spheres;
-    QOpenGLShaderProgram *program;
+    //QElapsedTimer timer; ----! Replaced by a constant time step. Timer introduced too much error in solvers.
+     QVector<planeCollider> planes;
+     QVector<triangleCollider> tris;
+     QVector<sphereCollider> spheres;
+     QOpenGLShaderProgram *program;
 
 };
 

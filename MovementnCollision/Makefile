@@ -1688,49 +1688,7 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qbasictimer.h \
 		objects.h \
 		timer.h \
-		ui_mainwindow.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtCore/QVariant \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QAction \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qaction.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qactiongroup.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QApplication \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qapplication.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtCore/qcoreapplication.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtCore/qeventloop.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qdesktopwidget.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtGui/qguiapplication.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtGui/qinputmethod.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QButtonGroup \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qbuttongroup.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QHBoxLayout \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qboxlayout.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qlayout.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qlayoutitem.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qgridlayout.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QHeaderView \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qheaderview.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qabstractitemview.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qabstractscrollarea.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qframe.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtCore/qabstractitemmodel.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtCore/qitemselectionmodel.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qstyleoption.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qabstractspinbox.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtGui/qvalidator.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtCore/qregularexpression.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qslider.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qabstractslider.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qstyle.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qtabbar.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qrubberband.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QLabel \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qlabel.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QMenuBar \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qmenubar.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qmenu.h \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QSpacerItem \
-		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QVBoxLayout
+		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
 particle.o: particle.cpp particle.h \

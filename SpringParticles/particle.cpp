@@ -5,44 +5,29 @@
 //****************************************************
 const QVector3D G(0, -9.8f, 0);
 
-bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres,
-                       bool &solver, QVector<Particle*> &particles, int &i){
-    float  elapsedTime = .03f; //fixed timestep
+bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres, bool solver){
+    float  elapsedTime = .03f;
     QVector3D lastPosition = m_Position;
 
-     QVector3D totForce = QVector3D(0, 0, 0);
-     QVector3D force = QVector3D(0, 0, 0);
+    //lifespan -= elapsedTime;
+    //if (lifespan < 0) return false;
 
-    if (i+1 < particles.size()){
-        QVector3D posDiff = particles[i+1]->m_Position - m_Position;
-        float velDot = QVector3D::dotProduct(particles[i+1]->m_Velocity - m_Velocity, posDiff.normalized());
-        p1Force = (kE*posDiff.length() + kD*velDot) * posDiff.normalized();
-        p2Force = - p1Force;
-        if (i == 0){
-            totForce = p1Force;
+    if (solver){
+        m_Velocity += G*elapsedTime;
+        m_Position += elapsedTime * m_Velocity;
+    }
+    else {
+        if (!lp){
+            m_Position += elapsedTime * m_Velocity + 0.5 * G*elapsedTime*elapsedTime;
+            lp = true;
         } else {
-            totForce = p1Force + particles[i-1]->p2Force;
+            m_Velocity = (m_Position - m_LastPosition) /elapsedTime;
+            m_Position += (m_Position - m_LastPosition) +G*elapsedTime*elapsedTime;
         }
     }
+    m_LastPosition = lastPosition;
 
-    if (i!= 0) force = totForce+G;
-
-        if (solver){
-            m_Velocity += force*elapsedTime;
-            m_Position += elapsedTime * m_Velocity;
-        }
-        else {
-            if (!lp){
-                m_Position += elapsedTime * m_Velocity + 0.5*force*elapsedTime*elapsedTime;
-                lp = true;
-            } else {
-                m_Velocity = (m_Position - m_LastPosition) /elapsedTime;
-                m_Position += kD*(m_Position - m_LastPosition) +force*elapsedTime*elapsedTime;
-            }
-        }
-        m_LastPosition = lastPosition;
-
-    //COLLISION check
+    //collision check
     //planes
     for (int i = 0; i<planes.size(); i++){
         bool check = Collider::pointPlaneCollision(m_LastPosition, m_Position, planes[i]);
@@ -52,27 +37,26 @@ bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider>
             m_Position = nD.first; m_Velocity = nD.second;
         }
     }
-    if (false){
-        //triangles
-        for (int i = 0; i<triangles.size(); i++){
-            bool check = Collider::pointTriCollision(m_LastPosition, m_Position, triangles[i]);
-            if (check) {
-                lp = false;
-                std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, triangles[i]);
-                m_Position = nD.first; m_Velocity = nD.second;
-            }
-        }
-
-        //sphere
-        for (int i = 0; i<spheres.size(); i++){
-            bool check = Collider::pointSphereCollision(m_Position, spheres[i]);
-            if (check) {
-                lp = false;
-                std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_LastPosition, m_Velocity, spheres[i]);
-                m_Position = nD.first; m_Velocity = nD.second;
-            }
+    //triangles
+    for (int i = 0; i<triangles.size(); i++){
+        bool check = Collider::pointTriCollision(m_LastPosition, m_Position, triangles[i]);
+        if (check) {
+            lp = false;
+            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, triangles[i]);
+            m_Position = nD.first; m_Velocity = nD.second;
         }
     }
+
+    //sphere
+    for (int i = 0; i<spheres.size(); i++){
+        bool check = Collider::pointSphereCollision(m_Position, spheres[i]);
+        if (check) {
+            lp = false;
+            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_LastPosition, m_Velocity, spheres[i]);
+            m_Position = nD.first; m_Velocity = nD.second;
+        }
+    }
+
     return true;
 }
 
@@ -92,11 +76,10 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     program->bind();
 
     //My Buffers
-    VAO = new QOpenGLVertexArrayObject;
-    VAO->destroy();
-    VAO->create();
-    if (!VAO->isCreated()) return false;
-    VAO->bind();
+    VAO.destroy();
+    VAO.create();
+    if (!VAO.isCreated()) return false;
+    VAO.bind();
 
     coordBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     coordBuffer->destroy();
@@ -117,7 +100,7 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     indexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
     indexBuffer->allocate(&faces[0], sizeof(faces));
 
-    VAO->release();
+    VAO.release();
 
     program->release();
     return true;
@@ -127,12 +110,12 @@ void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
     QMatrix4x4 modelMatrix;
     modelMatrix.translate(m_Position);
 
-    VAO->bind();
+    VAO.bind();
     program->setUniformValue("color", m_Color);
     program->setUniformValue("factor", m_Radius);
     program->setUniformValue("model", modelMatrix);
     gl.glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-    VAO->release();
+    VAO.release();
 }
 
 //****************************************************

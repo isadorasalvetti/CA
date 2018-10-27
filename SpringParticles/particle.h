@@ -14,7 +14,6 @@
 class Particle{
 public:
     Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog);
-    Particle(){}
     bool lp = false; //last position initialized
     QVector3D m_LastPosition;
     QVector3D i_Position;
@@ -22,23 +21,15 @@ public:
     QVector3D m_Velocity; // Current particle velocity
     QVector3D m_Color;    // Particle color
     float m_Radius; //size of the particle
-
-    //Spring Vars
-    const float kE = 30; //elasticity
-    const float kD = 0.8f; //damping
-    QVector3D p1Force;
-    QVector3D p2Force;
-
-    //Neighborhood
+    float lifespan = 15.0f;
 
     void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
-    bool mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres,
-                 bool &solver, QVector<Particle*> &particles, int &i);
+    bool mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres, bool solver);
 
 private:
     bool BuildPlane(QOpenGLShaderProgram *program);
 
-    QOpenGLVertexArrayObject* VAO;
+    QOpenGLVertexArrayObject VAO;
     QOpenGLBuffer* coordBuffer;
     QOpenGLBuffer* indexBuffer;
 };
