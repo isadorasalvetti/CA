@@ -1,39 +1,55 @@
 #include "particle.h"
 #include <QOpenGLFunctions>
 
-// Animation
+// Particle simulation
 //****************************************************
 const QVector3D G(0, -9.8f, 0);
 
 bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres,
-                       bool &solver, QVector<Particle*> &particles, int &i, int &dim){
+                       bool &solver, QVector<Particle*> &particles, int &i, int &dim, std::pair<int, int> &size){
     float  elapsedTime = .03f; //fixed timestep
     QVector3D lastPosition = m_Position;
     
+    //initial force = 0
     QVector3D totForce = QVector3D(0, 0, 0);
     QVector3D force = QVector3D(0, 0, 0);
     
-    if (dim==2){
+    /* SPRING MESHES*/
+
+    if (dim == 1){
+
+        /* ROPE FORCE CALCULATION STARTS HERE */
         float sprSize = 0.05; //initial distance between particle - spring size
         if (i+1 < particles.size()){
             QVector3D posDiff = particles[i+1]->m_Position - m_Position;
             float velDot = QVector3D::dotProduct(particles[i+1]->m_Velocity - m_Velocity, posDiff.normalized());
             p1Force = (kE*posDiff.length()-sprSize + kD*velDot) * posDiff.normalized();
             p2Force = - p1Force;
+
             if (i == 0){
                 totForce = p1Force;
             } else {
                 totForce = p1Force + particles[i-1]->p2Force;
             }
+
+            //Updates force for all particles except first.
+            if (i!= 0) force = totForce+G;
         }
-    } else if (dim==3){
+
+
+    } else if (dim == 2){
+        /* CLOTH FORCE CALCULATION STARTS HERE */
         QVector3D intForce = QVector3D(0, 0, 0);
+        //Internal forces
+        QVector <int> Strech = neighborhoodForFabric(0, i, size);
+        QVector <int> Shear = neighborhoodForFabric(1, i, size);
+        QVector <int> Bend = neighborhoodForFabric(2, i, size);
+
         QVector3D rstForce = QVector3D(0, 0, 0);
         QVector3D extForce = QVector3D(0, 0, 0);
     }
 
-    if (i!= 0) force = totForce+G;
-
+        /* SOLVERS START HERE */
         if (solver){
             m_Velocity += force*elapsedTime;
             m_Position += elapsedTime * m_Velocity;
@@ -47,13 +63,13 @@ bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider>
                 m_Position += kD*(m_Position - m_LastPosition) +force*elapsedTime*elapsedTime;
             }
         }
-        m_LastPosition = lastPosition;
+    m_LastPosition = lastPosition;
 
-        fixPrticleSpacing(particles, dim, i);
+    /* RESTRICTION FIXING */
+    if (dim == 1) fixPrticleSpacing(particles, dim, i);
 
-    //COLLISION check
+    /*COLLISION CHECKS START HERE */
     //planes
-
     for (int i = 0; i<planes.size(); i++){
         bool check = Collider::pointPlaneCollision(m_LastPosition, m_Position, planes[i]);
         if (check) {
@@ -62,31 +78,29 @@ bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider>
             m_Position = nD.first; m_Velocity = nD.second;
         }
     }
-    if (true){
-        //triangles
-        for (int i = 0; i<triangles.size(); i++){
-            bool check = Collider::pointTriCollision(m_LastPosition, m_Position, triangles[i]);
-            if (check) {
-                lp = false;
-                std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, triangles[i]);
-                m_Position = nD.first; m_Velocity = nD.second;
-            }
+    //triangles
+    for (int i = 0; i<triangles.size(); i++){
+        bool check = Collider::pointTriCollision(m_LastPosition, m_Position, triangles[i]);
+        if (check) {
+            lp = false;
+            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, triangles[i]);
+            m_Position = nD.first; m_Velocity = nD.second;
         }
+    }
 
-        //sphere
-        for (int i = 0; i<spheres.size(); i++){
-            bool check = Collider::pointSphereCollision(m_Position, spheres[i]);
-            if (check) {
-                lp = false;
-                std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_LastPosition, m_Velocity, spheres[i]);
-                m_Position = nD.first; m_Velocity = nD.second;
-            }
+    //sphere
+    for (int i = 0; i<spheres.size(); i++){
+        bool check = Collider::pointSphereCollision(m_Position, spheres[i]);
+        if (check) {
+            lp = false;
+            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_LastPosition, m_Velocity, spheres[i]);
+            m_Position = nD.first; m_Velocity = nD.second;
         }
     }
     return true;
 }
 
-
+/* CREATING THE PARTICLE/ BUFFERS */
 // Plane
 //****************************************************
 
@@ -156,10 +170,37 @@ void Particle::fixPrticleSpacing(QVector<Particle*> &particles, int &dim, int &i
     }
 }
 
-QVector<int> Particle::neighborhoodForFabric(int role, int i, std::pair<int, int> size){
+QVector<int> Particle::neighborhoodForFabric(int role, int &i, std::pair<int, int> &size){
+    QVector<int> neighbors;
 
+    if (role == 0){ //this is Strech
+        if(i - size.first > 0) neighbors.push_back(i - size.first); //up
+        if(i + size.first < size.first*size.second) neighbors.push_back(i + size.first); //down
+        if(i%size.first != 0) neighbors.push_back(i - 1); //left
+        if((i+1)%size.first != 0) neighbors.push_back(i + 1); //right
+    }
+
+    else if (role == 1){ //this is Shear
+        if((i)%size.first != 0){
+            if(i-1-size.first > 0) neighbors.push_back(i - 1 - size.first); //up-left
+            if(i-1+size.first < size.first*size.second) neighbors.push_back(i - 1 + size.first); //down-left
+
+        }
+        if((i+1)%size.first != 0){
+            if(i+1-size.first > 0) neighbors.push_back(i + 1 - size.first); //up-right
+            if(i+1+size.first < size.first*size.second) neighbors.push_back(i + 1 + size.first); //down-right
+        }
+    }
+
+    else if (role == 2){ //this is Bend
+        if(i - 2*size.first > 0) neighbors.push_back(i - 2*size.first); //up
+        if(i + 2*size.first < size.first*size.second) neighbors.push_back(i + 2*size.first); //down
+        if(i%size.first != 0 && (i-1)%size.first != 0) neighbors.push_back(i - 2); //left
+        if((i+2)%size.first != 0 && (i+1)%size.first) neighbors.push_back(i + 2); //right
+    }
+
+    return neighbors;
 }
-
 
 //****************************************************
 
@@ -176,7 +217,9 @@ Particle::Particle(QVector3D position, float radius, QVector3D color, QVector3D 
     };
 }
 
-void Particle::DestroySelf(){
+
+/* DESTROY PARTICLE*/
+Particle::~Particle(){
     VAO->destroy();
     coordBuffer->destroy();
     indexBuffer->destroy();

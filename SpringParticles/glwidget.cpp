@@ -169,6 +169,7 @@ void GLWidget::changeSolver(bool status){
 
 void GLWidget::Reset(){
     timer->t->stop();
+    spawner = particleSpawner();
     spawner.init(program_particle, 1);
     spawner.updateColliders(planeColliders, triColliders, sphereColliders);
     timer = new Timer(this, &spawner);

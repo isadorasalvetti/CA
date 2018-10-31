@@ -7,6 +7,7 @@
 class particleSpawner
 {
 public:
+    ~particleSpawner();
     QVector<Particle*> particles;
     void init(QOpenGLShaderProgram *prog, int dimension);
     void genParticle();

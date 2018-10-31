@@ -15,7 +15,7 @@ class Particle{
 public:
     Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog);
     Particle(){}
-    void DestroySelf();
+    ~Particle();
     bool lp = false; //last position initialized
     QVector3D m_LastPosition;
     QVector3D i_Position;
@@ -34,14 +34,13 @@ public:
 
     void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
     bool mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres,
-                 bool &solver, QVector<Particle*> &particles, int &i, int &dim);
+                 bool &solver, QVector<Particle*> &particles, int &i, int &dim, std::pair<int, int> &size);
 
-    void fixPrticleSpacing(QVector<Particle*> &particles, int &dim, int &i);
-
-    QVector<int> neighborhoodForFabric(int role, int i, std::pair<int, int> size); //0 = streach, 1 = sheer, 2 = bend
+    QVector<int> neighborhoodForFabric(int role, int &i, std::pair<int, int> &size); //0 = streach, 1 = sheer, 2 = bend
 
 private:
     bool BuildPlane(QOpenGLShaderProgram *program);
+    void fixPrticleSpacing(QVector<Particle*> &particles, int &dim, int &i);
 
     QOpenGLVertexArrayObject* VAO;
     QOpenGLBuffer* coordBuffer;

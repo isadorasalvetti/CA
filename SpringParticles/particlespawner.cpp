@@ -9,10 +9,6 @@ void particleSpawner::init(QOpenGLShaderProgram *prog, int dimension){
      * 2 - Create fabric
     */
 
-    //Delete old particles
-    for(int i = 0; i<particles.size(); i++) {particles[i]->DestroySelf(); delete particles[i];}
-    particles.clear();
-
     //generate new ones
     program = prog;
     genParticle();
@@ -81,7 +77,12 @@ void particleSpawner::updateParticles(){
 
     //Update particles positions
     for(int i = 0; i<particles.size(); i++){
-        particles[i]->mUpdate(planes, tris, spheres, solver, particles, i, dim);
+        particles[i]->mUpdate(planes, tris, spheres, solver, particles, i, dim, size);
     }
 
+}
+
+particleSpawner::~particleSpawner(){
+    //Delete old particles
+    for(int i = 0; i<particles.size(); i++) delete particles[i];
 }
