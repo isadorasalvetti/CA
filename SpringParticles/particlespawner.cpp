@@ -10,7 +10,7 @@ void particleSpawner::init(QOpenGLShaderProgram *prog, int dimension){
     */
 
     //Delete old particles
-    for(int i = 0; i<particles.size(); i++) delete particles[i];
+    for(int i = 0; i<particles.size(); i++) {particles[i]->DestroySelf(); delete particles[i];}
     particles.clear();
 
     //generate new ones
@@ -62,6 +62,7 @@ void particleSpawner::genParticle(){
 
     //Make a 2 dim spring system (cloth)
     else if (dim == 2){
+        //Spawn regular cloth mesh
         float y = .7f;
         for (unsigned int i = 0; i < size.first; i++){
             float x = size.first*spacing/2 + i*spacing;
@@ -77,7 +78,10 @@ void particleSpawner::genParticle(){
 }
 
 void particleSpawner::updateParticles(){
+
+    //Update particles positions
     for(int i = 0; i<particles.size(); i++){
-        particles[i]->mUpdate(planes, tris, spheres, solver, particles, i);
+        particles[i]->mUpdate(planes, tris, spheres, solver, particles, i, dim);
     }
+
 }

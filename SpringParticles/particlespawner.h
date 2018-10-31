@@ -17,11 +17,19 @@ public:
     bool solver; //true = euler, false= verlet
 
     //Rope Simulation
-    int lenght = 10;
+    int lenght = 35;
 
     //Cloth simulation
     std::pair<int, int > size = std::pair<int, int> (6, 4);
-    float spacing = 0.05f;
+    /* 01 02 03 04 05 06
+     * 07 08 09 10 11 12
+     * 13 14 15 16 17 18
+     * 19 20 21 22 23 24
+    */
+    
+    float spacing = 0.10f;
+    
+    static QVector<int> neightboors();
 
 private:
     int count = 0;

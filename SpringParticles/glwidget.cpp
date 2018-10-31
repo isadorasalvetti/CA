@@ -87,7 +87,7 @@ void GLWidget::paintGL()
     program->bind();
     //Rendering
     mesh.render(*this, program);
-    if (false) objectColliders.render(*this, program);
+    if (true) objectColliders.render(*this, program);
     program->release();
 
     glDisable(GL_CULL_FACE);
@@ -169,9 +169,6 @@ void GLWidget::changeSolver(bool status){
 
 void GLWidget::Reset(){
     timer->t->stop();
-
-    particleSpawner S;
-    spawner = S;
     spawner.init(program_particle, 1);
     spawner.updateColliders(planeColliders, triColliders, sphereColliders);
     timer = new Timer(this, &spawner);
