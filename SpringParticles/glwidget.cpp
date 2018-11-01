@@ -59,7 +59,7 @@ void GLWidget::initializeGL()
     mesh.addColision(planeColliders);
     objectColliders.addColision(triColliders, sphereColliders);
 
-    spawner.init(program_particle, 1);
+    spawner.init(program_particle, dim, kD, kE, solver);
     spawner.updateColliders(planeColliders, triColliders, sphereColliders);
     timer = new Timer(this, &spawner);
 
@@ -87,7 +87,7 @@ void GLWidget::paintGL()
     program->bind();
     //Rendering
     mesh.render(*this, program);
-    if (true) objectColliders.render(*this, program);
+    objectColliders.render(*this, program);
     program->release();
 
     glDisable(GL_CULL_FACE);
@@ -163,16 +163,10 @@ void GLWidget::setModelview()
 //Interface
 //************************************
 
-void GLWidget::changeSolver(bool status){
-    spawner.solver = status;
-}
-
-void GLWidget::Reset(){
+void GLWidget::Reset(int dim, float kd, float ke, Particle::SOLVER s){
     timer->t->stop();
-    spawner = particleSpawner();
-    spawner.init(program_particle, 1);
+    spawner.init(program_particle, dim, ke, kd, s);
     spawner.updateColliders(planeColliders, triColliders, sphereColliders);
     timer = new Timer(this, &spawner);
-
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 }

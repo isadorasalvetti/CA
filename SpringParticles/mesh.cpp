@@ -184,7 +184,7 @@ void Mesh::addColision(QVector<planeCollider> &vec){
         QVector3D v1v3 = v3 - v1;
         QVector3D normal = QVector3D::crossProduct(v1v2, v1v3).normalized();
         float d = -QVector3D::dotProduct(normal, v1);
-        planeCollider pl(normal, d, 0.95f);
+        planeCollider pl(normal, d, 0.15f);
         vec.push_back(pl);
     }
 }

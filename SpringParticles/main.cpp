@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     QSurfaceFormat fmt;
     fmt.setDepthBufferSize(24);
 
-    // Request OpenGL 3.3 compatibility or OpenGL ES 3.0.
+    // Request OpenGL 3.3 core or OpenGL ES 3.0.
     if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL) {
         qDebug("Requesting 3.3 core context");
         fmt.setVersion(3, 3);

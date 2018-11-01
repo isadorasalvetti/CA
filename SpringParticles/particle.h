@@ -13,34 +13,49 @@
 
 class Particle{
 public:
-    Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog);
+    Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog, float s);
     Particle(){}
     ~Particle();
+
+    enum ROLE {
+        STRETCH,
+        SHEER,
+        BEND
+    };
+
+    enum SOLVER {
+        VERLET,
+        EULER
+    };
+
     bool lp = false; //last position initialized
     QVector3D m_LastPosition;
     QVector3D i_Position;
     QVector3D m_Position; // Center point of particle
     QVector3D m_Velocity; // Current particle velocity
     QVector3D m_Color;    // Particle color
+    QVector3D m_Force;
     float m_Radius; //size of the particle
 
     //Spring Vars
-    const float kE = 10; //elasticity
-    const float kD = 0.8f; //damping
+    float sSpring;
+
     QVector3D p1Force;
-    QVector3D p2Force;
+    QVector3D p2Force; //neighboor to p2Forces
+
 
     //Neighborhood
 
     void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
-    bool mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres,
-                 bool &solver, QVector<Particle*> &particles, int &i, int &dim, std::pair<int, int> &size);
+    void forceUpdate(QVector<Particle*> &particles, int &i, int &dim, std::pair<int, int> &size, float &kE, float &kD);
+    bool positionUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres,
+                 SOLVER &solver, QVector<Particle*> &particles, int &i, int &dim, std::pair<int, int> &size, float kD);
 
-    QVector<int> neighborhoodForFabric(int role, int &i, std::pair<int, int> &size); //0 = streach, 1 = sheer, 2 = bend
+    QVector<int> neighborhoodForFabric(Particle::ROLE role, int &i, std::pair<int, int> &size);
 
 private:
     bool BuildPlane(QOpenGLShaderProgram *program);
-    void fixPrticleSpacing(QVector<Particle*> &particles, int &dim, int &i);
+    void fixPrticleSpacing(QVector<Particle*> &particles, int &i);
 
     QOpenGLVertexArrayObject* VAO;
     QOpenGLBuffer* coordBuffer;

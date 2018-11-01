@@ -69,12 +69,22 @@ public:
     ~MainWindow();
 
 public slots:
-    void clickButton();
+    void clickSolver();
+    void clickSim();
+    void changekE();
+    void changekD();
+    void clickReset();
 
 private:
     Ui::MainWindow *ui;
     GLWidget *gl;
-    bool solverStatus = false;
+
+    //Settings
+    Particle::SOLVER solver = Particle::VERLET;
+    int dimensions = 0;
+    float kE = 6.0f;
+    float kD = 0.0f;
+
 };
 
 #endif // MAINWINDOW_H

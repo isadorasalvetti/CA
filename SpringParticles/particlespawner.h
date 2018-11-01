@@ -9,31 +9,28 @@ class particleSpawner
 public:
     ~particleSpawner();
     QVector<Particle*> particles;
-    void init(QOpenGLShaderProgram *prog, int dimension);
+    void init(QOpenGLShaderProgram *prog, int dimension, float kd, float ke, Particle::SOLVER s);
     void genParticle();
     void updateColliders(QVector<planeCollider> &p, QVector<triangleCollider> &ts, QVector<sphereCollider> &ss);
     void renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog);
     void updateParticles();
 
-    bool solver; //true = euler, false= verlet
+    Particle::SOLVER solver; //true = euler, false= verlet
+
+    //Springs
+    float kE; //elasticity
+    float kD; //damping
 
     //Rope Simulation
     int lenght = 35;
 
     //Cloth simulation
-    std::pair<int, int > size = std::pair<int, int> (6, 4);
-    /* 01 02 03 04 05 06
-     * 07 08 09 10 11 12
-     * 13 14 15 16 17 18
-     * 19 20 21 22 23 24
-    */
-    
-    float spacing = 0.10f;
+    std::pair<int, int > size = std::pair<int, int> (60, 40);
+    float spacing = 0.05f;
     
     static QVector<int> neightboors();
 
 private:
-    int count = 0;
     int dim = 0;
 
     QVector<planeCollider> planes;
