@@ -77,13 +77,29 @@ void particleSpawner::genParticle(){
 }
 
 void particleSpawner::updateParticles(){
-
     //Update particles positions
     for(int i = 0; i<particles.size(); i++){
         particles[i]->forceUpdate(particles, i, dim, size, kD, kE);
     }
     for(int i = 0; i<particles.size(); i++){
-        particles[i]->positionUpdate(planes, tris, spheres, solver, particles, i, dim, size, kD);
+        particles[i]->positionUpdate(solver, particles, i, dim, size, kD);
+    }
+
+    if (dim == 2) {for(int i = 0; i<particles.size()/2; i++){
+            int i1 = particles.size()/2 + i;
+            int i2 = particles.size()/2-i-1;
+            particles[i1]->fixClothSpacing(particles, i1, size, Particle::STRETCH);
+            particles[i2]->fixClothSpacing(particles, i2, size, Particle::STRETCH);
+        }
+        for(int i = 0; i<particles.size()/2; i++){
+            int i1 = particles.size()/2 + i;
+            int i2 = particles.size()/2-i-1;
+            particles[i1]->fixClothSpacing(particles, i1, size, Particle::SHEER);
+            particles[i2]->fixClothSpacing(particles, i2, size, Particle::SHEER);
+        }}
+
+    for(int i = 0; i<particles.size(); i++){
+        particles[i]->collsionCheck(planes, tris, spheres);
     }
 
 }

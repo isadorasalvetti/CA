@@ -12,3 +12,7 @@ void Timer::update(){
    spawner->updateParticles();
    widget->update();
 }
+
+Timer::~Timer(){
+    delete t;
+}

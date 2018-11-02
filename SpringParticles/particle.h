@@ -30,7 +30,6 @@ public:
 
     bool lp = false; //last position initialized
     QVector3D m_LastPosition;
-    QVector3D i_Position;
     QVector3D m_Position; // Center point of particle
     QVector3D m_Velocity; // Current particle velocity
     QVector3D m_Color;    // Particle color
@@ -48,10 +47,11 @@ public:
 
     void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
     void forceUpdate(QVector<Particle*> &particles, int &i, int &dim, std::pair<int, int> &size, float &kE, float &kD);
-    bool positionUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres,
-                 SOLVER &solver, QVector<Particle*> &particles, int &i, int &dim, std::pair<int, int> &size, float kD);
+    void collsionCheck(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres);
+    void positionUpdate(SOLVER &solver, QVector<Particle*> &particles, int &i, int &dim, std::pair<int, int> &size, float kD);
 
     QVector<int> neighborhoodForFabric(Particle::ROLE role, int &i, std::pair<int, int> &size);
+    void fixClothSpacing(QVector<Particle*> &particles, int &i, std::pair<int, int> size, ROLE role);
 
 private:
     bool BuildPlane(QOpenGLShaderProgram *program);

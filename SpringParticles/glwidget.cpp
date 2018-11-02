@@ -68,8 +68,8 @@ void GLWidget::initializeGL()
     glEnable(GL_NORMALIZE);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
+    glEnable (GL_DEPTH_TEST);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     cout << "OpenGL initialized" << endl;
 }
@@ -85,16 +85,14 @@ void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     program->bind();
-    //Rendering
     mesh.render(*this, program);
     objectColliders.render(*this, program);
     program->release();
 
-    glDisable(GL_CULL_FACE);
+    //Rendering
     program_particle->bind();
     spawner.renderParticles(*this, program_particle);
     program_particle->release();
-    glEnable(GL_CULL_FACE);
 
 }
 
@@ -156,7 +154,6 @@ void GLWidget::setModelview()
     program->setUniformValue("modelview", viewMatrix);
     program->setUniformValue("normalMatrix", viewMatrix.normalMatrix());
     program->release();
-
 }
 
 //************************************
@@ -164,9 +161,10 @@ void GLWidget::setModelview()
 //************************************
 
 void GLWidget::Reset(int dim, float kd, float ke, Particle::SOLVER s){
+    setUpdatesEnabled(false);
     timer->t->stop();
     spawner.init(program_particle, dim, ke, kd, s);
     spawner.updateColliders(planeColliders, triColliders, sphereColliders);
-    timer = new Timer(this, &spawner);
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    timer->t->start(0);
+    setUpdatesEnabled(true);
 }

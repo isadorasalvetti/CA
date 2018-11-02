@@ -35,7 +35,7 @@ public:
     //Default Spawner Values
     Particle::SOLVER solver = Particle::VERLET;
     int dim = 1;
-    float kE = 6.0f;
+    float kE = 8.0f;
     float kD = 0.0f;
 
 protected:
