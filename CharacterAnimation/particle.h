@@ -24,7 +24,8 @@ public:
     float lifespan = 15.0f;
 
     void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
-    bool mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres, bool solver);
+    void collsionCheck(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres);
+    bool mUpdate();
 
 private:
     bool BuildPlane(QOpenGLShaderProgram *program);

@@ -30,7 +30,6 @@ public:
     QVector<triangleCollider> triColliders;
     QVector<sphereCollider> sphereColliders;
 
-    void changeSolver(bool status);
     void Reset();
 
 protected:

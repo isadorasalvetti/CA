@@ -9,25 +9,20 @@ bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider>
     float  elapsedTime = .03f;
     QVector3D lastPosition = m_Position;
 
-    //lifespan -= elapsedTime;
-    //if (lifespan < 0) return false;
+    if (!lp){
+        m_Position += elapsedTime * m_Velocity + 0.5 * G*elapsedTime*elapsedTime;
+        lp = true;
+    } else {
+        m_Velocity = (m_Position - m_LastPosition) /elapsedTime;
+        m_Position += (m_Position - m_LastPosition) +G*elapsedTime*elapsedTime;
+    }
 
-    if (solver){
-        m_Velocity += G*elapsedTime;
-        m_Position += elapsedTime * m_Velocity;
-    }
-    else {
-        if (!lp){
-            m_Position += elapsedTime * m_Velocity + 0.5 * G*elapsedTime*elapsedTime;
-            lp = true;
-        } else {
-            m_Velocity = (m_Position - m_LastPosition) /elapsedTime;
-            m_Position += (m_Position - m_LastPosition) +G*elapsedTime*elapsedTime;
-        }
-    }
     m_LastPosition = lastPosition;
+    return true;
+}
 
-    //collision check
+void Particle::collsionCheck(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres){
+    /*COLLISION CHECKS START HERE */
     //planes
     for (int i = 0; i<planes.size(); i++){
         bool check = Collider::pointPlaneCollision(m_LastPosition, m_Position, planes[i]);
@@ -56,9 +51,8 @@ bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider>
             m_Position = nD.first; m_Velocity = nD.second;
         }
     }
-
-    return true;
 }
+
 
 
 // Plane
@@ -118,6 +112,8 @@ void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
     VAO.release();
 }
 
+
+
 //****************************************************
 
 Particle::Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog){
@@ -131,4 +127,12 @@ Particle::Particle(QVector3D position, float radius, QVector3D color, QVector3D 
     if(!BuildPlane(prog)){
         std::cout << "Could not create particle" << std::endl;
     };
+}
+
+
+/* DESTROY PARTICLE*/
+Particle::~Particle(){
+    VAO->destroy();
+    coordBuffer->destroy();
+    indexBuffer->destroy();
 }

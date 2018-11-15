@@ -58,9 +58,8 @@ void GLWidget::initializeGL()
 
     mesh.addColision(planeColliders);
     objectColliders.addColision(triColliders, sphereColliders);
-
-    spawner.init(program_particle);
     spawner.updateColliders(planeColliders, triColliders, sphereColliders);
+    spawner.init(program_particle);
     timer = new Timer(this, &spawner);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -173,7 +172,6 @@ void GLWidget::Reset(){
     particleSpawner S;
     spawner = S;
     spawner.init(program_particle);
-    spawner.updateColliders(planeColliders, triColliders, sphereColliders);
     timer = new Timer(this, &spawner);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
