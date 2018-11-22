@@ -68,9 +68,6 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-public slots:
-    void clickButton();
-
 private:
     Ui::MainWindow *ui;
     GLWidget *gl;

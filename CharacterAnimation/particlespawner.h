@@ -8,6 +8,7 @@ class particleSpawner
 {
 public:
     QVector<Particle*> particles;
+    ~particleSpawner();
     void init(QOpenGLShaderProgram *prog);
     void genParticle();
     void updateColliders(QVector<planeCollider> &p, QVector<triangleCollider> &ts, QVector<sphereCollider> &ss);

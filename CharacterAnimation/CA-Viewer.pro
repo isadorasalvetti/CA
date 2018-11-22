@@ -4,6 +4,7 @@ HEADERS = \
     mainwindow.h \
     particle.h \
     particlespawner.h \
+    objects.h \
     timer.h \
     collider.h
 
@@ -14,6 +15,7 @@ SOURCES = \
     mainwindow.cpp \
     particle.cpp \
     particlespawner.cpp \
+    objects.cpp \
     timer.cpp \
     collider.cpp
 

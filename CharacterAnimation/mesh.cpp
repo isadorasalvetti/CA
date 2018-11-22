@@ -49,7 +49,7 @@ void Mesh::buildCube()
                   };
 
     int i;
-    float cubeSize = 2.8f;
+    float cubeSize = 5;
 
     for(i=0; i<8; i+=1)
         addVertex(cubeSize * vertices[3*i], cubeSize * vertices[3*i+1], cubeSize * vertices[3*i+2]);

@@ -3,18 +3,18 @@
 
 // Animation
 //****************************************************
-const QVector3D G(0, -9.8f, 0);
+const QVector3D G(0, 0, 0);
 
-bool Particle::mUpdate(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres, bool solver){
+bool Particle::mUpdate(){
     float  elapsedTime = .03f;
     QVector3D lastPosition = m_Position;
 
     if (!lp){
-        m_Position += elapsedTime * m_Velocity + 0.5 * G*elapsedTime*elapsedTime;
+        m_Position += elapsedTime * m_Velocity;// + 0.5 * G*elapsedTime*elapsedTime;
         lp = true;
     } else {
         m_Velocity = (m_Position - m_LastPosition) /elapsedTime;
-        m_Position += (m_Position - m_LastPosition) +G*elapsedTime*elapsedTime;
+        m_Position += (m_Position - m_LastPosition);// +G*elapsedTime*elapsedTime;
     }
 
     m_LastPosition = lastPosition;
@@ -70,10 +70,11 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     program->bind();
 
     //My Buffers
-    VAO.destroy();
-    VAO.create();
-    if (!VAO.isCreated()) return false;
-    VAO.bind();
+    VAO = new QOpenGLVertexArrayObject;
+    VAO->destroy();
+    VAO->create();
+    if (!VAO->isCreated()) return false;
+    VAO->bind();
 
     coordBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
     coordBuffer->destroy();
@@ -94,7 +95,7 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     indexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
     indexBuffer->allocate(&faces[0], sizeof(faces));
 
-    VAO.release();
+    VAO->release();
 
     program->release();
     return true;
@@ -104,12 +105,12 @@ void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
     QMatrix4x4 modelMatrix;
     modelMatrix.translate(m_Position);
 
-    VAO.bind();
+    VAO->bind();
     program->setUniformValue("color", m_Color);
     program->setUniformValue("factor", m_Radius);
     program->setUniformValue("model", modelMatrix);
     gl.glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-    VAO.release();
+    VAO->release();
 }
 
 

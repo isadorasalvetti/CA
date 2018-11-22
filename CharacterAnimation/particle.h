@@ -14,6 +14,7 @@
 class Particle{
 public:
     Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog);
+    ~Particle();
     bool lp = false; //last position initialized
     QVector3D m_LastPosition;
     QVector3D i_Position;
@@ -30,7 +31,7 @@ public:
 private:
     bool BuildPlane(QOpenGLShaderProgram *program);
 
-    QOpenGLVertexArrayObject VAO;
+    QOpenGLVertexArrayObject* VAO;
     QOpenGLBuffer* coordBuffer;
     QOpenGLBuffer* indexBuffer;
 };
