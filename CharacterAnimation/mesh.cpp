@@ -1,5 +1,6 @@
 #include "mesh.h"
 #include "collider.h"
+#include "museum_layout.h"
 #include <math.h>
 #include <fstream>
 #include <iostream>
@@ -7,6 +8,8 @@
 #include <QDebug>
 
 //renders ONLY the surrounding cube
+
+const bool useCube = false;
 
 void Mesh::addVertex(float v0, float v1, float v2)
 {
@@ -105,9 +108,26 @@ void Mesh::buildNormals() {
 
 bool Mesh::init(QOpenGLShaderProgram *program)
 {
-    //Create the mesh and normals
-    buildCube();
-    buildNormals();
+    //Create cube mesh and normals
+    if (useCube){
+        buildCube();
+        buildNormals();
+    }
+    //Create labyrinth structure and normals.
+    else {
+        mLayout *myLayout = new mLayout;
+        myLayout->genData();
+        vertices = myLayout->coords;
+        triangles = myLayout->faces;
+        //Append floor coords and indices
+        for (int i = 0; i < 4*3; i++){
+            vertices.push_back(myLayout->coordsFloor[i]);
+        }
+        for (int i = 0; i < 2*3; i++){
+            triangles.push_back(myLayout->facesFloor[i]+vertices.size());
+        }
+        buildNormals();
+    }
 
     program->bind();
 
@@ -161,7 +181,7 @@ bool Mesh::init(QOpenGLShaderProgram *program)
 void Mesh::render(QOpenGLFunctions &gl,QOpenGLShaderProgram *program)
 {
     program->setUniformValue("color", color);
-    program->setUniformValue("amICube", true);
+    program->setUniformValue("amICube", useCube);
     VAO.bind();
     gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, nullptr);
     VAO.release();

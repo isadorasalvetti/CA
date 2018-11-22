@@ -58,7 +58,8 @@ SOURCES       = main.cpp \
 		particlespawner.cpp \
 		objects.cpp \
 		timer.cpp \
-		collider.cpp moc_mainwindow.cpp \
+		collider.cpp \
+		museum_layout.cpp moc_mainwindow.cpp \
 		moc_timer.cpp
 OBJECTS       = main.o \
 		mesh.o \
@@ -69,6 +70,7 @@ OBJECTS       = main.o \
 		objects.o \
 		timer.o \
 		collider.o \
+		museum_layout.o \
 		moc_mainwindow.o \
 		moc_timer.o
 DIST          = shaders/basic.frag \
@@ -238,7 +240,8 @@ DIST          = shaders/basic.frag \
 		particlespawner.h \
 		objects.h \
 		timer.h \
-		collider.h main.cpp \
+		collider.h \
+		museum_layout.h main.cpp \
 		mesh.cpp \
 		glwidget.cpp \
 		mainwindow.cpp \
@@ -246,7 +249,8 @@ DIST          = shaders/basic.frag \
 		particlespawner.cpp \
 		objects.cpp \
 		timer.cpp \
-		collider.cpp
+		collider.cpp \
+		museum_layout.cpp
 QMAKE_TARGET  = CA-Viewer
 DESTDIR       = 
 TARGET        = CA-Viewer
@@ -596,8 +600,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /opt/Qt/5.9.6/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents mesh.h glwidget.h mainwindow.h particle.h particlespawner.h objects.h timer.h collider.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp mesh.cpp glwidget.cpp mainwindow.cpp particle.cpp particlespawner.cpp objects.cpp timer.cpp collider.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents mesh.h glwidget.h mainwindow.h particle.h particlespawner.h objects.h timer.h collider.h museum_layout.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp mesh.cpp glwidget.cpp mainwindow.cpp particle.cpp particlespawner.cpp objects.cpp timer.cpp collider.cpp museum_layout.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 
 
@@ -1319,6 +1323,50 @@ mesh.o: mesh.cpp mesh.h \
 		/opt/Qt/5.9.6/gcc_64/include/QtGui/qopenglbuffer.h \
 		collider.h \
 		/opt/Qt/5.9.6/gcc_64/include/QtGui/QVector3D \
+		museum_layout.h \
+		glwidget.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QOpenGLWidget \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qopenglwidget.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QWidget \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qwidget.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qwindowdefs.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpaintdevice.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpalette.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qcolor.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qrgb.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qrgba64.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qbrush.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qmatrix.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpolygon.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qregion.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qline.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qtransform.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpainterpath.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qimage.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpixelformat.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpixmap.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qfont.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qfontmetrics.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qfontinfo.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qcursor.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qkeysequence.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qevent.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qurl.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qurlquery.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qfile.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qfiledevice.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qtouchdevice.h \
+		particlespawner.h \
+		particle.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/QTimer \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qtimer.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qbasictimer.h \
+		objects.h \
+		timer.h \
 		/opt/Qt/5.9.6/gcc_64/include/QtCore/QDebug
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mesh.o mesh.cpp
 
@@ -1613,7 +1661,49 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		/opt/Qt/5.9.6/gcc_64/include/QtCore/qbasictimer.h \
 		objects.h \
 		timer.h \
-		ui_mainwindow.h
+		ui_mainwindow.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/QVariant \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QAction \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qaction.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qactiongroup.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QApplication \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qapplication.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qcoreapplication.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qeventloop.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qguiapplication.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qinputmethod.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QButtonGroup \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qbuttongroup.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QHBoxLayout \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qboxlayout.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qlayout.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qlayoutitem.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qgridlayout.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QHeaderView \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qheaderview.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qabstractitemview.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qabstractscrollarea.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qframe.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qabstractitemmodel.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qitemselectionmodel.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qabstractitemdelegate.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qstyleoption.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qabstractspinbox.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qvalidator.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qregularexpression.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qslider.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qabstractslider.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qstyle.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qtabbar.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qrubberband.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QLabel \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qlabel.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QMenuBar \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qmenubar.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qmenu.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QSpacerItem \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QVBoxLayout
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
 particle.o: particle.cpp particle.h \
@@ -2084,6 +2174,145 @@ collider.o: collider.cpp collider.h \
 		/opt/Qt/5.9.6/gcc_64/include/QtCore/qobjectdefs.h \
 		/opt/Qt/5.9.6/gcc_64/include/QtCore/qobjectdefs_impl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o collider.o collider.cpp
+
+museum_layout.o: museum_layout.cpp museum_layout.h \
+		glwidget.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QOpenGLWidget \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qopenglwidget.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qtguiglobal.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qglobal.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qconfig.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qtcore-config.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qsystemdetection.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qprocessordetection.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qcompilerdetection.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qtypeinfo.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qsysinfo.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qlogging.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qflags.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qatomic.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qbasicatomic.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qgenericatomic.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qatomic_cxx11.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qatomic_msvc.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qglobalstatic.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qmutex.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qnumeric.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qversiontagging.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qtgui-config.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qtwidgets-config.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/QWidget \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qwidget.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qwindowdefs.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qobjectdefs.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qnamespace.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qwindowdefs_win.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qobject.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qstring.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qchar.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qbytearray.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qrefcount.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qarraydata.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qstringbuilder.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qlist.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qalgorithms.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qiterator.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qhashfunctions.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qpair.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qbytearraylist.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qstringlist.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qregexp.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qstringmatcher.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qcoreevent.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qscopedpointer.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qmetatype.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qvarlengtharray.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qcontainerfwd.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qobject_impl.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qmargins.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpaintdevice.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qrect.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qsize.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qpoint.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpalette.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qcolor.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qrgb.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qrgba64.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qbrush.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qvector.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qmatrix.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpolygon.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qregion.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qdatastream.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qiodevice.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qline.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qtransform.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpainterpath.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qimage.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpixelformat.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qpixmap.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qsharedpointer.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qshareddata.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qhash.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qsharedpointer_impl.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qfont.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qfontmetrics.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qfontinfo.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtWidgets/qsizepolicy.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qcursor.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qkeysequence.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qevent.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qvariant.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qmap.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qdebug.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qtextstream.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qlocale.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qset.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qcontiguouscache.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qurl.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qurlquery.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qfile.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qfiledevice.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qvector2d.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qtouchdevice.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/QSurfaceFormat \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qsurfaceformat.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qopengl.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qt_windows.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qopengles2ext.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qopenglext.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/QOpenGLFunctions \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qopenglfunctions.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qopenglcontext.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/QObject \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/QScopedPointer \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qopenglversionfunctions.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/QOpenGLShaderProgram \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qopenglshaderprogram.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qvector3d.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qvector4d.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qmatrix4x4.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qquaternion.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qgenericmatrix.h \
+		mesh.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/QOpenGLVertexArrayObject \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qopenglvertexarrayobject.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/QOpenGLBuffer \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/qopenglbuffer.h \
+		collider.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtGui/QVector3D \
+		particlespawner.h \
+		particle.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/QTimer \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qtimer.h \
+		/opt/Qt/5.9.6/gcc_64/include/QtCore/qbasictimer.h \
+		objects.h \
+		timer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o museum_layout.o museum_layout.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

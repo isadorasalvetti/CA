@@ -85,7 +85,9 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     program->bind();
     //Rendering
+    glDisable(GL_CULL_FACE);
     mesh.render(*this, program);
+    glEnable(GL_CULL_FACE);
     //objectColliders.render(*this, program);
     program->release();
 
