@@ -21,7 +21,6 @@ public:
     QVector3D m_Velocity; // Current particle velocity
     QVector3D m_Color;    // Particle color
     cilinderCollider myCollision; //Collision information
-    QVector<Particle> &particlesList; //List of all other particles
 
     float m_Radius; //size of the particle
     float lifespan = 15.0f;

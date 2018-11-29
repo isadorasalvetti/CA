@@ -16,6 +16,8 @@ public:
     void genParticleCollision();
     void updateParticles();
 
+    void collsionCheck(QVector<cilinderCollider> &cilinders, int i);
+
     bool solver; //true = euler, false= verlet
 
 private:

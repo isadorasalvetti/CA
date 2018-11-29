@@ -53,17 +53,6 @@ void Particle::collsionCheck(QVector<planeCollider> &planes, QVector<triangleCol
     }
 }
 
-void Particle::collsionCheck(QVector<cilinderCollider> &cilinders){
-    // COLLSION not elastic!
-    // Particle will attempt to avoid the second entity before the collision happens.
-
-    for (int i = 0; i < particlesList; i++){
-    if (Collider.cilinderCilinderCollision(this->myCollision, particlesList[i].myCollision))
-        Collider::updateParticleA(m_LastPosition, m_Velocity, particlesList[i].myCollision);
-    }
-
-}
-
  /*COLLISION CHECKS END HERE */
 
 
@@ -131,8 +120,6 @@ void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
 //****************************************************
 
 Particle::Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog){
-    i_Position = position;
-
     m_Velocity = velocity;
     m_Position = position;
     m_Radius = radius;

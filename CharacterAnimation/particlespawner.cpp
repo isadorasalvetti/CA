@@ -2,6 +2,7 @@
 
 const float max = 0.2;
 const float particleRadius = 0.7f;
+QVector<cilinderCollider> particleColliders;
 
 void particleSpawner::init(QOpenGLShaderProgram *prog){
     //Delete old particles, if there are any
@@ -32,8 +33,8 @@ void particleSpawner::genParticleCollision() {
     */
 
     for(int i = 0; i<particles.size(); i++){
-        particles[i]->myCollision = cilinderCollider(particles[i]->m_Position, particleRadius);
-        particles[i]->particlesList = particles;
+        cilinderCollider c(particles[i]->m_Position, particleRadius);
+        particles[i]->myCollision = c;
     }
 }
 
@@ -63,8 +64,19 @@ void particleSpawner::updateParticles(){
         particles[i]->mUpdate();
     }
     for(int i = 0; i<particles.size(); i++){
-        particles[i]->collsionCheck(particleColliders);
+        collsionCheck(particleColliders, i);
     }
+}
+
+void particleSpawner::collsionCheck(QVector<cilinderCollider> &cilinders, int i){
+    // COLLSION not elastic!
+    // Particle will attempt to avoid the second entity before the collision happens.
+    for (int j = 0; j < particles.size(); j++){
+        if (Collider::cilinderCilinderCollision(particles[i]->myCollision, particles[j]->myCollision))
+            int stop;
+            //Collider::updateParticleA(particles[i]->m_LastPosition, particles[i]->m_Velocity, particles[i]->myCollision);
+        }
+
 }
 
 particleSpawner::~particleSpawner(){

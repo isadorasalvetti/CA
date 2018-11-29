@@ -40,8 +40,7 @@ class cilinderCollider{
     public:
     QVector3D c;
     float r;
-    float b; //bounciness
-    cilinderCollider(QVector3D C, float R, float B): c(C), r(R), b(B) {}
+    cilinderCollider(QVector3D C, float R): c(C), r(R) {}
     cilinderCollider() {}
 };
 
@@ -54,7 +53,7 @@ public:
     static std::pair<QVector3D, QVector3D> updateParticle(QVector3D p2, QVector3D v2, planeCollider plane);
     static std::pair<QVector3D, QVector3D> updateParticle(QVector3D p2, QVector3D v2, triangleCollider tri);
     static std::pair<QVector3D, QVector3D> updateParticle(QVector3D p2, QVector3D v2, sphereCollider tri);
-    static std::pair<QVector3D, QVector3D> updateParticleA(QVector3D p2, QVector3D v2, cilinderCollider tri);
+    static std::pair<QVector3D, QVector3D> updateParticleA(QVector3D p2, QVector3D v2, cilinderCollider cil);
 
     static float triangleArea(QVector3D a, QVector3D b, QVector3D c);
 };
