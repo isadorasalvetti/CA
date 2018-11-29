@@ -190,7 +190,12 @@ void Mesh::render(QOpenGLFunctions &gl,QOpenGLShaderProgram *program)
 // Collision
 //**************************************
 
-void Mesh::addColision(QVector<planeCollider> &vec){
+void Mesh::addColision(QVector<planeCollider> &vec){    
+    /*
+    DOES NOT WORK!
+    Assumes the bounding mesh is a cube and add plane collisions. Does not work for complex mesh.
+    Note: must add triangle collision if collision is necessary.
+
     for (unsigned int i=0; i+2<triangles.size(); i+= 6){
         QVector3D v1(vertices[triangles[i] * 3], vertices[triangles[i] * 3 + 1],
                            vertices[triangles[i] * 3 + 2]);
@@ -207,4 +212,6 @@ void Mesh::addColision(QVector<planeCollider> &vec){
         planeCollider pl(normal, d, 0.95f);
         vec.push_back(pl);
     }
+    */
+
 }

@@ -17,15 +17,18 @@ public:
     ~Particle();
     bool lp = false; //last position initialized
     QVector3D m_LastPosition;
-    QVector3D i_Position;
     QVector3D m_Position; // Center point of particle
     QVector3D m_Velocity; // Current particle velocity
     QVector3D m_Color;    // Particle color
+    cilinderCollider myCollision; //Collision information
+    QVector<Particle> &particlesList; //List of all other particles
+
     float m_Radius; //size of the particle
     float lifespan = 15.0f;
 
     void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
-    void collsionCheck(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres);
+    void collsionCheck(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres); //Used for static objects (point based only!)
+    void collsionCheck(QVector<cilinderCollider> &cilinders); //Used for collision with other particles (if cilinder boundary has been added)
     bool mUpdate();
 
 private:

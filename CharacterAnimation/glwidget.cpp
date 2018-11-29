@@ -145,9 +145,10 @@ void GLWidget::setModelview()
 {
     QMatrix4x4 viewMatrix;
 
-    viewMatrix.translate(0, 0, -distance);
+    viewMatrix.translate(-6, -5, -10);
+    viewMatrix.rotate(30, 1.0f, 0.0f, 0.0f);
     viewMatrix.rotate(angleX, 1.0f, 0.0f, 0.0f);
-    viewMatrix.rotate(angleY, 0.0f, 1.0f, 0.0f);
+    //viewMatrix.rotate(angleY, 0.0f, 1.0f, 0.0f);
 
     program_particle->bind();
     program_particle->setUniformValue("view", viewMatrix);

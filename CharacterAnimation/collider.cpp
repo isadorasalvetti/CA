@@ -27,6 +27,16 @@ bool Collider::pointSphereCollision(QVector3D p1, sphereCollider sphere){
     return dist*dist <= sphere.r*sphere.r;
 }
 
+bool Collider::cilinderCilinderCollision(cilinderCollider c1, cilinderCollider c2){
+    /* 2D only! */
+    dist = c1.c.distanceToPoint(c2.c);
+    return dist < c1.r + c2.r;
+}
+
+std::pair<QVector3D, QVector3D> updateParticleA(QVector3D p2, QVector3D v2, cilinderCollider tri){
+    //std::pair<QVector3D, QVector3D> update(pC, vC); //return new position and new velocity
+}
+
 std::pair<QVector3D, QVector3D> Collider::updateParticle(QVector3D p2, QVector3D v2, sphereCollider sphere){
     //Compute contact point
     QVector3D normal = sphere.c - p2;

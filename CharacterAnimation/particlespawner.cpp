@@ -1,6 +1,7 @@
 #include "particlespawner.h"
 
 const float max = 0.2;
+const float particleRadius = 0.7f;
 
 void particleSpawner::init(QOpenGLShaderProgram *prog){
     //Delete old particles, if there are any
@@ -17,10 +18,25 @@ void particleSpawner::init(QOpenGLShaderProgram *prog){
 }
 
 void particleSpawner::updateColliders(QVector<planeCollider> &p, QVector<triangleCollider> &ts, QVector<sphereCollider> &ss){
+    // Colliders received by other static objecs
     planes = p;
     tris = ts;
     spheres = ss;
 }
+
+void particleSpawner::genParticleCollision() {
+
+    /*
+    Generates a 2D cilinder collision surroundeing the particle.
+    This is not static, must be updated.
+    */
+
+    for(int i = 0; i<particles.size(); i++){
+        particles[i]->myCollision = cilinderCollider(particles[i]->m_Position, particleRadius);
+        particles[i]->particlesList = particles;
+    }
+}
+
 
 void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog){
     for(int i = 0; i<particles.size(); i++){
@@ -38,6 +54,7 @@ void particleSpawner::genParticle(){
     QVector3D color = QVector3D(0, 0, 0);
     QVector3D velocity = QVector3D(static_cast<float>(rand())/static_cast<float>(RAND_MAX), 0, static_cast<float>(rand())/static_cast<float>(RAND_MAX));
     Particle *p = new Particle(position, radius, color, velocity, program);
+    genParticleCollision();
     particles.push_back(p);
 }
 
@@ -46,7 +63,7 @@ void particleSpawner::updateParticles(){
         particles[i]->mUpdate();
     }
     for(int i = 0; i<particles.size(); i++){
-        particles[i]->collsionCheck(planes, tris, spheres);
+        particles[i]->collsionCheck(particleColliders);
     }
 }
 

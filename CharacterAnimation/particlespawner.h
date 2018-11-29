@@ -13,6 +13,7 @@ public:
     void genParticle();
     void updateColliders(QVector<planeCollider> &p, QVector<triangleCollider> &ts, QVector<sphereCollider> &ss);
     void renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog);
+    void genParticleCollision();
     void updateParticles();
 
     bool solver; //true = euler, false= verlet

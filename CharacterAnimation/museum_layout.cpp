@@ -16,9 +16,10 @@ void mLayout::genData(){
         face2 = (p0, p1, pr1, pr0) - add both front/back faces.
    Walls to the left and above should have already been created, do not check.
     */
-
-   std::array<int, 20*22> nodeToVert; //has the vertex fot this node been created?
-   std::array<int, 20*22> nodeToFaces; //This is a closed structure. Each vert should have 2 adjacent faces. Have them been created?
+   const int Mx = 14;
+   const int My = 10;
+   std::array<int, Mx*My> nodeToVert; //has the vertex fot this node been created?
+   std::array<int, Mx*My> nodeToFaces; //This is a closed structure. Each vert should have 2 adjacent faces. Have them been created?
    nodeToVert.fill(-1);
    nodeToFaces.fill(0);
 
@@ -34,8 +35,8 @@ void mLayout::genData(){
            //new verts: Mx*scl, My*scl, Mz
                int face0; int face1;
                if (nodeToVert[cellID] == -1){//add verts if they have not been previously added
-               coords.push_back(j*scl); coords.push_back(0); coords.push_back(i*scl);
-               coords.push_back(j*scl); coords.push_back(Mz); coords.push_back(i*scl);
+               coords.push_back(j*scl); coords.push_back(0); coords.push_back(-i*scl);
+               coords.push_back(j*scl); coords.push_back(Mz); coords.push_back(-i*scl);
                face0 = coords.size()/3 -2; face1 = coords.size()/3 -1;
                nodeToVert[cellID] = face0; //position of the first cell added in the coords vector.
                }else {//if they have, find its face vert IDs.
@@ -43,14 +44,13 @@ void mLayout::genData(){
                }
            //Check surrounding faces.
                int btID = (i+1)*Mx+j;
-               int rgtID = i*Mx+j+1;
                int cellBottom = floorPlan[btID];
-               int cellRight = floorPlan[rgtID];
+
                if (cellBottom == 1){
                    int face0b; int face1b;
                    if (nodeToVert[btID] == -1){
-                   coords.push_back(j*scl); coords.push_back(0); coords.push_back((i+1)*scl);
-                   coords.push_back(j*scl); coords.push_back(Mz); coords.push_back((i+1)*scl);
+                   coords.push_back(j*scl); coords.push_back(0); coords.push_back(-(i+1)*scl);
+                   coords.push_back(j*scl); coords.push_back(Mz); coords.push_back(-(i+1)*scl);
                    face0b = coords.size()/3 -2; face1b = coords.size()/3 -1;
                    nodeToVert[btID] = face0b; //position of the first cell added in the coords vector.
                    } else {face0b = nodeToVert[btID]; face1b = nodeToVert[btID] +1;}
@@ -62,11 +62,15 @@ void mLayout::genData(){
                    nodeToFaces[cellID] += 1;
                    nodeToFaces[btID] += 1;}
                }
+
+               if (j == Mx-1) break;
+               int rgtID = i*Mx+j+1;
+               int cellRight = floorPlan[rgtID];
                if (cellRight == 1){
                    int face0r; int face1r;
                    if(nodeToVert[rgtID] == -1){
-                   coords.push_back((j+1)*scl); coords.push_back(0); coords.push_back(i*scl);
-                   coords.push_back((j+1)*scl); coords.push_back(Mz); coords.push_back(i*scl);
+                   coords.push_back((j+1)*scl); coords.push_back(0); coords.push_back(-i*scl);
+                   coords.push_back((j+1)*scl); coords.push_back(Mz); coords.push_back(-i*scl);
                    face0r = coords.size()/3 -2; face1r = coords.size()/3 -1;
                    nodeToVert[rgtID] = face0r; //position of the first cell added in the coords vector.
                    } else {face0r = nodeToVert[rgtID]; face1r = nodeToVert[rgtID] +1;}
@@ -88,6 +92,6 @@ void mLayout::genData(){
            }
        }}//END Plan loop
 
-   std::cout<<"End Museum Generation"<<std::endl;
+   std::cout<<"End Labyrinth Generation"<<std::endl;
 
 }
