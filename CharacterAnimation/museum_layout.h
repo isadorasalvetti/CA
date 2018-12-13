@@ -2,39 +2,36 @@
 #define MUSEUM_LAYOUT_H
 
 #include "glwidget.h"
-#include <cmath>
+#include <algorithm>
 
-
+using namespace std;
 typedef pair<int, int> iiPair;
+
+//Pathfinding
+struct node{
+    node(iiPair ii): coords(ii), cost(0) {}
+    iiPair coords;
+    float cost;
+    bool operator < (const node &n2){return cost > n2.cost;} //Cheat for priority queue.
+    void compCost(const node &objective){
+        int h = max(abs(coords.first - objective.coords.first), abs(coords.second - objective.coords.second));
+    }
+};
 
 class mLayout
 {
-    using namespace std;
-
     public:
     void genData();
     vector<float> coords;
     vector<int> faces;
-
-    node getRandomObjective();
-
-    //Pathfinding
-    struct node{
-        node(iiPair ii): coords(ii), cost(0) {}
-        iiPair coords;
-        float cost;
-        bool operator < (const node &n2){return cost > n2.cost;} //Cheat for priority queue.
-        void compCost(const node &objective){
-            int h = max(abs(node.coords.first - objective.coords.first), abs(node.coords.second - objective.coords.second));
-        }
-    };
     vector<node> getNodeNeighboorhoord(node myNode);
     vector<node> findPath(node currentNode, node objectiveNode);
+    node getRandomObjective();
 
 
     //Update Camera
-    QVector3D min;
-    QVector3D max;
+    QVector3D minCam;
+    QVector3D maxCam;
 
     //floor
     vector<float> coordsFloor = {

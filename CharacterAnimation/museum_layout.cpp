@@ -1,4 +1,5 @@
 #include "museum_layout.h"
+#include <queue>
 
 const int Mx = 14;
 const int My = 10;
@@ -87,8 +88,8 @@ void mLayout::genData(){
 
            else if (cell == 9){
                //Build Min/ Max to set camera at spawn
-               min = QVector3D (j - Mz/5, 1.0, i - Mz/5);
-               max = QVector3D (j + Mz/5, 0.5, i + Mz/5);
+               minCam = QVector3D (j - Mz/5, 1.0, i - Mz/5);
+               maxCam = QVector3D (j + Mz/5, 0.5, i + Mz/5);
 
            }
        }}//END Plan loop
@@ -114,7 +115,7 @@ bool isInGrid(iiPair &p, iiPair &size) {
 
 
 void mLayout::findPath(node currentNode, node objectiveNode){
-    priority_queue<node> openList;
+    priority_queue<node, vector<node>, less<node>> openList;
     vector<node> closedList;
 
     openList.push(currentNode);
@@ -131,6 +132,7 @@ void mLayout::findPath(node currentNode, node objectiveNode){
 
 vector<node> mLayout::getNodeNeighboorhoord(node myNode){
     vector<node> neighbors;
+    iiPair p = myNode.coords;
 
     //Ortogonal
     iiPair p2 = p;

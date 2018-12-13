@@ -32,11 +32,18 @@ public:
 
     void Reset(int dim, float kd, float ke, Particle::SOLVER s);
 
-    //Default Spawner Values
+    //Default Spawner Values - Rope
+//    Particle::SOLVER solver = Particle::VERLET;
+//    int dim = 1;
+//    float kE = 8.0f;
+//    float kD = 0.0f;
+
+    //Default Spawner Values - Cloth
     Particle::SOLVER solver = Particle::VERLET;
-    int dim = 1;
+    int dim = 2;
     float kE = 8.0f;
     float kD = 0.0f;
+
 
 protected:
     void initializeGL();

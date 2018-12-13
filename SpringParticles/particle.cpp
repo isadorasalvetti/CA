@@ -192,7 +192,7 @@ void Particle::fixClothSpacing(QVector<Particle*> &particles, int &i, std::pair<
     float mod = 1.3f;
     float sz;
     if(role == Particle::STRETCH) sz = sSpring;
-    if(role == Particle::SHEER) sz = sqrt((sSpring*sSpring)*2);
+    else if(role == Particle::SHEER) sz = sqrt((sSpring*sSpring)*2);
 
     QVector<int> ngt = neighborhoodForFabric(role, i, size);
     for (int j = 0; j<ngt.size(); j++){
