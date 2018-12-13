@@ -2,40 +2,62 @@
 #define MUSEUM_LAYOUT_H
 
 #include "glwidget.h"
+#include <cmath>
+
+
+typedef pair<int, int> iiPair;
 
 class mLayout
 {
+    using namespace std;
+
     public:
     void genData();
-    std::vector<float> coords;
-    std::vector<int> faces;
+    vector<float> coords;
+    vector<int> faces;
+
+    node getRandomObjective();
+
+    //Pathfinding
+    struct node{
+        node(iiPair ii): coords(ii), cost(0) {}
+        iiPair coords;
+        float cost;
+        bool operator < (const node &n2){return cost > n2.cost;} //Cheat for priority queue.
+        void compCost(const node &objective){
+            int h = max(abs(node.coords.first - objective.coords.first), abs(node.coords.second - objective.coords.second));
+        }
+    };
+    vector<node> getNodeNeighboorhoord(node myNode);
+    vector<node> findPath(node currentNode, node objectiveNode);
+
 
     //Update Camera
     QVector3D min;
     QVector3D max;
 
     //floor
-    std::vector<float> coordsFloor = {
+    vector<float> coordsFloor = {
          0, 0, 0, //0
         13, 0, 0, //1
          0, 0, 9, //2
         13, 0, 9 //3
     };
 
-    std::vector<int> facesFloor = {
+    vector<int> facesFloor = {
         2, 1, 0,
         3, 1, 2
     };
 
-    std::vector<float> normalsFloor ={
+    vector<float> normalsFloor ={
       0, 1, 0,
       0, 1, 0
     };
 
     private:
     float Mz = 0.5; //arbitrary wall hight
-    std::array<int, 14*10> floorPlan = //Must leave a columm of zeroes on the right or left.
-        std::array<int, 14*10>{
+    array<int, 14*10> floorPlan = //Must leave a columm of zeroes on the right or left.
+        array<int, 14*10>{
           //0  1  2  3  4  5  6  7  8  9 10  11 12 13
             1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1,   //0
             1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1,   //1
@@ -50,8 +72,8 @@ class mLayout
 
         }; //14x09 floor plan.
 
-    std::array<int, 20*22> floorPlanTestMe =
-        std::array<int, 20*22>{
+    array<int, 20*22> floorPlanTestMe =
+        array<int, 20*22>{
           //0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   //0
             0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,   //1

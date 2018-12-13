@@ -1,7 +1,9 @@
 #include "museum_layout.h"
 
-void mLayout::genData(){
+const int Mx = 14;
+const int My = 10;
 
+void mLayout::genData(){
    /*
    For defining walls:
    - Check if node (p) is meant to be a wall and has not yet been processed.
@@ -16,10 +18,9 @@ void mLayout::genData(){
         face2 = (p0, p1, pr1, pr0) - add both front/back faces.
    Walls to the left and above should have already been created, do not check.
     */
-   const int Mx = 14;
-   const int My = 10;
-   std::array<int, Mx*My> nodeToVert; //has the vertex fot this node been created?
-   std::array<int, Mx*My> nodeToFaces; //This is a closed structure. Each vert should have 2 adjacent faces. Have them been created?
+
+   array<int, Mx*My> nodeToVert; //has the vertex fot this node been created?
+   array<int, Mx*My> nodeToFaces; //This is a closed structure. Each vert should have 2 adjacent faces. Have them been created?
    nodeToVert.fill(-1);
    nodeToFaces.fill(0);
 
@@ -92,6 +93,95 @@ void mLayout::genData(){
            }
        }}//END Plan loop
 
-   std::cout<<"End Labyrinth Generation"<<std::endl;
+   cout<<"End Labyrinth Generation"<<endl;
+}
+
+//**************************************************
+//Pathifinding
+//**************************************************
+
+
+//Grid functions
+
+int grid2index(iiPair &p, iiPair &size) {
+    return p.second + p.first * size.second;
+}
+bool isInGrid(iiPair &p, iiPair &size) {
+    return p.first >= 0 and p.second >= 0 and
+           p.first < size.first and p.second < size.second;
+}
+
+
+
+void mLayout::findPath(node currentNode, node objectiveNode){
+    priority_queue<node> openList;
+    vector<node> closedList;
+
+    openList.push(currentNode);
+
+    while(!openList.empty()){
+        node q = openList.top();
+        vector<node> candidates = getNodeNeighboorhoord(q);
+        for (unsigned int i = 0; i<candidates.size(); i++){
+            if (candidates[i].coords == objectiveNode) break; //this node is the goal.
+        }
+    }
+
+}
+
+vector<node> mLayout::getNodeNeighboorhoord(node myNode){
+    vector<node> neighbors;
+
+    //Ortogonal
+    iiPair p2 = p;
+    p2.first += 1;
+    if (isInGrid(p2, size) //coord must be valid
+     && floorPlan[grid2index(p2, iiPair(Mx, My))]) //coord must be walkable
+        neighbors.append(node(p2)); //append node to candidate list
+    p2 = p;
+    p2.first -= 1;
+    if (isInGrid(p2, size)
+     && floorPlan[grid2index(p2, iiPair(Mx, My))])
+        neighbors.append(node(p2));
+    p2 = p;
+    p2.second -= 1;
+    if (isInGrid(p2, size)
+     && floorPlan[grid2index(p2, iiPair(Mx, My))])
+        neighbors.append(node(p2));
+    p2 = p;
+    p2.second += 1;
+    if (isInGrid(p2, size)
+     && floorPlan[grid2index(p2, iiPair(Mx, My))])
+        neighbors.append(node(p2));
+
+    //Diagonals
+    p2 = p;
+    p2.first += 1;
+    p2.second += 1;
+    if (isInGrid(p2, size)
+     && floorPlan[grid2index(p2, iiPair(Mx, My))])
+        neighbors.append(node(p2));
+    p2 = p;
+    p2.first -= 1;
+    p2.second += 1;
+    if (isInGrid(p2, size)
+     && floorPlan[grid2index(p2, iiPair(Mx, My))])
+        neighbors.append(node(p2));
+    p2 = p;
+    p2.first += 1;
+    p2.second -= 1;
+    if (isInGrid(p2, size)
+     && floorPlan[grid2index(p2, iiPair(Mx, My))])
+        neighbors.append(node(p2));
+    p2 = p;
+    p2.first -= 1;
+    p2.second -= 1;
+    if (isInGrid(p2, size)
+     && floorPlan[grid2index(p2, iiPair(Mx, My))])
+        neighbors.append(node(p2));
+
+}
+
+node mLayout::getRandomObjective(){
 
 }
