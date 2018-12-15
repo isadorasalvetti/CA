@@ -1,29 +1,28 @@
 HEADERS = \
-    mesh.h \
     glwidget.h \
     mainwindow.h \
     particle.h \
     particlespawner.h \
-    objects.h \
     timer.h \
     collider.h \
-    museum_layout.h
+    navmesh.h \
+    rendermesh.h
 
 SOURCES = \
           main.cpp \
-    mesh.cpp \
     glwidget.cpp \
     mainwindow.cpp \
     particle.cpp \
     particlespawner.cpp \
-    objects.cpp \
     timer.cpp \
     collider.cpp \
-    museum_layout.cpp
+    navmesh.cpp \
+    rendermesh.cpp
 
 QT += gui opengl
 
 CONFIG += c++11
+QMAKE_CXXFLAGS += -O0 -g
 
 DISTFILES += \
     shaders/basic.frag \

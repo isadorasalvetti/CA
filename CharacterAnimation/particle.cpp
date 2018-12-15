@@ -1,54 +1,76 @@
 #include "particle.h"
 #include <QOpenGLFunctions>
 
-// Animation
+// Movement
 //****************************************************
 const QVector3D G(0, 0, 0);
 
-bool Particle::mUpdate(){
+bool lessQVec3D(const QVector3D &v1, const QVector3D &v2, const float &error){
+    //v1 < v2
+    return (v1.x() < v2.x() + error
+         && v1.y() < v2.y() + error
+         && v1.z() < v2.z() + error);
+}
+
+bool greaterQVec3D(const QVector3D &v1, const QVector3D &v2, const float &error){
+    //v1 > v2
+    return (v1.x() > v2.x() - error
+         && v1.y() > v2.y() - error
+         && v1.z() > v2.z() - error);
+}
+
+bool Particle::updateNcheckObjective(){
     float  elapsedTime = .03f;
-    QVector3D lastPosition = m_Position;
+    QVector3D lastPosition = currPosition;
+    Velocity = (currPosition - nextObjective).normalized()*0.01;
 
     if (!lp){
-        m_Position += elapsedTime * m_Velocity;// + 0.5 * G*elapsedTime*elapsedTime;
+        currPosition += elapsedTime * Velocity;// + 0.5 * G*elapsedTime*elapsedTime;
         lp = true;
     } else {
-        m_Velocity = (m_Position - m_LastPosition) /elapsedTime;
-        m_Position += (m_Position - m_LastPosition);// +G*elapsedTime*elapsedTime;
+        Velocity = (currPosition - LastPosition) /elapsedTime;
+        currPosition += (currPosition - LastPosition);// +G*elapsedTime*elapsedTime;
     }
 
-    m_LastPosition = lastPosition;
-    return true;
+    LastPosition = lastPosition;
+    const float error = 0.5;
+    if (lessQVec3D(currPosition, nextObjective, error) && greaterQVec3D(currPosition, nextObjective, error)){
+        if (currPathCoord < myPath.size() - 1){//end of path not reached. Get next node.
+            currPathCoord += 1;
+            nextObjective = myPath[currPathCoord];
+        } else return true; //End of path reached.
+    }
+    return false;
 }
 
 void Particle::collsionCheck(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres){
     /*COLLISION CHECKS START HERE */
     //planes
     for (int i = 0; i<planes.size(); i++){
-        bool check = Collider::pointPlaneCollision(m_LastPosition, m_Position, planes[i]);
+        bool check = Collider::pointPlaneCollision(LastPosition, currPosition, planes[i]);
         if (check) {
             lp = false;
-            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, planes[i]);
-            m_Position = nD.first; m_Velocity = nD.second;
+            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(currPosition, Velocity, planes[i]);
+            currPosition = nD.first; Velocity = nD.second;
         }
     }
     //triangles
     for (int i = 0; i<triangles.size(); i++){
-        bool check = Collider::pointTriCollision(m_LastPosition, m_Position, triangles[i]);
+        bool check = Collider::pointTriCollision(LastPosition, currPosition, triangles[i]);
         if (check) {
             lp = false;
-            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_Position, m_Velocity, triangles[i]);
-            m_Position = nD.first; m_Velocity = nD.second;
+            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(currPosition, Velocity, triangles[i]);
+            currPosition = nD.first; Velocity = nD.second;
         }
     }
 
     //sphere
     for (int i = 0; i<spheres.size(); i++){
-        bool check = Collider::pointSphereCollision(m_Position, spheres[i]);
+        bool check = Collider::pointSphereCollision(currPosition, spheres[i]);
         if (check) {
             lp = false;
-            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(m_LastPosition, m_Velocity, spheres[i]);
-            m_Position = nD.first; m_Velocity = nD.second;
+            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(LastPosition, Velocity, spheres[i]);
+            currPosition = nD.first; Velocity = nD.second;
         }
     }
 }
@@ -105,7 +127,7 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
 
 void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
     QMatrix4x4 modelMatrix;
-    modelMatrix.translate(m_Position);
+    modelMatrix.translate(currPosition);
 
     VAO->bind();
     program->setUniformValue("color", m_Color);
@@ -119,11 +141,9 @@ void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
 
 //****************************************************
 
-Particle::Particle(QVector3D position, float radius, QVector3D color, QVector3D velocity, QOpenGLShaderProgram *prog){
-    m_Velocity = velocity;
-    m_Position = position;
-    m_Radius = radius;
-    m_Color = color;
+Particle::Particle(QVector3D position, QOpenGLShaderProgram *prog){
+    currPosition = position;
+    m_Radius = 0.05f;
 
     if(!BuildPlane(prog)){
         std::cout << "Could not create particle" << std::endl;

@@ -1,21 +1,19 @@
 #include "particlespawner.h"
 
-const float max = 0.2;
 const float particleRadius = 0.7f;
 QVector<cilinderCollider> particleColliders;
 
-void particleSpawner::init(QOpenGLShaderProgram *prog){
+void particleSpawner::init(QOpenGLShaderProgram *prog, NavMesh &nm){
     //Delete old particles, if there are any
     for(int i = 0; i<particles.size(); i++) delete particles[i];
     particles.clear();
 
     //generate new ones
     program = prog;
+    myNavMesh = &nm;
     for (unsigned int i = 0; i< 30; i++){
         genParticle();
     }
-
-    //timer.start();
 }
 
 void particleSpawner::updateColliders(QVector<planeCollider> &p, QVector<triangleCollider> &ts, QVector<sphereCollider> &ss){
@@ -33,7 +31,7 @@ void particleSpawner::genParticleCollision() {
     */
 
     for(int i = 0; i<particles.size(); i++){
-        cilinderCollider c(particles[i]->m_Position, particleRadius);
+        cilinderCollider c(particles[i]->currPosition, particleRadius);
         particles[i]->myCollision = c;
     }
 }
@@ -47,36 +45,30 @@ void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram
 }
 
 void particleSpawner::genParticle(){
-    float x = max - 2 * max * static_cast<float>(rand())/static_cast<float>(RAND_MAX);
-    float y = 0;
-    float z = max - 2 * max * static_cast<float>(rand())/static_cast<float>(RAND_MAX);
-    QVector3D position = QVector3D(x, y, z);
+    iiPair gridPosition = myNavMesh->getRandomObjective().coords;
+    QVector3D position = myNavMesh->gridToWorldPos(gridPosition);
+
     float radius = .05f;
-    QVector3D color = QVector3D(0, 0, 0);
     QVector3D velocity = QVector3D(static_cast<float>(rand())/static_cast<float>(RAND_MAX), 0, static_cast<float>(rand())/static_cast<float>(RAND_MAX));
-    Particle *p = new Particle(position, radius, color, velocity, program);
+    Particle *p = new Particle(position, program);
+    p->positionInGrid = gridPosition;
     genParticleCollision();
     particles.push_back(p);
 }
 
 void particleSpawner::updateParticles(){
     for(int i = 0; i<particles.size(); i++){
-        particles[i]->mUpdate();
+        if (particles[i]->updateNcheckObjective()) getNewPath(i);
     }
     for(int i = 0; i<particles.size(); i++){
-        collsionCheck(particleColliders, i);
+        //collsionCheck(particleColliders, i);
     }
 }
 
-void particleSpawner::collsionCheck(QVector<cilinderCollider> &cilinders, int i){
-    // COLLSION not elastic!
-    // Particle will attempt to avoid the second entity before the collision happens.
-    for (int j = 0; j < particles.size(); j++){
-        if (Collider::cilinderCilinderCollision(particles[i]->myCollision, particles[j]->myCollision))
-            int stop;
-            //Collider::updateParticleA(particles[i]->m_LastPosition, particles[i]->m_Velocity, particles[i]->myCollision);
-        }
-
+void particleSpawner::getNewPath(int i){
+    particles[i]->myPath = myNavMesh->getPathNObjective(particles[i]->currPosition);
+    particles[i]->currPathCoord = 0;
+    particles[i]->nextObjective = particles[i]->myPath[0];
 }
 
 particleSpawner::~particleSpawner(){

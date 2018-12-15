@@ -1,6 +1,5 @@
-#include "mesh.h"
+#include "rendermesh.h"
 #include "collider.h"
-#include "museum_layout.h"
 #include <math.h>
 #include <fstream>
 #include <iostream>
@@ -11,21 +10,21 @@
 
 const bool useCube = false;
 
-void Mesh::addVertex(float v0, float v1, float v2)
+void RenderMesh::addVertex(float v0, float v1, float v2)
 {
     vertices.push_back(v0);
     vertices.push_back(v1);
     vertices.push_back(v2);
 }
 
-void Mesh::addTriangle(int v0, int v1, int v2)
+void RenderMesh::addTriangle(int v0, int v1, int v2)
 {
     triangles.push_back(v0);
     triangles.push_back(v1);
     triangles.push_back(v2);
 }
 
-void Mesh::buildCube()
+void RenderMesh::buildCube()
 {
     GLfloat vertices[] = {-1, -.5, -1,
                           1, -.5, -1,
@@ -60,7 +59,7 @@ void Mesh::buildCube()
         addTriangle(faces[3*i], faces[3*i+1], faces[3*i+2]);
 }
 
-void Mesh::buildNormals() {
+void RenderMesh::buildNormals() {
   const int kFaces = triangles.size();
   std::vector<float> face_normals(kFaces, 0);
 
@@ -106,7 +105,7 @@ void Mesh::buildNormals() {
   }
 }
 
-bool Mesh::init(QOpenGLShaderProgram *program)
+bool RenderMesh::init(QOpenGLShaderProgram *program, NavMesh &myNavMesh)
 {
     //Create cube mesh and normals
     if (useCube){
@@ -115,16 +114,15 @@ bool Mesh::init(QOpenGLShaderProgram *program)
     }
     //Create labyrinth structure and normals.
     else {
-        mLayout *myLayout = new mLayout;
-        myLayout->genData();
-        vertices = myLayout->coords;
-        triangles = myLayout->faces;
+        myNavMesh.genData();
+        vertices = myNavMesh.coords;
+        triangles = myNavMesh.faces;
         //Append floor coords and indices
         for (int i = 0; i < 4*3; i++){
-            vertices.push_back(myLayout->coordsFloor[i]);
+            vertices.push_back(myNavMesh.coordsFloor[i]);
         }
         for (int i = 0; i < 2*3; i++){
-            triangles.push_back(myLayout->facesFloor[i]+vertices.size());
+            triangles.push_back(myNavMesh.facesFloor[i]+vertices.size());
         }
         buildNormals();
     }
@@ -178,7 +176,7 @@ bool Mesh::init(QOpenGLShaderProgram *program)
     return true;
 }
 
-void Mesh::render(QOpenGLFunctions &gl,QOpenGLShaderProgram *program)
+void RenderMesh::render(QOpenGLFunctions &gl,QOpenGLShaderProgram *program)
 {
     program->setUniformValue("color", color);
     program->setUniformValue("amICube", useCube);
@@ -190,12 +188,7 @@ void Mesh::render(QOpenGLFunctions &gl,QOpenGLShaderProgram *program)
 // Collision
 //**************************************
 
-void Mesh::addColision(QVector<planeCollider> &vec){    
-    /*
-    DOES NOT WORK!
-    Assumes the bounding mesh is a cube and add plane collisions. Does not work for complex mesh.
-    Note: must add triangle collision if collision is necessary.
-
+void RenderMesh::addPlanarColision(QVector<planeCollider> &vec){
     for (unsigned int i=0; i+2<triangles.size(); i+= 6){
         QVector3D v1(vertices[triangles[i] * 3], vertices[triangles[i] * 3 + 1],
                            vertices[triangles[i] * 3 + 2]);
@@ -212,6 +205,5 @@ void Mesh::addColision(QVector<planeCollider> &vec){
         planeCollider pl(normal, d, 0.95f);
         vec.push_back(pl);
     }
-    */
 
 }

@@ -1,5 +1,5 @@
-#ifndef MESH_H
-#define MESH_H
+#ifndef RENDERMESH_H
+#define RENDERMESH_H
 
 #include <vector>
 #include <QOpenGLFunctions>
@@ -7,10 +7,11 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLBuffer>
 #include "collider.h"
+#include "navmesh.h"
 
-class Mesh {
+class RenderMesh {
 public:
-    bool init(QOpenGLShaderProgram *program);
+    bool init(QOpenGLShaderProgram *program, NavMesh &myNavMesh);
 
     //GL VAO n VBO
     QOpenGLVertexArrayObject VAO;
@@ -22,7 +23,7 @@ public:
     QVector3D color;
 
     void render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
-    void addColision(QVector<planeCollider> &vec);
+    void addPlanarColision(QVector<planeCollider> &vec);
     QVector3D correctPosition();
 
 private:
@@ -36,4 +37,4 @@ private:
     std::vector<int> triangles;
 };
 
-#endif // MESH_H
+#endif // RENDERMESH_H

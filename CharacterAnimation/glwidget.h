@@ -1,13 +1,13 @@
-#ifndef GLWIDGET_H
+﻿#ifndef GLWIDGET_H
 #define GLWIDGET_H
 
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
-#include "mesh.h"
+#include "navmesh.h"
+#include "rendermesh.h"
 #include "particlespawner.h"
 #include "collider.h"
-#include "objects.h"
 #include "timer.h"
 
 QT_BEGIN_NAMESPACE
@@ -45,16 +45,17 @@ private:
     void setModelview();
     //QMatrix4x4 projectionMatrix;
     //QMatrix4x4 modelviewMatrix;
-    float angleX, angleY, distance;
+    float angleX, translationX, distance;
     QPoint lastMousePos;
 
     QOpenGLShaderProgram *program;
     QOpenGLShaderProgram *program_particle;
-    Mesh mesh;
-    Objects objectColliders;
-    particleSpawner spawner;
-
     Timer *timer;
+
+    NavMesh myNavMesh;
+    RenderMesh myMesh;
+    particleSpawner mySpawner;
+
 };
 
 #endif

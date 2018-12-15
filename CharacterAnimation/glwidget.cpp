@@ -5,18 +5,19 @@
 #include <QMatrix4x4>
 #include <QMouseEvent>
 
-#include "mesh.h"
+#include "rendermesh.h"
 #include "particlespawner.h"
 
 
 using namespace std;
 
 const float rotationFactor = 0.5f;
+const float translationFactor = 0.5f;
 const float maxRotationCamera = 75.0f;
 const float minDistanceCamera = 1.0f;
 const float maxDistanceCamera = 3.0f;
 
-GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), angleX(0.0f), angleY(0.0f), distance(2.0f)
+GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), angleX(0.0f), translationX(0.0f), distance(2.0f)
 {
     program = nullptr;
     program_particle = nullptr;
@@ -50,17 +51,9 @@ void GLWidget::initializeGL()
             QApplication::quit();
     }
 
-    if(!mesh.init(program) || !objectColliders.Init(program))
-    {
-            cout << "Could not create vbo" << endl;
-            QApplication::quit();
-    }
-
-    mesh.addColision(planeColliders);
-    //objectColliders.addColision(triColliders, sphereColliders);
-    spawner.updateColliders(planeColliders, triColliders, sphereColliders);
-    spawner.init(program_particle);
-    timer = new Timer(this, &spawner);
+    myMesh.init(program, myNavMesh);
+    mySpawner.init(program_particle, myNavMesh);
+    timer = new Timer(this, &mySpawner);
 
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     //Default render flags.
@@ -86,14 +79,14 @@ void GLWidget::paintGL()
     program->bind();
     //Rendering
     glDisable(GL_CULL_FACE);
-    mesh.render(*this, program);
+    myMesh.render(*this, program);
     glEnable(GL_CULL_FACE);
     //objectColliders.render(*this, program);
     program->release();
 
     glDisable(GL_CULL_FACE);
     program_particle->bind();
-    spawner.renderParticles(*this, program_particle);
+    mySpawner.renderParticles(*this, program_particle);
     program_particle->release();
     glEnable(GL_CULL_FACE);
 
@@ -111,7 +104,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     {
         angleX += rotationFactor * (event->y() - lastMousePos.y());
         angleX = max(-maxRotationCamera, min(angleX, maxRotationCamera));
-        angleY += rotationFactor * (event->x() - lastMousePos.x());
+        translationX += translationFactor * (event->x() - lastMousePos.x());
     }
     // Zoom
     if(event->buttons() & Qt::RightButton)
@@ -145,8 +138,8 @@ void GLWidget::setModelview()
 {
     QMatrix4x4 viewMatrix;
 
-    viewMatrix.translate(-6, -5, -10);
-    viewMatrix.rotate(30, 1.0f, 0.0f, 0.0f);
+    viewMatrix.translate(0.2, 2.6, -10);
+    viewMatrix.rotate(70, 1.0f, 0.0f, 0.0f);
     viewMatrix.rotate(angleX, 1.0f, 0.0f, 0.0f);
     //viewMatrix.rotate(angleY, 0.0f, 1.0f, 0.0f);
 
@@ -166,12 +159,5 @@ void GLWidget::setModelview()
 //************************************
 
 void GLWidget::Reset(){
-    timer->t->stop();
-
-    particleSpawner S;
-    spawner = S;
-    spawner.init(program_particle);
-    timer = new Timer(this, &spawner);
-
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 }
