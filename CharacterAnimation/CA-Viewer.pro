@@ -6,7 +6,10 @@ HEADERS = \
     timer.h \
     collider.h \
     navmesh.h \
-    rendermesh.h
+    rendermesh.h \
+    animatedcharacter.h
+
+INCLUDEPATH += ./cal3d/
 
 SOURCES = \
           main.cpp \
@@ -17,7 +20,8 @@ SOURCES = \
     timer.cpp \
     collider.cpp \
     navmesh.cpp \
-    rendermesh.cpp
+    rendermesh.cpp \
+    animatedcharacter.cpp
 
 QT += gui opengl
 
