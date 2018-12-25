@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_QML_DEBUG -DQT_OPENGL_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -O0 -g -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -Ical3d -I../../../../Qt/5.9.6/gcc_64/include -I../../../../Qt/5.9.6/gcc_64/include/QtOpenGL -I../../../../Qt/5.9.6/gcc_64/include/QtWidgets -I../../../../Qt/5.9.6/gcc_64/include/QtGui -I../../../../Qt/5.9.6/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I../../../../Qt/5.9.6/gcc_64/mkspecs/linux-g++
+INCPATH       = -I. -I../../../../lib/Cal3D/src -I../../../../Qt/5.9.6/gcc_64/include -I../../../../Qt/5.9.6/gcc_64/include/QtOpenGL -I../../../../Qt/5.9.6/gcc_64/include/QtWidgets -I../../../../Qt/5.9.6/gcc_64/include/QtGui -I../../../../Qt/5.9.6/gcc_64/include/QtCore -I. -isystem /usr/include/libdrm -I. -I../../../../Qt/5.9.6/gcc_64/mkspecs/linux-g++
 QMAKE         = /home/isadora/Qt/5.9.6/gcc_64/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -38,7 +38,7 @@ DISTNAME      = CA-Viewer1.0.0
 DISTDIR = /home/isadora/Documents/CA/Viewer/CharacterAnimation/.tmp/CA-Viewer1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/home/isadora/Qt/5.9.6/gcc_64/lib
-LIBS          = $(SUBLIBS) -L/home/isadora/Qt/5.9.6/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L/usr/lib -lcal3d -L/home/isadora/Qt/5.9.6/gcc_64/lib -lQt5OpenGL -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -858,7 +858,7 @@ moc_mainwindow.cpp: ../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QMainWindow \
 		mainwindow.h \
 		moc_predefs.h \
 		../../../../Qt/5.9.6/gcc_64/bin/moc
-	/home/isadora/Qt/5.9.6/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/isadora/Qt/5.9.6/gcc_64/mkspecs/linux-g++ -I/home/isadora/Documents/CA/Viewer/CharacterAnimation -I/home/isadora/Documents/CA/Viewer/CharacterAnimation/cal3d -I/home/isadora/Qt/5.9.6/gcc_64/include -I/home/isadora/Qt/5.9.6/gcc_64/include/QtOpenGL -I/home/isadora/Qt/5.9.6/gcc_64/include/QtWidgets -I/home/isadora/Qt/5.9.6/gcc_64/include/QtGui -I/home/isadora/Qt/5.9.6/gcc_64/include/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
+	/home/isadora/Qt/5.9.6/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/isadora/Qt/5.9.6/gcc_64/mkspecs/linux-g++ -I/home/isadora/Documents/CA/Viewer/CharacterAnimation -I/home/isadora/lib/Cal3D/src -I/home/isadora/Qt/5.9.6/gcc_64/include -I/home/isadora/Qt/5.9.6/gcc_64/include/QtOpenGL -I/home/isadora/Qt/5.9.6/gcc_64/include/QtWidgets -I/home/isadora/Qt/5.9.6/gcc_64/include/QtGui -I/home/isadora/Qt/5.9.6/gcc_64/include/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
 
 moc_timer.cpp: ../../../../Qt/5.9.6/gcc_64/include/QtCore/QTimer \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qtimer.h \
@@ -997,7 +997,7 @@ moc_timer.cpp: ../../../../Qt/5.9.6/gcc_64/include/QtCore/QTimer \
 		timer.h \
 		moc_predefs.h \
 		../../../../Qt/5.9.6/gcc_64/bin/moc
-	/home/isadora/Qt/5.9.6/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/isadora/Qt/5.9.6/gcc_64/mkspecs/linux-g++ -I/home/isadora/Documents/CA/Viewer/CharacterAnimation -I/home/isadora/Documents/CA/Viewer/CharacterAnimation/cal3d -I/home/isadora/Qt/5.9.6/gcc_64/include -I/home/isadora/Qt/5.9.6/gcc_64/include/QtOpenGL -I/home/isadora/Qt/5.9.6/gcc_64/include/QtWidgets -I/home/isadora/Qt/5.9.6/gcc_64/include/QtGui -I/home/isadora/Qt/5.9.6/gcc_64/include/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include timer.h -o moc_timer.cpp
+	/home/isadora/Qt/5.9.6/gcc_64/bin/moc $(DEFINES) --include ./moc_predefs.h -I/home/isadora/Qt/5.9.6/gcc_64/mkspecs/linux-g++ -I/home/isadora/Documents/CA/Viewer/CharacterAnimation -I/home/isadora/lib/Cal3D/src -I/home/isadora/Qt/5.9.6/gcc_64/include -I/home/isadora/Qt/5.9.6/gcc_64/include/QtOpenGL -I/home/isadora/Qt/5.9.6/gcc_64/include/QtWidgets -I/home/isadora/Qt/5.9.6/gcc_64/include/QtGui -I/home/isadora/Qt/5.9.6/gcc_64/include/QtCore -I/usr/include/c++/7 -I/usr/include/x86_64-linux-gnu/c++/7 -I/usr/include/c++/7/backward -I/usr/lib/gcc/x86_64-linux-gnu/7/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include timer.h -o moc_timer.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -2169,47 +2169,42 @@ rendermesh.o: rendermesh.cpp rendermesh.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o rendermesh.o rendermesh.cpp
 
 animatedcharacter.o: animatedcharacter.cpp animatedcharacter.h \
-		cal3d/cal3d.h \
-		cal3d/animation.h \
-		cal3d/global.h \
-		cal3d/platform.h \
-		cal3d/animation_action.h \
-		cal3d/animation_cycle.h \
-		cal3d/bone.h \
-		cal3d/vector.h \
-		cal3d/matrix.h \
-		cal3d/quaternion.h \
-		cal3d/corebone.h \
-		cal3d/buffersource.h \
-		cal3d/datasource.h \
-		cal3d/coreanimation.h \
-		cal3d/refcounted.h \
-		cal3d/refptr.h \
-		cal3d/coreanimatedmorph.h \
-		cal3d/coremorphtrack.h \
-		cal3d/coremorphkeyframe.h \
-		cal3d/corematerial.h \
-		cal3d/coremesh.h \
-		cal3d/coremodel.h \
-		cal3d/coreskeleton.h \
-		cal3d/coresubmesh.h \
-		cal3d/coresubmorphtarget.h \
-		cal3d/error.h \
-		cal3d/hardwaremodel.h \
-		cal3d/loader.h \
-		cal3d/tinyxml.h \
-		cal3d/mesh.h \
-		cal3d/mixer.h \
-		cal3d/model.h \
-		cal3d/morphtargetmixer.h \
-		cal3d/physique.h \
-		cal3d/physiquedualquaternion.h \
-		cal3d/renderer.h \
-		cal3d/saver.h \
-		cal3d/skeleton.h \
-		cal3d/springsystem.h \
-		cal3d/streamsource.h \
-		cal3d/submesh.h
+		../../../../lib/Cal3D/src/cal3d/cal3d.h \
+		../../../../lib/Cal3D/src/cal3d/animation.h \
+		../../../../lib/Cal3D/src/cal3d/global.h \
+		../../../../lib/Cal3D/src/cal3d/platform.h \
+		../../../../lib/Cal3D/src/cal3d/animation_action.h \
+		../../../../lib/Cal3D/src/cal3d/animation_cycle.h \
+		../../../../lib/Cal3D/src/cal3d/bone.h \
+		../../../../lib/Cal3D/src/cal3d/vector.h \
+		../../../../lib/Cal3D/src/cal3d/matrix.h \
+		../../../../lib/Cal3D/src/cal3d/quaternion.h \
+		../../../../lib/Cal3D/src/cal3d/corebone.h \
+		../../../../lib/Cal3D/src/cal3d/coreanimation.h \
+		../../../../lib/Cal3D/src/cal3d/refcounted.h \
+		../../../../lib/Cal3D/src/cal3d/refptr.h \
+		../../../../lib/Cal3D/src/cal3d/corematerial.h \
+		../../../../lib/Cal3D/src/cal3d/coremesh.h \
+		../../../../lib/Cal3D/src/cal3d/coremodel.h \
+		../../../../lib/Cal3D/src/cal3d/coreskeleton.h \
+		../../../../lib/Cal3D/src/cal3d/coremorphanimation.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmesh.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmorphtarget.h \
+		../../../../lib/Cal3D/src/cal3d/datasource.h \
+		../../../../lib/Cal3D/src/cal3d/error.h \
+		../../../../lib/Cal3D/src/cal3d/hardwaremodel.h \
+		../../../../lib/Cal3D/src/cal3d/loader.h \
+		../../../../lib/Cal3D/src/cal3d/mesh.h \
+		../../../../lib/Cal3D/src/cal3d/mixer.h \
+		../../../../lib/Cal3D/src/cal3d/model.h \
+		../../../../lib/Cal3D/src/cal3d/morphtargetmixer.h \
+		../../../../lib/Cal3D/src/cal3d/physique.h \
+		../../../../lib/Cal3D/src/cal3d/renderer.h \
+		../../../../lib/Cal3D/src/cal3d/saver.h \
+		../../../../lib/Cal3D/src/cal3d/skeleton.h \
+		../../../../lib/Cal3D/src/cal3d/springsystem.h \
+		../../../../lib/Cal3D/src/cal3d/streamsource.h \
+		../../../../lib/Cal3D/src/cal3d/submesh.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o animatedcharacter.o animatedcharacter.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 

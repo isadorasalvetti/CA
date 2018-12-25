@@ -1,3 +1,6 @@
+LIBS += -L/usr/lib -lcal3d
+INCLUDEPATH += /home/isadora/lib/Cal3D/src/
+
 HEADERS = \
     glwidget.h \
     mainwindow.h \
@@ -9,10 +12,8 @@ HEADERS = \
     rendermesh.h \
     animatedcharacter.h
 
-INCLUDEPATH += ./cal3d/
-
 SOURCES = \
-          main.cpp \
+    main.cpp \
     glwidget.cpp \
     mainwindow.cpp \
     particle.cpp \
@@ -35,4 +36,6 @@ DISTFILES += \
     shaders/particle.frag
 
 FORMS += \
-mainwindow.ui
+mainwindow.ui 
+
+

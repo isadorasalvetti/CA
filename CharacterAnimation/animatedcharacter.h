@@ -10,10 +10,11 @@ enum Character {SKL, CALLY, PLD, ZOMBIES};
 class AnimatedCharacter{
 public:   
     AnimatedCharacter(): myCoreModel("Character") {}
-    cal3d::CalCoreModel myCoreModel;
+    CalCoreModel myCoreModel;
 
 private:
     void loadCharacter(Character c = CALLY);
+    float renderScale;
 };
 
 #endif // ANIMATEDCHARACTER_H
