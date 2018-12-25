@@ -18,11 +18,12 @@ class Particle{
 public:
     Particle(QVector3D position, QOpenGLShaderProgram *prog);
     ~Particle();
-    bool lp = false; //last position initialized
-    QVector3D LastPosition;
     QVector3D currPosition; // Center point of particle
+    QVector3D LastPosition;
     QVector3D Velocity; // Current particle velocity
     QVector3D m_Color;    // Particle color
+    float speed = 0.3f;
+
     cilinderCollider myCollision; //Collision information
 
     float m_Radius; //size of the particle

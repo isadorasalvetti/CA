@@ -138,8 +138,8 @@ void GLWidget::setModelview()
 {
     QMatrix4x4 viewMatrix;
 
-    viewMatrix.translate(0.2, 2.6, -10);
-    viewMatrix.rotate(70, 1.0f, 0.0f, 0.0f);
+    viewMatrix.translate(0.0f, 0.0f, -8);
+    viewMatrix.rotate(45, 1.0f, 0.0f, 0.0f);
     viewMatrix.rotate(angleX, 1.0f, 0.0f, 0.0f);
     //viewMatrix.rotate(angleY, 0.0f, 1.0f, 0.0f);
 

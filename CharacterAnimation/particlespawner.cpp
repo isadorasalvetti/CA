@@ -11,8 +11,10 @@ void particleSpawner::init(QOpenGLShaderProgram *prog, NavMesh &nm){
     //generate new ones
     program = prog;
     myNavMesh = &nm;
+
     for (unsigned int i = 0; i< 30; i++){
         genParticle();
+        getNewPath(i);
     }
 }
 
@@ -51,7 +53,9 @@ void particleSpawner::genParticle(){
     float radius = .05f;
     QVector3D velocity = QVector3D(static_cast<float>(rand())/static_cast<float>(RAND_MAX), 0, static_cast<float>(rand())/static_cast<float>(RAND_MAX));
     Particle *p = new Particle(position, program);
+
     p->positionInGrid = gridPosition;
+
     genParticleCollision();
     particles.push_back(p);
 }

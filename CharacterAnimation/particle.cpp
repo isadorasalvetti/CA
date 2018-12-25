@@ -21,19 +21,12 @@ bool greaterQVec3D(const QVector3D &v1, const QVector3D &v2, const float &error)
 
 bool Particle::updateNcheckObjective(){
     float  elapsedTime = .03f;
-    QVector3D lastPosition = currPosition;
-    Velocity = (nextObjective-currPosition).normalized();
+    LastPosition = currPosition;
 
-    if (!lp){
-        currPosition += elapsedTime * Velocity;// + 0.5 * G*elapsedTime*elapsedTime;
-        lp = true;
-    } else {
-        Velocity = (currPosition - LastPosition) /elapsedTime;
-        currPosition += (currPosition - LastPosition);// +G*elapsedTime*elapsedTime;
-    }
+    Velocity = (nextObjective-currPosition).normalized() * speed;
+    currPosition += elapsedTime * Velocity;
 
-    LastPosition = lastPosition;
-    const float error = 0.5;
+    const float error = (elapsedTime*speed)/2.0 + 1.2e-07f;
     if (lessQVec3D(currPosition, nextObjective, error) && greaterQVec3D(currPosition, nextObjective, error)){
         if (currPathCoord < myPath.size() - 1){//end of path not reached. Get next node.
             currPathCoord += 1;
@@ -49,7 +42,6 @@ void Particle::collsionCheck(QVector<planeCollider> &planes, QVector<triangleCol
     for (int i = 0; i<planes.size(); i++){
         bool check = Collider::pointPlaneCollision(LastPosition, currPosition, planes[i]);
         if (check) {
-            lp = false;
             std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(currPosition, Velocity, planes[i]);
             currPosition = nD.first; Velocity = nD.second;
         }
@@ -58,7 +50,6 @@ void Particle::collsionCheck(QVector<planeCollider> &planes, QVector<triangleCol
     for (int i = 0; i<triangles.size(); i++){
         bool check = Collider::pointTriCollision(LastPosition, currPosition, triangles[i]);
         if (check) {
-            lp = false;
             std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(currPosition, Velocity, triangles[i]);
             currPosition = nD.first; Velocity = nD.second;
         }
@@ -68,7 +59,6 @@ void Particle::collsionCheck(QVector<planeCollider> &planes, QVector<triangleCol
     for (int i = 0; i<spheres.size(); i++){
         bool check = Collider::pointSphereCollision(currPosition, spheres[i]);
         if (check) {
-            lp = false;
             std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(LastPosition, Velocity, spheres[i]);
             currPosition = nD.first; Velocity = nD.second;
         }

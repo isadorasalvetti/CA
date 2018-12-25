@@ -28,14 +28,15 @@ class NavMesh{
     vector<iiPair> findPath(node currentNode, node objectiveNode);
     node getRandomObjective();
     QVector3D gridToWorldPos(iiPair gridPos);
+    iiPair worldToGridPos(QVector3D worldPos);
 
     vector<QVector3D> getPathNObjective(const QVector3D &currPosition);
 
-    static const int Mx = 14;
-    static const int My = 10;
+    static const int Mj = 14;
+    static const int Mi = 10;
 
-    const int offsetX = 7;
-    const int offsetZ = 5;
+    const float offsetI = Mi/2.0f;
+    const float offsetJ = Mj/2.0f;
 
     //floor
     vector<float> coordsFloor = {
@@ -58,7 +59,7 @@ class NavMesh{
     private:
     float Mz = 0.5; //arbitrary wall hight
     vector<iiPair> possibleObjectives;
-    array<int, Mx*My> floorPlan = {
+    array<int, Mj*Mi> floorPlan = {
           //0  1  2  3  4  5  6  7  8  9  10 11 12 13
             1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1,   //0
             1, 9, 0, 0, 9, 1, 1, 1, 1, 0, 0, 0, 9, 1,   //1
