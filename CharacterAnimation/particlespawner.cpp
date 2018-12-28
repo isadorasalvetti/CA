@@ -11,8 +11,9 @@ void particleSpawner::init(QOpenGLShaderProgram *prog, NavMesh &nm){
     //generate new ones
     program = prog;
     myNavMesh = &nm;
+    myMesh.init (program, SKL);
 
-    for (unsigned int i = 0; i< 30; i++){
+    for (unsigned int i = 0; i < 1; i++){
         genParticle();
         getNewPath(i);
     }
@@ -39,9 +40,9 @@ void particleSpawner::genParticleCollision() {
 }
 
 
-void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog){
+void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog){   
     for(int i = 0; i<particles.size(); i++){
-        particles[i]->Render(gl, prog);
+        particles[i]->Render(gl, prog, myMesh);
     }
     //timer.start();
 }

@@ -4,6 +4,7 @@
 #include "particle.h"
 #include "collider.h"
 #include "navmesh.h"
+#include "rendermesh.h"
 
 class particleSpawner{
 public:
@@ -26,6 +27,8 @@ private:
      QVector<triangleCollider> tris;
      QVector<sphereCollider> spheres;
      QOpenGLShaderProgram *program;
+     RenderMesh myMesh;
+     bool characterCreated = false;
 
 };
 

@@ -115,16 +115,21 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     return true;
 }
 
-void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program){
+void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, RenderMesh &myMesh){
     QMatrix4x4 modelMatrix;
     modelMatrix.translate(currPosition);
+    myMesh.renderCharacter(gl, program, modelMatrix);
 
+    // set the model transformation
+
+/* //Render sphere marker
     VAO->bind();
     program->setUniformValue("color", m_Color);
     program->setUniformValue("factor", m_Radius);
     program->setUniformValue("model", modelMatrix);
     gl.glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     VAO->release();
+*/
 }
 
 
@@ -135,9 +140,9 @@ Particle::Particle(QVector3D position, QOpenGLShaderProgram *prog){
     currPosition = position;
     m_Radius = 0.05f;
 
-    if(!BuildPlane(prog)){
-        std::cout << "Could not create particle" << std::endl;
-    };
+    //if(!BuildPlane(prog)){
+    //    std::cout << "Could not create particle" << std::endl;
+    //};
 }
 
 

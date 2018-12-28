@@ -10,7 +10,8 @@ HEADERS = \
     collider.h \
     navmesh.h \
     rendermesh.h \
-    animatedcharacter.h
+    animatedcharacter.h \
+    ctga.h
 
 SOURCES = \
     main.cpp \
@@ -22,7 +23,8 @@ SOURCES = \
     collider.cpp \
     navmesh.cpp \
     rendermesh.cpp \
-    animatedcharacter.cpp
+    animatedcharacter.cpp \
+    ctga.cpp
 
 QT += gui opengl
 

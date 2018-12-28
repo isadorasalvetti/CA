@@ -24,8 +24,7 @@ public:
     GLWidget(QWidget *parent = nullptr);
     ~GLWidget();
 
-    //Scene management
-    //colliders
+    //Colliders
     QVector<planeCollider> planeColliders;
     QVector<triangleCollider> triColliders;
     QVector<sphereCollider> sphereColliders;

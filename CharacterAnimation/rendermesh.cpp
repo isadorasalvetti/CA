@@ -1,14 +1,12 @@
 #include "rendermesh.h"
-#include "collider.h"
 #include <math.h>
 #include <fstream>
 #include <iostream>
 #include <QOpenGLFunctions>
 #include <QDebug>
 
-//renders ONLY the surrounding cube
-
-const bool useCube = false;
+bool useCube = false;
+bool amIChar = false;
 
 void RenderMesh::addVertex(float v0, float v1, float v2)
 {
@@ -105,28 +103,37 @@ void RenderMesh::buildNormals() {
   }
 }
 
-bool RenderMesh::init(QOpenGLShaderProgram *program, NavMesh &myNavMesh)
-{
-    //Create cube mesh and normals
-    if (useCube){
-        buildCube();
-        buildNormals();
-    }
-    //Create labyrinth structure and normals.
-    else {
-        myNavMesh.genData();
-        vertices = myNavMesh.coords;
-        triangles = myNavMesh.faces;
-        //Append floor coords and indices
-        for (int i = 0; i < 4*3; i++){
-            vertices.push_back(myNavMesh.coordsFloor[i]);
-        }
-        for (int i = 0; i < 2*3; i++){
-            triangles.push_back(myNavMesh.facesFloor[i]+vertices.size());
-        }
-        buildNormals();
-    }
+bool RenderMesh::init(QOpenGLShaderProgram *program){
+    useCube = true;
+    buildCube();
+    buildNormals();
+    return (genBuffers(program) && fillBuffers());
+}
 
+bool RenderMesh::init(QOpenGLShaderProgram *program, NavMesh &myNavMesh) {
+    //Create labyrinth structure and normals.
+    myNavMesh.genData();
+    vertices = myNavMesh.coords;
+    triangles = myNavMesh.faces;
+    //Append floor coords and indices
+    for (int i = 0; i < 4*3; i++){
+        vertices.push_back(myNavMesh.coordsFloor[i]);
+    }
+    for (int i = 0; i < 2*3; i++){
+        triangles.push_back(myNavMesh.facesFloor[i]+vertices.size());
+    }
+    buildNormals();
+    return (genBuffers(program) && fillBuffers());
+}
+
+bool RenderMesh::init(QOpenGLShaderProgram *program, Character type) {
+    amIChar = true;
+    QOpenGLFunctions f;
+    animChar.loadCharacter(f, type);
+    return (genBuffers(program) && fillBuffers());
+}
+
+bool RenderMesh::genBuffers(QOpenGLShaderProgram *program){
     program->bind();
 
     //My Uniforms
@@ -145,7 +152,6 @@ bool RenderMesh::init(QOpenGLShaderProgram *program, NavMesh &myNavMesh)
     if (!coordBuffer->isCreated()) return false;
     if (!coordBuffer->bind()) return false;
     coordBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    coordBuffer->allocate(&vertices[0], sizeof(float) * vertices.size());
 
     program->enableAttributeArray(0);
     program->setAttributeBuffer(0, GL_FLOAT, 0, 3, 0);
@@ -157,7 +163,6 @@ bool RenderMesh::init(QOpenGLShaderProgram *program, NavMesh &myNavMesh)
     if (!normBuffer->isCreated()) return false;
     if (!normBuffer->bind()) return false;
     normBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    normBuffer->allocate(&normals[0], sizeof(float) * normals.size());
 
     program->enableAttributeArray(1);
     program->setAttributeBuffer(1, GL_FLOAT, 0, 3, 0);
@@ -169,17 +174,85 @@ bool RenderMesh::init(QOpenGLShaderProgram *program, NavMesh &myNavMesh)
     if (!indexBuffer->isCreated()) return false;
     if (!indexBuffer->bind()) return false;
     indexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
-    indexBuffer->allocate(&triangles[0], sizeof(int) * triangles.size());
 
     VAO.release();
     program->release();
     return true;
 }
 
-void RenderMesh::render(QOpenGLFunctions &gl,QOpenGLShaderProgram *program)
-{
+bool RenderMesh::fillBuffers(){
+    VAO.bind();
+    if (!coordBuffer->bind()) return false;
+    coordBuffer->allocate(&vertices[0], sizeof(float) * vertices.size());
+    if (!normBuffer->bind()) return false;
+    normBuffer->allocate(&normals[0], sizeof(float) * normals.size());
+    if (!indexBuffer->bind()) return false;
+    indexBuffer->allocate(&triangles[0], sizeof(float) * triangles.size());
+    VAO.release();
+
+    return true;
+}
+
+bool RenderMesh::fillBuffers(
+        float (&meshVertices)[30000][3], int &vertCount,
+        float (&meshNormals)[30000][3], int &normCount,
+        float (&meshFaces)[50000][3], int &facesCount){
+    VAO.bind();
+    if (!coordBuffer->bind()) return false;
+    coordBuffer->allocate(&meshVertices[0], sizeof(float) * vertCount);
+    if (!normBuffer->bind()) return false;
+    normBuffer->allocate(&meshNormals[0], sizeof(float) * normCount);
+    if (!indexBuffer->bind()) return false;
+    indexBuffer->allocate(&meshFaces[0], sizeof(float) * facesCount);
+    VAO.release();
+
+    return true;
+}
+
+void RenderMesh::renderCharacter(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, QMatrix4x4 modelMatrix) {
     program->setUniformValue("color", color);
     program->setUniformValue("amICube", useCube);
+    program->setUniformValue("model", modelMatrix);
+
+    if (!amIChar) cout << "Attempted to reder static mesh as character" << endl;
+
+    float meshVertices[30000][3];
+    int vertCount;
+    float meshNormals[30000][3];
+    int normCount;
+    float meshFaces[50000][3];
+    int facesCount;
+
+    int meshId = 0;
+    int subMeshId = 0;
+    int meshCount = animChar.m_calModel->getRenderer()->getMeshCount();
+    int subMeshCount = animChar.m_calModel->getRenderer()->getSubmeshCount(meshId);
+    while (meshId < meshCount){
+        animChar.getMeshInfo(meshVertices, vertCount,
+                             meshNormals, normCount,
+                             meshFaces, facesCount,
+                             meshId, subMeshId);
+
+        VAO.bind();
+        gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, nullptr);
+        VAO.release();
+
+        subMeshId += 1;
+        if (subMeshId > subMeshCount ){
+            subMeshId = 0;
+            meshId += 1;
+        }
+    }
+}
+
+
+void RenderMesh::renderStatic(QOpenGLFunctions &gl, QOpenGLShaderProgram *program) {
+    QMatrix4x4 id;
+
+    program->setUniformValue("color", color);
+    program->setUniformValue("amICube", useCube);
+    program->setUniformValue("model", id);
+
     VAO.bind();
     gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, nullptr);
     VAO.release();

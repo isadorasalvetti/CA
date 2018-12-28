@@ -59,7 +59,8 @@ SOURCES       = main.cpp \
 		collider.cpp \
 		navmesh.cpp \
 		rendermesh.cpp \
-		animatedcharacter.cpp moc_mainwindow.cpp \
+		animatedcharacter.cpp \
+		ctga.cpp moc_mainwindow.cpp \
 		moc_timer.cpp
 OBJECTS       = main.o \
 		glwidget.o \
@@ -71,6 +72,7 @@ OBJECTS       = main.o \
 		navmesh.o \
 		rendermesh.o \
 		animatedcharacter.o \
+		ctga.o \
 		moc_mainwindow.o \
 		moc_timer.o
 DIST          = shaders/basic.frag \
@@ -266,7 +268,8 @@ DIST          = shaders/basic.frag \
 		collider.h \
 		navmesh.h \
 		rendermesh.h \
-		animatedcharacter.h main.cpp \
+		animatedcharacter.h \
+		ctga.h main.cpp \
 		glwidget.cpp \
 		mainwindow.cpp \
 		particle.cpp \
@@ -275,7 +278,8 @@ DIST          = shaders/basic.frag \
 		collider.cpp \
 		navmesh.cpp \
 		rendermesh.cpp \
-		animatedcharacter.cpp
+		animatedcharacter.cpp \
+		ctga.cpp
 QMAKE_TARGET  = CA-Viewer
 DESTDIR       = 
 TARGET        = CA-Viewer
@@ -675,8 +679,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../../Qt/5.9.6/gcc_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents glwidget.h mainwindow.h particle.h particlespawner.h timer.h collider.h navmesh.h rendermesh.h animatedcharacter.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp glwidget.cpp mainwindow.cpp particle.cpp particlespawner.cpp timer.cpp collider.cpp navmesh.cpp rendermesh.cpp animatedcharacter.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents glwidget.h mainwindow.h particle.h particlespawner.h timer.h collider.h navmesh.h rendermesh.h animatedcharacter.h ctga.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp glwidget.cpp mainwindow.cpp particle.cpp particlespawner.cpp timer.cpp collider.cpp navmesh.cpp rendermesh.cpp animatedcharacter.cpp ctga.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents mainwindow.ui $(DISTDIR)/
 
 
@@ -854,6 +858,43 @@ moc_mainwindow.cpp: ../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QMainWindow \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/QTimer \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qtimer.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qbasictimer.h \
+		animatedcharacter.h \
+		../../../../lib/Cal3D/src/cal3d/cal3d.h \
+		../../../../lib/Cal3D/src/cal3d/animation.h \
+		../../../../lib/Cal3D/src/cal3d/global.h \
+		../../../../lib/Cal3D/src/cal3d/platform.h \
+		../../../../lib/Cal3D/src/cal3d/animation_action.h \
+		../../../../lib/Cal3D/src/cal3d/animation_cycle.h \
+		../../../../lib/Cal3D/src/cal3d/bone.h \
+		../../../../lib/Cal3D/src/cal3d/vector.h \
+		../../../../lib/Cal3D/src/cal3d/matrix.h \
+		../../../../lib/Cal3D/src/cal3d/quaternion.h \
+		../../../../lib/Cal3D/src/cal3d/corebone.h \
+		../../../../lib/Cal3D/src/cal3d/coreanimation.h \
+		../../../../lib/Cal3D/src/cal3d/refcounted.h \
+		../../../../lib/Cal3D/src/cal3d/refptr.h \
+		../../../../lib/Cal3D/src/cal3d/corematerial.h \
+		../../../../lib/Cal3D/src/cal3d/coremesh.h \
+		../../../../lib/Cal3D/src/cal3d/coremodel.h \
+		../../../../lib/Cal3D/src/cal3d/coreskeleton.h \
+		../../../../lib/Cal3D/src/cal3d/coremorphanimation.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmesh.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmorphtarget.h \
+		../../../../lib/Cal3D/src/cal3d/datasource.h \
+		../../../../lib/Cal3D/src/cal3d/error.h \
+		../../../../lib/Cal3D/src/cal3d/hardwaremodel.h \
+		../../../../lib/Cal3D/src/cal3d/loader.h \
+		../../../../lib/Cal3D/src/cal3d/mesh.h \
+		../../../../lib/Cal3D/src/cal3d/mixer.h \
+		../../../../lib/Cal3D/src/cal3d/model.h \
+		../../../../lib/Cal3D/src/cal3d/morphtargetmixer.h \
+		../../../../lib/Cal3D/src/cal3d/physique.h \
+		../../../../lib/Cal3D/src/cal3d/renderer.h \
+		../../../../lib/Cal3D/src/cal3d/saver.h \
+		../../../../lib/Cal3D/src/cal3d/skeleton.h \
+		../../../../lib/Cal3D/src/cal3d/springsystem.h \
+		../../../../lib/Cal3D/src/cal3d/streamsource.h \
+		../../../../lib/Cal3D/src/cal3d/submesh.h \
 		timer.h \
 		mainwindow.h \
 		moc_predefs.h \
@@ -992,6 +1033,43 @@ moc_timer.cpp: ../../../../Qt/5.9.6/gcc_64/include/QtCore/QTimer \
 		../../../../Qt/5.9.6/gcc_64/include/QtGui/QOpenGLBuffer \
 		../../../../Qt/5.9.6/gcc_64/include/QtGui/qopenglbuffer.h \
 		collider.h \
+		animatedcharacter.h \
+		../../../../lib/Cal3D/src/cal3d/cal3d.h \
+		../../../../lib/Cal3D/src/cal3d/animation.h \
+		../../../../lib/Cal3D/src/cal3d/global.h \
+		../../../../lib/Cal3D/src/cal3d/platform.h \
+		../../../../lib/Cal3D/src/cal3d/animation_action.h \
+		../../../../lib/Cal3D/src/cal3d/animation_cycle.h \
+		../../../../lib/Cal3D/src/cal3d/bone.h \
+		../../../../lib/Cal3D/src/cal3d/vector.h \
+		../../../../lib/Cal3D/src/cal3d/matrix.h \
+		../../../../lib/Cal3D/src/cal3d/quaternion.h \
+		../../../../lib/Cal3D/src/cal3d/corebone.h \
+		../../../../lib/Cal3D/src/cal3d/coreanimation.h \
+		../../../../lib/Cal3D/src/cal3d/refcounted.h \
+		../../../../lib/Cal3D/src/cal3d/refptr.h \
+		../../../../lib/Cal3D/src/cal3d/corematerial.h \
+		../../../../lib/Cal3D/src/cal3d/coremesh.h \
+		../../../../lib/Cal3D/src/cal3d/coremodel.h \
+		../../../../lib/Cal3D/src/cal3d/coreskeleton.h \
+		../../../../lib/Cal3D/src/cal3d/coremorphanimation.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmesh.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmorphtarget.h \
+		../../../../lib/Cal3D/src/cal3d/datasource.h \
+		../../../../lib/Cal3D/src/cal3d/error.h \
+		../../../../lib/Cal3D/src/cal3d/hardwaremodel.h \
+		../../../../lib/Cal3D/src/cal3d/loader.h \
+		../../../../lib/Cal3D/src/cal3d/mesh.h \
+		../../../../lib/Cal3D/src/cal3d/mixer.h \
+		../../../../lib/Cal3D/src/cal3d/model.h \
+		../../../../lib/Cal3D/src/cal3d/morphtargetmixer.h \
+		../../../../lib/Cal3D/src/cal3d/physique.h \
+		../../../../lib/Cal3D/src/cal3d/renderer.h \
+		../../../../lib/Cal3D/src/cal3d/saver.h \
+		../../../../lib/Cal3D/src/cal3d/skeleton.h \
+		../../../../lib/Cal3D/src/cal3d/springsystem.h \
+		../../../../lib/Cal3D/src/cal3d/streamsource.h \
+		../../../../lib/Cal3D/src/cal3d/submesh.h \
 		navmesh.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtGui/QVector2D \
 		timer.h \
@@ -1142,6 +1220,43 @@ ui_mainwindow.h: mainwindow.ui \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/QTimer \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qtimer.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qbasictimer.h \
+		animatedcharacter.h \
+		../../../../lib/Cal3D/src/cal3d/cal3d.h \
+		../../../../lib/Cal3D/src/cal3d/animation.h \
+		../../../../lib/Cal3D/src/cal3d/global.h \
+		../../../../lib/Cal3D/src/cal3d/platform.h \
+		../../../../lib/Cal3D/src/cal3d/animation_action.h \
+		../../../../lib/Cal3D/src/cal3d/animation_cycle.h \
+		../../../../lib/Cal3D/src/cal3d/bone.h \
+		../../../../lib/Cal3D/src/cal3d/vector.h \
+		../../../../lib/Cal3D/src/cal3d/matrix.h \
+		../../../../lib/Cal3D/src/cal3d/quaternion.h \
+		../../../../lib/Cal3D/src/cal3d/corebone.h \
+		../../../../lib/Cal3D/src/cal3d/coreanimation.h \
+		../../../../lib/Cal3D/src/cal3d/refcounted.h \
+		../../../../lib/Cal3D/src/cal3d/refptr.h \
+		../../../../lib/Cal3D/src/cal3d/corematerial.h \
+		../../../../lib/Cal3D/src/cal3d/coremesh.h \
+		../../../../lib/Cal3D/src/cal3d/coremodel.h \
+		../../../../lib/Cal3D/src/cal3d/coreskeleton.h \
+		../../../../lib/Cal3D/src/cal3d/coremorphanimation.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmesh.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmorphtarget.h \
+		../../../../lib/Cal3D/src/cal3d/datasource.h \
+		../../../../lib/Cal3D/src/cal3d/error.h \
+		../../../../lib/Cal3D/src/cal3d/hardwaremodel.h \
+		../../../../lib/Cal3D/src/cal3d/loader.h \
+		../../../../lib/Cal3D/src/cal3d/mesh.h \
+		../../../../lib/Cal3D/src/cal3d/mixer.h \
+		../../../../lib/Cal3D/src/cal3d/model.h \
+		../../../../lib/Cal3D/src/cal3d/morphtargetmixer.h \
+		../../../../lib/Cal3D/src/cal3d/physique.h \
+		../../../../lib/Cal3D/src/cal3d/renderer.h \
+		../../../../lib/Cal3D/src/cal3d/saver.h \
+		../../../../lib/Cal3D/src/cal3d/skeleton.h \
+		../../../../lib/Cal3D/src/cal3d/springsystem.h \
+		../../../../lib/Cal3D/src/cal3d/streamsource.h \
+		../../../../lib/Cal3D/src/cal3d/submesh.h \
 		timer.h
 	/home/isadora/Qt/5.9.6/gcc_64/bin/uic mainwindow.ui -o ui_mainwindow.h
 
@@ -1299,6 +1414,43 @@ main.o: main.cpp ../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QApplication \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/QTimer \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qtimer.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qbasictimer.h \
+		animatedcharacter.h \
+		../../../../lib/Cal3D/src/cal3d/cal3d.h \
+		../../../../lib/Cal3D/src/cal3d/animation.h \
+		../../../../lib/Cal3D/src/cal3d/global.h \
+		../../../../lib/Cal3D/src/cal3d/platform.h \
+		../../../../lib/Cal3D/src/cal3d/animation_action.h \
+		../../../../lib/Cal3D/src/cal3d/animation_cycle.h \
+		../../../../lib/Cal3D/src/cal3d/bone.h \
+		../../../../lib/Cal3D/src/cal3d/vector.h \
+		../../../../lib/Cal3D/src/cal3d/matrix.h \
+		../../../../lib/Cal3D/src/cal3d/quaternion.h \
+		../../../../lib/Cal3D/src/cal3d/corebone.h \
+		../../../../lib/Cal3D/src/cal3d/coreanimation.h \
+		../../../../lib/Cal3D/src/cal3d/refcounted.h \
+		../../../../lib/Cal3D/src/cal3d/refptr.h \
+		../../../../lib/Cal3D/src/cal3d/corematerial.h \
+		../../../../lib/Cal3D/src/cal3d/coremesh.h \
+		../../../../lib/Cal3D/src/cal3d/coremodel.h \
+		../../../../lib/Cal3D/src/cal3d/coreskeleton.h \
+		../../../../lib/Cal3D/src/cal3d/coremorphanimation.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmesh.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmorphtarget.h \
+		../../../../lib/Cal3D/src/cal3d/datasource.h \
+		../../../../lib/Cal3D/src/cal3d/error.h \
+		../../../../lib/Cal3D/src/cal3d/hardwaremodel.h \
+		../../../../lib/Cal3D/src/cal3d/loader.h \
+		../../../../lib/Cal3D/src/cal3d/mesh.h \
+		../../../../lib/Cal3D/src/cal3d/mixer.h \
+		../../../../lib/Cal3D/src/cal3d/model.h \
+		../../../../lib/Cal3D/src/cal3d/morphtargetmixer.h \
+		../../../../lib/Cal3D/src/cal3d/physique.h \
+		../../../../lib/Cal3D/src/cal3d/renderer.h \
+		../../../../lib/Cal3D/src/cal3d/saver.h \
+		../../../../lib/Cal3D/src/cal3d/skeleton.h \
+		../../../../lib/Cal3D/src/cal3d/springsystem.h \
+		../../../../lib/Cal3D/src/cal3d/streamsource.h \
+		../../../../lib/Cal3D/src/cal3d/submesh.h \
 		timer.h \
 		mainwindow.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QMainWindow \
@@ -1446,6 +1598,43 @@ glwidget.o: glwidget.cpp glwidget.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/QTimer \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qtimer.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qbasictimer.h \
+		animatedcharacter.h \
+		../../../../lib/Cal3D/src/cal3d/cal3d.h \
+		../../../../lib/Cal3D/src/cal3d/animation.h \
+		../../../../lib/Cal3D/src/cal3d/global.h \
+		../../../../lib/Cal3D/src/cal3d/platform.h \
+		../../../../lib/Cal3D/src/cal3d/animation_action.h \
+		../../../../lib/Cal3D/src/cal3d/animation_cycle.h \
+		../../../../lib/Cal3D/src/cal3d/bone.h \
+		../../../../lib/Cal3D/src/cal3d/vector.h \
+		../../../../lib/Cal3D/src/cal3d/matrix.h \
+		../../../../lib/Cal3D/src/cal3d/quaternion.h \
+		../../../../lib/Cal3D/src/cal3d/corebone.h \
+		../../../../lib/Cal3D/src/cal3d/coreanimation.h \
+		../../../../lib/Cal3D/src/cal3d/refcounted.h \
+		../../../../lib/Cal3D/src/cal3d/refptr.h \
+		../../../../lib/Cal3D/src/cal3d/corematerial.h \
+		../../../../lib/Cal3D/src/cal3d/coremesh.h \
+		../../../../lib/Cal3D/src/cal3d/coremodel.h \
+		../../../../lib/Cal3D/src/cal3d/coreskeleton.h \
+		../../../../lib/Cal3D/src/cal3d/coremorphanimation.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmesh.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmorphtarget.h \
+		../../../../lib/Cal3D/src/cal3d/datasource.h \
+		../../../../lib/Cal3D/src/cal3d/error.h \
+		../../../../lib/Cal3D/src/cal3d/hardwaremodel.h \
+		../../../../lib/Cal3D/src/cal3d/loader.h \
+		../../../../lib/Cal3D/src/cal3d/mesh.h \
+		../../../../lib/Cal3D/src/cal3d/mixer.h \
+		../../../../lib/Cal3D/src/cal3d/model.h \
+		../../../../lib/Cal3D/src/cal3d/morphtargetmixer.h \
+		../../../../lib/Cal3D/src/cal3d/physique.h \
+		../../../../lib/Cal3D/src/cal3d/renderer.h \
+		../../../../lib/Cal3D/src/cal3d/saver.h \
+		../../../../lib/Cal3D/src/cal3d/skeleton.h \
+		../../../../lib/Cal3D/src/cal3d/springsystem.h \
+		../../../../lib/Cal3D/src/cal3d/streamsource.h \
+		../../../../lib/Cal3D/src/cal3d/submesh.h \
 		timer.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/QApplication \
 		../../../../Qt/5.9.6/gcc_64/include/QtWidgets/qapplication.h \
@@ -1602,6 +1791,43 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/QTimer \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qtimer.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qbasictimer.h \
+		animatedcharacter.h \
+		../../../../lib/Cal3D/src/cal3d/cal3d.h \
+		../../../../lib/Cal3D/src/cal3d/animation.h \
+		../../../../lib/Cal3D/src/cal3d/global.h \
+		../../../../lib/Cal3D/src/cal3d/platform.h \
+		../../../../lib/Cal3D/src/cal3d/animation_action.h \
+		../../../../lib/Cal3D/src/cal3d/animation_cycle.h \
+		../../../../lib/Cal3D/src/cal3d/bone.h \
+		../../../../lib/Cal3D/src/cal3d/vector.h \
+		../../../../lib/Cal3D/src/cal3d/matrix.h \
+		../../../../lib/Cal3D/src/cal3d/quaternion.h \
+		../../../../lib/Cal3D/src/cal3d/corebone.h \
+		../../../../lib/Cal3D/src/cal3d/coreanimation.h \
+		../../../../lib/Cal3D/src/cal3d/refcounted.h \
+		../../../../lib/Cal3D/src/cal3d/refptr.h \
+		../../../../lib/Cal3D/src/cal3d/corematerial.h \
+		../../../../lib/Cal3D/src/cal3d/coremesh.h \
+		../../../../lib/Cal3D/src/cal3d/coremodel.h \
+		../../../../lib/Cal3D/src/cal3d/coreskeleton.h \
+		../../../../lib/Cal3D/src/cal3d/coremorphanimation.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmesh.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmorphtarget.h \
+		../../../../lib/Cal3D/src/cal3d/datasource.h \
+		../../../../lib/Cal3D/src/cal3d/error.h \
+		../../../../lib/Cal3D/src/cal3d/hardwaremodel.h \
+		../../../../lib/Cal3D/src/cal3d/loader.h \
+		../../../../lib/Cal3D/src/cal3d/mesh.h \
+		../../../../lib/Cal3D/src/cal3d/mixer.h \
+		../../../../lib/Cal3D/src/cal3d/model.h \
+		../../../../lib/Cal3D/src/cal3d/morphtargetmixer.h \
+		../../../../lib/Cal3D/src/cal3d/physique.h \
+		../../../../lib/Cal3D/src/cal3d/renderer.h \
+		../../../../lib/Cal3D/src/cal3d/saver.h \
+		../../../../lib/Cal3D/src/cal3d/skeleton.h \
+		../../../../lib/Cal3D/src/cal3d/springsystem.h \
+		../../../../lib/Cal3D/src/cal3d/streamsource.h \
+		../../../../lib/Cal3D/src/cal3d/submesh.h \
 		timer.h \
 		ui_mainwindow.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/QVariant \
@@ -1743,7 +1969,44 @@ particle.o: particle.cpp particle.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/QTimer \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qtimer.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qbasictimer.h \
-		collider.h
+		collider.h \
+		animatedcharacter.h \
+		../../../../lib/Cal3D/src/cal3d/cal3d.h \
+		../../../../lib/Cal3D/src/cal3d/animation.h \
+		../../../../lib/Cal3D/src/cal3d/global.h \
+		../../../../lib/Cal3D/src/cal3d/platform.h \
+		../../../../lib/Cal3D/src/cal3d/animation_action.h \
+		../../../../lib/Cal3D/src/cal3d/animation_cycle.h \
+		../../../../lib/Cal3D/src/cal3d/bone.h \
+		../../../../lib/Cal3D/src/cal3d/vector.h \
+		../../../../lib/Cal3D/src/cal3d/matrix.h \
+		../../../../lib/Cal3D/src/cal3d/quaternion.h \
+		../../../../lib/Cal3D/src/cal3d/corebone.h \
+		../../../../lib/Cal3D/src/cal3d/coreanimation.h \
+		../../../../lib/Cal3D/src/cal3d/refcounted.h \
+		../../../../lib/Cal3D/src/cal3d/refptr.h \
+		../../../../lib/Cal3D/src/cal3d/corematerial.h \
+		../../../../lib/Cal3D/src/cal3d/coremesh.h \
+		../../../../lib/Cal3D/src/cal3d/coremodel.h \
+		../../../../lib/Cal3D/src/cal3d/coreskeleton.h \
+		../../../../lib/Cal3D/src/cal3d/coremorphanimation.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmesh.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmorphtarget.h \
+		../../../../lib/Cal3D/src/cal3d/datasource.h \
+		../../../../lib/Cal3D/src/cal3d/error.h \
+		../../../../lib/Cal3D/src/cal3d/hardwaremodel.h \
+		../../../../lib/Cal3D/src/cal3d/loader.h \
+		../../../../lib/Cal3D/src/cal3d/mesh.h \
+		../../../../lib/Cal3D/src/cal3d/mixer.h \
+		../../../../lib/Cal3D/src/cal3d/model.h \
+		../../../../lib/Cal3D/src/cal3d/morphtargetmixer.h \
+		../../../../lib/Cal3D/src/cal3d/physique.h \
+		../../../../lib/Cal3D/src/cal3d/renderer.h \
+		../../../../lib/Cal3D/src/cal3d/saver.h \
+		../../../../lib/Cal3D/src/cal3d/skeleton.h \
+		../../../../lib/Cal3D/src/cal3d/springsystem.h \
+		../../../../lib/Cal3D/src/cal3d/streamsource.h \
+		../../../../lib/Cal3D/src/cal3d/submesh.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o particle.o particle.cpp
 
 particlespawner.o: particlespawner.cpp particlespawner.h \
@@ -1843,6 +2106,43 @@ particlespawner.o: particlespawner.cpp particlespawner.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qtimer.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtCore/qbasictimer.h \
 		collider.h \
+		animatedcharacter.h \
+		../../../../lib/Cal3D/src/cal3d/cal3d.h \
+		../../../../lib/Cal3D/src/cal3d/animation.h \
+		../../../../lib/Cal3D/src/cal3d/global.h \
+		../../../../lib/Cal3D/src/cal3d/platform.h \
+		../../../../lib/Cal3D/src/cal3d/animation_action.h \
+		../../../../lib/Cal3D/src/cal3d/animation_cycle.h \
+		../../../../lib/Cal3D/src/cal3d/bone.h \
+		../../../../lib/Cal3D/src/cal3d/vector.h \
+		../../../../lib/Cal3D/src/cal3d/matrix.h \
+		../../../../lib/Cal3D/src/cal3d/quaternion.h \
+		../../../../lib/Cal3D/src/cal3d/corebone.h \
+		../../../../lib/Cal3D/src/cal3d/coreanimation.h \
+		../../../../lib/Cal3D/src/cal3d/refcounted.h \
+		../../../../lib/Cal3D/src/cal3d/refptr.h \
+		../../../../lib/Cal3D/src/cal3d/corematerial.h \
+		../../../../lib/Cal3D/src/cal3d/coremesh.h \
+		../../../../lib/Cal3D/src/cal3d/coremodel.h \
+		../../../../lib/Cal3D/src/cal3d/coreskeleton.h \
+		../../../../lib/Cal3D/src/cal3d/coremorphanimation.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmesh.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmorphtarget.h \
+		../../../../lib/Cal3D/src/cal3d/datasource.h \
+		../../../../lib/Cal3D/src/cal3d/error.h \
+		../../../../lib/Cal3D/src/cal3d/hardwaremodel.h \
+		../../../../lib/Cal3D/src/cal3d/loader.h \
+		../../../../lib/Cal3D/src/cal3d/mesh.h \
+		../../../../lib/Cal3D/src/cal3d/mixer.h \
+		../../../../lib/Cal3D/src/cal3d/model.h \
+		../../../../lib/Cal3D/src/cal3d/morphtargetmixer.h \
+		../../../../lib/Cal3D/src/cal3d/physique.h \
+		../../../../lib/Cal3D/src/cal3d/renderer.h \
+		../../../../lib/Cal3D/src/cal3d/saver.h \
+		../../../../lib/Cal3D/src/cal3d/skeleton.h \
+		../../../../lib/Cal3D/src/cal3d/springsystem.h \
+		../../../../lib/Cal3D/src/cal3d/streamsource.h \
+		../../../../lib/Cal3D/src/cal3d/submesh.h \
 		navmesh.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtGui/QVector2D
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o particlespawner.o particlespawner.cpp
@@ -1980,6 +2280,43 @@ timer.o: timer.cpp timer.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtGui/QOpenGLBuffer \
 		../../../../Qt/5.9.6/gcc_64/include/QtGui/qopenglbuffer.h \
 		collider.h \
+		animatedcharacter.h \
+		../../../../lib/Cal3D/src/cal3d/cal3d.h \
+		../../../../lib/Cal3D/src/cal3d/animation.h \
+		../../../../lib/Cal3D/src/cal3d/global.h \
+		../../../../lib/Cal3D/src/cal3d/platform.h \
+		../../../../lib/Cal3D/src/cal3d/animation_action.h \
+		../../../../lib/Cal3D/src/cal3d/animation_cycle.h \
+		../../../../lib/Cal3D/src/cal3d/bone.h \
+		../../../../lib/Cal3D/src/cal3d/vector.h \
+		../../../../lib/Cal3D/src/cal3d/matrix.h \
+		../../../../lib/Cal3D/src/cal3d/quaternion.h \
+		../../../../lib/Cal3D/src/cal3d/corebone.h \
+		../../../../lib/Cal3D/src/cal3d/coreanimation.h \
+		../../../../lib/Cal3D/src/cal3d/refcounted.h \
+		../../../../lib/Cal3D/src/cal3d/refptr.h \
+		../../../../lib/Cal3D/src/cal3d/corematerial.h \
+		../../../../lib/Cal3D/src/cal3d/coremesh.h \
+		../../../../lib/Cal3D/src/cal3d/coremodel.h \
+		../../../../lib/Cal3D/src/cal3d/coreskeleton.h \
+		../../../../lib/Cal3D/src/cal3d/coremorphanimation.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmesh.h \
+		../../../../lib/Cal3D/src/cal3d/coresubmorphtarget.h \
+		../../../../lib/Cal3D/src/cal3d/datasource.h \
+		../../../../lib/Cal3D/src/cal3d/error.h \
+		../../../../lib/Cal3D/src/cal3d/hardwaremodel.h \
+		../../../../lib/Cal3D/src/cal3d/loader.h \
+		../../../../lib/Cal3D/src/cal3d/mesh.h \
+		../../../../lib/Cal3D/src/cal3d/mixer.h \
+		../../../../lib/Cal3D/src/cal3d/model.h \
+		../../../../lib/Cal3D/src/cal3d/morphtargetmixer.h \
+		../../../../lib/Cal3D/src/cal3d/physique.h \
+		../../../../lib/Cal3D/src/cal3d/renderer.h \
+		../../../../lib/Cal3D/src/cal3d/saver.h \
+		../../../../lib/Cal3D/src/cal3d/skeleton.h \
+		../../../../lib/Cal3D/src/cal3d/springsystem.h \
+		../../../../lib/Cal3D/src/cal3d/streamsource.h \
+		../../../../lib/Cal3D/src/cal3d/submesh.h \
 		navmesh.h \
 		../../../../Qt/5.9.6/gcc_64/include/QtGui/QVector2D
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o timer.o timer.cpp
@@ -2169,6 +2506,80 @@ rendermesh.o: rendermesh.cpp rendermesh.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o rendermesh.o rendermesh.cpp
 
 animatedcharacter.o: animatedcharacter.cpp animatedcharacter.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtGui/QOpenGLFunctions \
+		../../../../Qt/5.9.6/gcc_64/include/QtGui/qopenglfunctions.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtGui/qtguiglobal.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qglobal.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qconfig-bootstrapped.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qconfig.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qtcore-config.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qsystemdetection.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qprocessordetection.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qcompilerdetection.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qtypeinfo.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qsysinfo.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qlogging.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qflags.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qatomic.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qbasicatomic.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qatomic_bootstrap.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qgenericatomic.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qatomic_cxx11.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qatomic_msvc.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qglobalstatic.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qmutex.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qnumeric.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qversiontagging.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtGui/qtgui-config.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtGui/qopengl.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qt_windows.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtGui/qopengles2ext.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtGui/qopenglext.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtGui/qopenglcontext.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qnamespace.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/QObject \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qobject.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qobjectdefs.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qobjectdefs_impl.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qstring.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qchar.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qbytearray.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qrefcount.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qarraydata.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qstringbuilder.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qlist.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qalgorithms.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qiterator.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qhashfunctions.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qpair.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qbytearraylist.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qstringlist.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qregexp.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qstringmatcher.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qcoreevent.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qscopedpointer.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qmetatype.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qvarlengtharray.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qcontainerfwd.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qobject_impl.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/QScopedPointer \
+		../../../../Qt/5.9.6/gcc_64/include/QtGui/QSurfaceFormat \
+		../../../../Qt/5.9.6/gcc_64/include/QtGui/qsurfaceformat.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtGui/qopenglversionfunctions.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qhash.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qvariant.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qmap.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qdebug.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qtextstream.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qiodevice.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qlocale.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qshareddata.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qvector.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qpoint.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qset.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qcontiguouscache.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qsharedpointer.h \
+		../../../../Qt/5.9.6/gcc_64/include/QtCore/qsharedpointer_impl.h \
 		../../../../lib/Cal3D/src/cal3d/cal3d.h \
 		../../../../lib/Cal3D/src/cal3d/animation.h \
 		../../../../lib/Cal3D/src/cal3d/global.h \
@@ -2204,8 +2615,12 @@ animatedcharacter.o: animatedcharacter.cpp animatedcharacter.h \
 		../../../../lib/Cal3D/src/cal3d/skeleton.h \
 		../../../../lib/Cal3D/src/cal3d/springsystem.h \
 		../../../../lib/Cal3D/src/cal3d/streamsource.h \
-		../../../../lib/Cal3D/src/cal3d/submesh.h
+		../../../../lib/Cal3D/src/cal3d/submesh.h \
+		ctga.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o animatedcharacter.o animatedcharacter.cpp
+
+ctga.o: ctga.cpp ctga.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ctga.o ctga.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

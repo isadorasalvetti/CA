@@ -10,6 +10,7 @@
 #include <QOpenGLBuffer>
 #include <QTimer>
 #include "collider.h"
+#include "rendermesh.h"
 
 using namespace std;
 typedef pair<int, int> iiPair;
@@ -18,6 +19,7 @@ class Particle{
 public:
     Particle(QVector3D position, QOpenGLShaderProgram *prog);
     ~Particle();
+    bool characterGenerated = false;
     QVector3D currPosition; // Center point of particle
     QVector3D LastPosition;
     QVector3D Velocity; // Current particle velocity
@@ -33,7 +35,7 @@ public:
     int currPathCoord = 0;
     QVector3D nextObjective;
 
-    void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
+    void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, RenderMesh &myMesh);
     void collsionCheck(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres); //Used for static objects (point based only!)
     void collsionCheck(QVector<cilinderCollider> &cilinders); //Used for collision with other particles (if cilinder boundary has been added)
     bool updateNcheckObjective(); //returns false when particle needs new objective
