@@ -1,4 +1,5 @@
 #include "particlespawner.h"
+#include <math.h> 
 
 const float particleRadius = 0.7f;
 QVector<cilinderCollider> particleColliders;
@@ -11,7 +12,8 @@ void particleSpawner::init(QOpenGLShaderProgram *prog, NavMesh &nm){
     //generate new ones
     program = prog;
     myNavMesh = &nm;
-    myMesh.init (program, SKL);
+    for (int i = 0; i<meshAmount; i++) myMesh[i].init (program, CALLY);
+    marker.init(prog);
 
     for (unsigned int i = 0; i < 1; i++){
         genParticle();
@@ -40,11 +42,23 @@ void particleSpawner::genParticleCollision() {
 }
 
 
-void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog){   
-    for(int i = 0; i<particles.size(); i++){
-        particles[i]->Render(gl, prog, myMesh);
+void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog){
+   for(int i = 0; i<particles.size(); i++){
+        QMatrix4x4 modelMatrix;
+        QVector3D moveDirection = particles[i]->forwardDirection;
+
+        modelMatrix.translate(particles[i]->currPosition);
+
+        float turnAngle = atan2(moveDirection.x(), moveDirection.z());
+        modelMatrix.rotate(-turnAngle*57.3f, QVector3D(0, -1, 0));
+
+        modelMatrix.rotate(-90, QVector3D(1, 0, 0));
+        myMesh[0].renderCharacter(gl, prog, modelMatrix);
     }
-    //timer.start();
+}
+
+void renderMarker(){
+
 }
 
 void particleSpawner::genParticle(){
@@ -68,6 +82,8 @@ void particleSpawner::updateParticles(){
     for(int i = 0; i<particles.size(); i++){
         //collsionCheck(particleColliders, i);
     }
+    //Update animations
+    for(int i = 0; i<meshAmount; i++) myMesh[i].updateCharacterAnimation(0.03f);
 }
 
 void particleSpawner::getNewPath(int i){

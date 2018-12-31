@@ -23,7 +23,12 @@ bool Particle::updateNcheckObjective(){
     float  elapsedTime = .03f;
     LastPosition = currPosition;
 
-    Velocity = (nextObjective-currPosition).normalized() * speed;
+    nextforwardDirection = (nextObjective-currPosition).normalized();
+    if (forwardDirection == QVector3D(0,0,0)) forwardDirection = nextforwardDirection;
+    else if (forwardDirection != nextforwardDirection)
+        forwardDirection = forwardDirection*0.85f + nextforwardDirection*0.15f;
+
+    Velocity = forwardDirection * speed;
     currPosition += elapsedTime * Velocity;
 
     const float error = (elapsedTime*speed)/2.0 + 1.2e-07f;
@@ -115,23 +120,6 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
     return true;
 }
 
-void Particle::Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, RenderMesh &myMesh){
-    QMatrix4x4 modelMatrix;
-    modelMatrix.translate(currPosition);
-    myMesh.renderCharacter(gl, program, modelMatrix);
-
-    // set the model transformation
-
-/* //Render sphere marker
-    VAO->bind();
-    program->setUniformValue("color", m_Color);
-    program->setUniformValue("factor", m_Radius);
-    program->setUniformValue("model", modelMatrix);
-    gl.glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-    VAO->release();
-*/
-}
-
 
 
 //****************************************************
@@ -148,7 +136,7 @@ Particle::Particle(QVector3D position, QOpenGLShaderProgram *prog){
 
 /* DESTROY PARTICLE*/
 Particle::~Particle(){
-    VAO->destroy();
+    //VAO->destroy();
     coordBuffer->destroy();
     indexBuffer->destroy();
 }

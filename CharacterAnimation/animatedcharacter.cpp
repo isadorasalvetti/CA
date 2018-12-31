@@ -121,7 +121,7 @@ void AnimatedCharacter::loadCharacter(QOpenGLFunctions &f, Character c){
         // handle the model creation
         if(strKey == "scale") {
             // set rendering scale factor
-            renderScale = atof(strData.c_str());
+            renderScale = atof(strData.c_str())/200;
         }
         else if(strKey == "skeleton") {
                 // load core skeleton
@@ -196,7 +196,6 @@ void AnimatedCharacter::loadCharacter(QOpenGLFunctions &f, Character c){
         }
 
         // Calculate Bounding Boxes
-
         myCoreModel.getCoreSkeleton()->calculateBoundingBoxes(&myCoreModel);
 
         m_calModel = new CalModel(&myCoreModel);
@@ -313,45 +312,40 @@ GLuint AnimatedCharacter::loadTexture(QOpenGLFunctions &f, const string& strFile
     return pId;
 }
 
+void AnimatedCharacter::beginRenderLoop(){
+    m_calModel->getRenderer()->beginRendering();
+}
+
+void AnimatedCharacter::endRenderLoop(){
+    m_calModel->getRenderer()->endRendering();
+}
+
 int AnimatedCharacter::getMeshInfo
-  (float (&meshVertices)[30000][3], int &vertCount,
-   float (&meshNormals)[30000][3], int &normCount,
-   float (&meshFaces)[50000][3], int &facesCount,
+  (float (&meshVertices)[90000], int &vertCount,
+   float (&meshNormals)[90000], int &normCount,
+   CalIndex (&meshFaces)[150000], int &facesCount,
    const int &meshId, const int &subMeshId){
-  m_calModel->update(0.03f);
 
   // get the renderer of the model
   CalRenderer *pCalRenderer;
   pCalRenderer = m_calModel->getRenderer();
 
-  // begin the rendering loop
-  if(!pCalRenderer->beginRendering()) return -1;
-
-  // get the number of meshes
-  int meshCount = pCalRenderer->getMeshCount();
-  int submeshCount = pCalRenderer->getSubmeshCount(meshId);
-
   // select mesh and submesh for further data access
+  int meshCount = pCalRenderer->getMeshCount();
   if(pCalRenderer->selectMeshSubmesh(meshId, subMeshId)) {
 
     // get the transformed vertices of the submesh
-    static float meshVertices[30000][3];
-    int vertexCount;
-    vertexCount = pCalRenderer->getVertices(&meshVertices[0][0]);
+    vertCount = pCalRenderer->getVertices(&meshVertices[0]);
+
+    for(int vertexId = 0; vertexId < vertCount*3; vertexId++){
+    meshVertices[vertexId] *= renderScale;
+    }
 
     // get the transformed normals of the submesh
-    static float meshNormals[30000][3];
-    pCalRenderer->getNormals(&meshNormals[0][0]);
-
-    // get the texture coordinates of the submesh
-    static float meshTextureCoordinates[30000][2];
-    int textureCoordinateCount;
-    textureCoordinateCount = pCalRenderer->getTextureCoordinates(0, &meshTextureCoordinates[0][0]);
+    normCount = pCalRenderer->getNormals(&meshNormals[0]);
 
     // get the faces of the submesh
-    static CalIndex meshFaces[50000][3];
-    int faceCount;
-    faceCount = pCalRenderer->getFaces(&meshFaces[0][0]);
+    facesCount = pCalRenderer->getFaces(&meshFaces[0]);
     }
 
   // end the rendering

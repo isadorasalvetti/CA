@@ -9,5 +9,5 @@ smooth in float normalColor;
 void main (void) {
    // write Total Color:
     if (amICube) frag_color = vec4(1, 1, 1, 1) - vec4(color*normalColor, 0);
-    else frag_color = vec4(sqrt(color*normalColor), 1);
+    else frag_color = vec4(color*normalColor, 1);
 }

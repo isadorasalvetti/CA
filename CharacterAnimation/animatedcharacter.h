@@ -7,7 +7,7 @@
 using namespace std;
 
 enum Character {SKL, CALLY, PLD, ZOMBIES};
-enum State {IDLE = 0, MOTION=1, FANCY = 2};
+enum State {IDLE = 0, MOTION=2, FANCY = 1};
 
 
 class AnimatedCharacter{
@@ -23,14 +23,17 @@ public:
     CalCoreModel myCoreModel;
     CalModel *m_calModel;
 
+    void beginRenderLoop();
+    void endRenderLoop();
+
     void loadCharacter(QOpenGLFunctions &f, Character c= CALLY);
     void executeAction(int action);
     float getLodLevel();
     void getMotionBlend(float *pMotionBlend);
     float getRenderScale();
     int getState();
-    int getMeshInfo(float (&meshVertices)[30000][3], int &vertCount, float (&meshNormals)[30000][3], int &normCount,
-    float (&meshFaces)[50000][3], int &facesCount, const int &meshId, const int &subMeshId);
+    int getMeshInfo(float (&meshVertices)[90000], int &vertCount, float (&meshNormals)[90000], int &normCount,
+    CalIndex (&meshFaces)[150000], int &facesCount, const int &meshId, const int &subMeshId);
     void onUpdate(float elapsedSeconds);
     void setLodLevel(float lodLevel);
     void setMotionBlend(float *pMotionBlend, float delay);
@@ -44,7 +47,7 @@ private:
     int state;
     float motionBlend[3];
     int animationId[16];
-    float lodLevel;
+    float lodLevel = 0;
     float renderScale;
 };
 

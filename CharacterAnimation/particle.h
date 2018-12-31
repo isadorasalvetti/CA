@@ -20,10 +20,16 @@ public:
     Particle(QVector3D position, QOpenGLShaderProgram *prog);
     ~Particle();
     bool characterGenerated = false;
+
     QVector3D currPosition; // Center point of particle
     QVector3D LastPosition;
+
     QVector3D Velocity; // Current particle velocity
     QVector3D m_Color;    // Particle color
+
+    QVector3D forwardDirection = QVector3D(0,0,0);
+    QVector3D nextforwardDirection;
+
     float speed = 0.3f;
 
     cilinderCollider myCollision; //Collision information
@@ -35,7 +41,6 @@ public:
     int currPathCoord = 0;
     QVector3D nextObjective;
 
-    void Render(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, RenderMesh &myMesh);
     void collsionCheck(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres); //Used for static objects (point based only!)
     void collsionCheck(QVector<cilinderCollider> &cilinders); //Used for collision with other particles (if cilinder boundary has been added)
     bool updateNcheckObjective(); //returns false when particle needs new objective

@@ -18,10 +18,9 @@ public:
 
     bool genBuffers(QOpenGLShaderProgram *program);
     bool fillBuffers();
-    bool fillBuffers(
-            float (&meshVertices)[30000][3], int &vertCount,
-            float (&meshNormals)[30000][3], int &normCount,
-            float (&meshFaces)[50000][3], int &facesCount);
+    bool fillBuffers(float (&meshVertices)[90000], int &vertCount,
+            float (&meshNormals)[90000], int &normCount,
+            CalIndex (&meshFaces)[150000], int &facesCount);
 
     //GL VAO n VBO
     QOpenGLVertexArrayObject VAO;
@@ -34,6 +33,7 @@ public:
 
     void renderStatic(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
     void renderCharacter(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, QMatrix4x4 modelMatrix);
+    void updateCharacterAnimation(float dt);
     void addPlanarColision(QVector<planeCollider> &vec);
     QVector3D correctPosition();
 

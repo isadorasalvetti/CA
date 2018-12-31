@@ -84,27 +84,7 @@ void GLWidget::paintGL()
     //objectColliders.render(*this, program);
     program->release();
 
-    // set the light position and attributes
-    const GLfloat lightPosition[] = { 1.0f, -1.0f, 1.0f, 1.0f };
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-    const GLfloat lightColorAmbient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
-    glLightfv(GL_LIGHT0, GL_AMBIENT, lightColorAmbient);
-    const GLfloat lightColorDiffuse[] = { 0.52f, 0.5f, 0.5f, 1.0f };
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColorDiffuse);
-    const GLfloat lightColorSpecular[] = { 0.1f, 0.1f, 0.1f, 1.0f };
-    glLightfv(GL_LIGHT0, GL_SPECULAR, lightColorSpecular);
-
-    // set the global OpenGL states
-    glEnable(GL_DEPTH_TEST);
-    glShadeModel(GL_SMOOTH);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-
-    // we will use vertex arrays, so enable them
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-
-    mySpawner.renderParticles(*this, program_particle);
+    mySpawner.renderParticles(*this, program);
 
 }
 

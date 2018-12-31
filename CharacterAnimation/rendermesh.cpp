@@ -49,7 +49,7 @@ void RenderMesh::buildCube()
                   };
 
     int i;
-    float cubeSize = 5;
+    float cubeSize = 0.5;
 
     for(i=0; i<8; i+=1)
         addVertex(cubeSize * vertices[3*i], cubeSize * vertices[3*i+1], cubeSize * vertices[3*i+2]);
@@ -113,6 +113,7 @@ bool RenderMesh::init(QOpenGLShaderProgram *program){
 bool RenderMesh::init(QOpenGLShaderProgram *program, NavMesh &myNavMesh) {
     //Create labyrinth structure and normals.
     myNavMesh.genData();
+    color = QVector3D(0, 1, 1);
     vertices = myNavMesh.coords;
     triangles = myNavMesh.faces;
     //Append floor coords and indices
@@ -130,14 +131,14 @@ bool RenderMesh::init(QOpenGLShaderProgram *program, Character type) {
     amIChar = true;
     QOpenGLFunctions f;
     animChar.loadCharacter(f, type);
+    color = QVector3D(1, 0, 1);
+    //buildCube();
+    //buildNormals();
     return (genBuffers(program) && fillBuffers());
 }
 
 bool RenderMesh::genBuffers(QOpenGLShaderProgram *program){
     program->bind();
-
-    //My Uniforms
-    color = QVector3D (0.8f, 0.8f, 0.8f);
 
     //My Buffers
     VAO.destroy();
@@ -151,7 +152,7 @@ bool RenderMesh::genBuffers(QOpenGLShaderProgram *program){
     coordBuffer->create();
     if (!coordBuffer->isCreated()) return false;
     if (!coordBuffer->bind()) return false;
-    coordBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    coordBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
     program->enableAttributeArray(0);
     program->setAttributeBuffer(0, GL_FLOAT, 0, 3, 0);
@@ -162,7 +163,7 @@ bool RenderMesh::genBuffers(QOpenGLShaderProgram *program){
     normBuffer->create();
     if (!normBuffer->isCreated()) return false;
     if (!normBuffer->bind()) return false;
-    normBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    normBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
     program->enableAttributeArray(1);
     program->setAttributeBuffer(1, GL_FLOAT, 0, 3, 0);
@@ -173,7 +174,7 @@ bool RenderMesh::genBuffers(QOpenGLShaderProgram *program){
     indexBuffer->create();
     if (!indexBuffer->isCreated()) return false;
     if (!indexBuffer->bind()) return false;
-    indexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    indexBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
 
     VAO.release();
     program->release();
@@ -194,37 +195,40 @@ bool RenderMesh::fillBuffers(){
 }
 
 bool RenderMesh::fillBuffers(
-        float (&meshVertices)[30000][3], int &vertCount,
-        float (&meshNormals)[30000][3], int &normCount,
-        float (&meshFaces)[50000][3], int &facesCount){
+        float (&meshVertices)[90000], int &vertCount,
+        float (&meshNormals)[90000], int &normCount,
+        CalIndex (&meshFaces)[150000], int &facesCount){
     VAO.bind();
     if (!coordBuffer->bind()) return false;
-    coordBuffer->allocate(&meshVertices[0], sizeof(float) * vertCount);
+    coordBuffer->allocate(&meshVertices[0], sizeof(float) * vertCount * 3);
     if (!normBuffer->bind()) return false;
-    normBuffer->allocate(&meshNormals[0], sizeof(float) * normCount);
+    normBuffer->allocate(&meshNormals[0], sizeof(float) * normCount * 3);
     if (!indexBuffer->bind()) return false;
-    indexBuffer->allocate(&meshFaces[0], sizeof(float) * facesCount);
+    indexBuffer->allocate(&meshFaces[0], sizeof(int) * facesCount * 3);
     VAO.release();
 
     return true;
 }
 
 void RenderMesh::renderCharacter(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, QMatrix4x4 modelMatrix) {
+    program->bind();
     program->setUniformValue("color", color);
     program->setUniformValue("amICube", useCube);
     program->setUniformValue("model", modelMatrix);
 
     if (!amIChar) cout << "Attempted to reder static mesh as character" << endl;
 
-    float meshVertices[30000][3];
+    float meshVertices[90000];
     int vertCount;
-    float meshNormals[30000][3];
+    float meshNormals[90000];
     int normCount;
-    float meshFaces[50000][3];
+    CalIndex meshFaces[150000];
     int facesCount;
 
     int meshId = 0;
     int subMeshId = 0;
+
+    animChar.beginRenderLoop();
     int meshCount = animChar.m_calModel->getRenderer()->getMeshCount();
     int subMeshCount = animChar.m_calModel->getRenderer()->getSubmeshCount(meshId);
     while (meshId < meshCount){
@@ -232,17 +236,23 @@ void RenderMesh::renderCharacter(QOpenGLFunctions &gl, QOpenGLShaderProgram *pro
                              meshNormals, normCount,
                              meshFaces, facesCount,
                              meshId, subMeshId);
-
+        fillBuffers(meshVertices, vertCount, meshNormals, normCount, meshFaces, facesCount);
         VAO.bind();
-        gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, nullptr);
+
+        if(sizeof(CalIndex)==2)
+                    glDrawElements(GL_TRIANGLES, facesCount*3, GL_UNSIGNED_SHORT, nullptr);
+                else
+                    glDrawElements(GL_TRIANGLES, facesCount*3, GL_UNSIGNED_INT, nullptr);
         VAO.release();
 
         subMeshId += 1;
-        if (subMeshId > subMeshCount ){
+        if (subMeshId >= subMeshCount ){
             subMeshId = 0;
             meshId += 1;
         }
     }
+    animChar.endRenderLoop();
+    program->release();
 }
 
 
@@ -256,6 +266,10 @@ void RenderMesh::renderStatic(QOpenGLFunctions &gl, QOpenGLShaderProgram *progra
     VAO.bind();
     gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, nullptr);
     VAO.release();
+}
+
+void RenderMesh::updateCharacterAnimation(float dt){
+    animChar.m_calModel->update(dt);
 }
 
 // Collision

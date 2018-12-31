@@ -27,7 +27,9 @@ private:
      QVector<triangleCollider> tris;
      QVector<sphereCollider> spheres;
      QOpenGLShaderProgram *program;
-     RenderMesh myMesh;
+     static const int meshAmount = 4;
+     RenderMesh myMesh[meshAmount];
+     RenderMesh marker;
      bool characterCreated = false;
 
 };
