@@ -4,6 +4,7 @@
 // Movement
 //****************************************************
 const QVector3D G(0, 0, 0);
+float speed = 0.6f;
 
 bool lessQVec3D(const QVector3D &v1, const QVector3D &v2, const float &error){
     //v1 < v2
@@ -19,8 +20,7 @@ bool greaterQVec3D(const QVector3D &v1, const QVector3D &v2, const float &error)
          && v1.z() > v2.z() - error);
 }
 
-bool Particle::updateNcheckObjective(){
-    float  elapsedTime = .03f;
+bool Particle::updateNcheckObjective(float dt){
     LastPosition = currPosition;
 
     nextforwardDirection = (nextObjective-currPosition).normalized();
@@ -29,9 +29,9 @@ bool Particle::updateNcheckObjective(){
         forwardDirection = forwardDirection*0.85f + nextforwardDirection*0.15f;
 
     Velocity = forwardDirection * speed;
-    currPosition += elapsedTime * Velocity;
+    currPosition += dt * Velocity;
 
-    const float error = (elapsedTime*speed)/2.0 + 1.2e-07f;
+    const float error = (dt*speed)/2.0 + 1.2e-07f;
     if (lessQVec3D(currPosition, nextObjective, error) && greaterQVec3D(currPosition, nextObjective, error)){
         if (currPathCoord < myPath.size() - 1){//end of path not reached. Get next node.
             currPathCoord += 1;

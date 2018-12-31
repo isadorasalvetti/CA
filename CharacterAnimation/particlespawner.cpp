@@ -4,6 +4,9 @@
 const float particleRadius = 0.7f;
 QVector<cilinderCollider> particleColliders;
 
+const float baseSpeed = 0.025f;
+const float modSpeed = 0.005f;
+
 void particleSpawner::init(QOpenGLShaderProgram *prog, NavMesh &nm){
     //Delete old particles, if there are any
     for(int i = 0; i<particles.size(); i++) delete particles[i];
@@ -12,10 +15,13 @@ void particleSpawner::init(QOpenGLShaderProgram *prog, NavMesh &nm){
     //generate new ones
     program = prog;
     myNavMesh = &nm;
-    for (int i = 0; i<meshAmount; i++) myMesh[i].init (program, CALLY);
-    marker.init(prog);
+    for (int i = 0; i<meshAmount; i++) {
+        myMesh[i].init (program, SKL);
+        speed[i] = baseSpeed + i*modSpeed;
+    }
+    if (!marker.init(prog)) cout << "Marker initialization failed" << endl;
 
-    for (unsigned int i = 0; i < 1; i++){
+    for (unsigned int i = 0; i < 20; i++){
         genParticle();
         getNewPath(i);
     }
@@ -53,23 +59,32 @@ void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram
         modelMatrix.rotate(-turnAngle*57.3f, QVector3D(0, -1, 0));
 
         modelMatrix.rotate(-90, QVector3D(1, 0, 0));
-        myMesh[0].renderCharacter(gl, prog, modelMatrix);
+        int m = particles[i]->meshId;
+        if (i == 0){
+            myMesh[m].color = QVector3D(1,0,0);
+            myMesh[m].renderCharacter(gl, prog, modelMatrix);
+            myMesh[m].color = QVector3D(1,1,1);
+        } else myMesh[m].renderCharacter(gl, prog, modelMatrix);
     }
+   renderMarkers(gl, prog);
 }
 
-void renderMarker(){
+void particleSpawner::renderMarkers(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog){
+    marker.color = QVector3D(0,1,1);
+    marker.renderStatic(gl, prog, destinationMarker);
 
+    marker.color = QVector3D(1,0,1);
+    marker.renderStatic(gl, prog, originMarker);
 }
 
 void particleSpawner::genParticle(){
     iiPair gridPosition = myNavMesh->getRandomObjective().coords;
     QVector3D position = myNavMesh->gridToWorldPos(gridPosition);
 
-    float radius = .05f;
-    QVector3D velocity = QVector3D(static_cast<float>(rand())/static_cast<float>(RAND_MAX), 0, static_cast<float>(rand())/static_cast<float>(RAND_MAX));
     Particle *p = new Particle(position, program);
 
     p->positionInGrid = gridPosition;
+    p->meshId = rand()%meshAmount;
 
     genParticleCollision();
     particles.push_back(p);
@@ -77,19 +92,30 @@ void particleSpawner::genParticle(){
 
 void particleSpawner::updateParticles(){
     for(int i = 0; i<particles.size(); i++){
-        if (particles[i]->updateNcheckObjective()) getNewPath(i);
+        int s = particles[i]->meshId;
+        if (particles[i]->updateNcheckObjective(speed[s])) //update position
+            getNewPath(i); //updatePath
     }
-    for(int i = 0; i<particles.size(); i++){
+    for(int i = 0; i<particles.size(); i++){ //Check colision
         //collsionCheck(particleColliders, i);
     }
     //Update animations
-    for(int i = 0; i<meshAmount; i++) myMesh[i].updateCharacterAnimation(0.03f);
+    for(int i = 0; i<meshAmount; i++) myMesh[i].updateCharacterAnimation(speed[i]);
 }
 
 void particleSpawner::getNewPath(int i){
     particles[i]->myPath = myNavMesh->getPathNObjective(particles[i]->currPosition);
     particles[i]->currPathCoord = 0;
     particles[i]->nextObjective = particles[i]->myPath[0];
+    int s = particles[i]->myPath.size();
+    updateMarkerMatrices(particles[i]->myPath[0], particles[i]->myPath[s]);
+}
+
+void particleSpawner::updateMarkerMatrices(QVector3D o, QVector3D d){
+    destinationMarker.setToIdentity();
+    destinationMarker.translate(d);
+    originMarker.setToIdentity();
+    originMarker.translate(o);
 }
 
 particleSpawner::~particleSpawner(){

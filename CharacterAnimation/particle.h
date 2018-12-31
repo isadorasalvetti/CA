@@ -30,7 +30,7 @@ public:
     QVector3D forwardDirection = QVector3D(0,0,0);
     QVector3D nextforwardDirection;
 
-    float speed = 0.3f;
+    int meshId;
 
     cilinderCollider myCollision; //Collision information
 
@@ -43,7 +43,7 @@ public:
 
     void collsionCheck(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres); //Used for static objects (point based only!)
     void collsionCheck(QVector<cilinderCollider> &cilinders); //Used for collision with other particles (if cilinder boundary has been added)
-    bool updateNcheckObjective(); //returns false when particle needs new objective
+    bool updateNcheckObjective(float dt); //returns false when particle needs new objective
 
 private:
     bool BuildPlane(QOpenGLShaderProgram *program);

@@ -19,6 +19,8 @@ public:
     void getNewPath(int i);
 
     bool solver; //true = euler, false= verlet
+    void updateMarkerMatrices(QVector3D o, QVector3D d);
+    void renderMarkers(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog);
 
 private:
      int count = 0;
@@ -29,8 +31,13 @@ private:
      QOpenGLShaderProgram *program;
      static const int meshAmount = 4;
      RenderMesh myMesh[meshAmount];
-     RenderMesh marker;
+     float speed[meshAmount];
      bool characterCreated = false;
+
+     QMatrix4x4 destinationMarker;
+     QMatrix4x4 originMarker;
+     QVector<QMatrix4x4> pathMarkers;
+     RenderMesh marker;
 
 };
 

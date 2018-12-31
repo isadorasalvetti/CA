@@ -10,6 +10,8 @@
 #include "collider.h"
 #include "navmesh.h"
 
+static const QMatrix4x4 identity = QMatrix4x4();
+
 class RenderMesh {
 public:
     bool init(QOpenGLShaderProgram *program);
@@ -31,8 +33,9 @@ public:
     QMatrix4x4 modelMatrix;
     QVector3D color;
 
-    void renderStatic(QOpenGLFunctions &gl, QOpenGLShaderProgram *program);
-    void renderCharacter(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, QMatrix4x4 modelMatrix);
+    void renderStatic(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, QMatrix4x4 model = identity);
+    void renderCharacter(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, QMatrix4x4 modelMatrix = identity);
+
     void updateCharacterAnimation(float dt);
     void addPlanarColision(QVector<planeCollider> &vec);
     QVector3D correctPosition();
@@ -40,7 +43,7 @@ public:
 private:
     void addVertex(float v0, float v1, float v2);
     void addTriangle(int v0, int v1, int v2);
-    void buildCube();
+    void buildCube(float cubesize);
     void buildNormals();
 
     AnimatedCharacter animChar;

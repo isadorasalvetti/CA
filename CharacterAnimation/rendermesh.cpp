@@ -5,7 +5,6 @@
 #include <QOpenGLFunctions>
 #include <QDebug>
 
-bool useCube = false;
 bool amIChar = false;
 
 void RenderMesh::addVertex(float v0, float v1, float v2)
@@ -22,7 +21,7 @@ void RenderMesh::addTriangle(int v0, int v1, int v2)
     triangles.push_back(v2);
 }
 
-void RenderMesh::buildCube()
+void RenderMesh::buildCube(float cubesize)
 {
     GLfloat vertices[] = {-1, -.5, -1,
                           1, -.5, -1,
@@ -49,10 +48,9 @@ void RenderMesh::buildCube()
                   };
 
     int i;
-    float cubeSize = 0.5;
 
     for(i=0; i<8; i+=1)
-        addVertex(cubeSize * vertices[3*i], cubeSize * vertices[3*i+1], cubeSize * vertices[3*i+2]);
+        addVertex(cubesize * vertices[3*i], cubesize * vertices[3*i+1], cubesize * vertices[3*i+2]);
     for(i=0; i<12; i++)
         addTriangle(faces[3*i], faces[3*i+1], faces[3*i+2]);
 }
@@ -104,8 +102,7 @@ void RenderMesh::buildNormals() {
 }
 
 bool RenderMesh::init(QOpenGLShaderProgram *program){
-    useCube = true;
-    buildCube();
+    buildCube(0.2f);
     buildNormals();
     return (genBuffers(program) && fillBuffers());
 }
@@ -113,16 +110,16 @@ bool RenderMesh::init(QOpenGLShaderProgram *program){
 bool RenderMesh::init(QOpenGLShaderProgram *program, NavMesh &myNavMesh) {
     //Create labyrinth structure and normals.
     myNavMesh.genData();
-    color = QVector3D(0, 1, 1);
+    color = QVector3D(0, 0.2f, 0.3f);
     vertices = myNavMesh.coords;
     triangles = myNavMesh.faces;
-    //Append floor coords and indices
-    for (int i = 0; i < 4*3; i++){
-        vertices.push_back(myNavMesh.coordsFloor[i]);
-    }
-    for (int i = 0; i < 2*3; i++){
-        triangles.push_back(myNavMesh.facesFloor[i]+vertices.size());
-    }
+//    //Append floor coords and indices
+//    for (int i = 0; i < 4*3; i++){
+//        vertices.push_back(myNavMesh.coordsFloor[i]);
+//    }
+//    for (int i = 0; i < 2*3; i++){
+//        triangles.push_back(myNavMesh.facesFloor[i]+vertices.size());
+//    }
     buildNormals();
     return (genBuffers(program) && fillBuffers());
 }
@@ -131,10 +128,8 @@ bool RenderMesh::init(QOpenGLShaderProgram *program, Character type) {
     amIChar = true;
     QOpenGLFunctions f;
     animChar.loadCharacter(f, type);
-    color = QVector3D(1, 0, 1);
-    //buildCube();
-    //buildNormals();
-    return (genBuffers(program) && fillBuffers());
+    color = QVector3D(1, 1, 1);
+    return genBuffers(program);
 }
 
 bool RenderMesh::genBuffers(QOpenGLShaderProgram *program){
@@ -190,7 +185,6 @@ bool RenderMesh::fillBuffers(){
     if (!indexBuffer->bind()) return false;
     indexBuffer->allocate(&triangles[0], sizeof(float) * triangles.size());
     VAO.release();
-
     return true;
 }
 
@@ -213,7 +207,7 @@ bool RenderMesh::fillBuffers(
 void RenderMesh::renderCharacter(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, QMatrix4x4 modelMatrix) {
     program->bind();
     program->setUniformValue("color", color);
-    program->setUniformValue("amICube", useCube);
+    program->setUniformValue("useLight", true);
     program->setUniformValue("model", modelMatrix);
 
     if (!amIChar) cout << "Attempted to reder static mesh as character" << endl;
@@ -256,12 +250,11 @@ void RenderMesh::renderCharacter(QOpenGLFunctions &gl, QOpenGLShaderProgram *pro
 }
 
 
-void RenderMesh::renderStatic(QOpenGLFunctions &gl, QOpenGLShaderProgram *program) {
-    QMatrix4x4 id;
+void RenderMesh::renderStatic(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, QMatrix4x4 model) {
 
     program->setUniformValue("color", color);
-    program->setUniformValue("amICube", useCube);
-    program->setUniformValue("model", id);
+    program->setUniformValue("useLight", false);
+    program->setUniformValue("model", model);
 
     VAO.bind();
     gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, nullptr);
@@ -270,27 +263,4 @@ void RenderMesh::renderStatic(QOpenGLFunctions &gl, QOpenGLShaderProgram *progra
 
 void RenderMesh::updateCharacterAnimation(float dt){
     animChar.m_calModel->update(dt);
-}
-
-// Collision
-//**************************************
-
-void RenderMesh::addPlanarColision(QVector<planeCollider> &vec){
-    for (unsigned int i=0; i+2<triangles.size(); i+= 6){
-        QVector3D v1(vertices[triangles[i] * 3], vertices[triangles[i] * 3 + 1],
-                           vertices[triangles[i] * 3 + 2]);
-        QVector3D v2(vertices[triangles[i + 1] * 3],
-                           vertices[triangles[i + 1] * 3 + 1],
-                           vertices[triangles[i + 1] * 3 + 2]);
-        QVector3D v3(vertices[triangles[i + 2] * 3],
-                           vertices[triangles[i + 2] * 3 + 1],
-                           vertices[triangles[i + 2] * 3 + 2]);
-        QVector3D v1v2 = v2 - v1;
-        QVector3D v1v3 = v3 - v1;
-        QVector3D normal = QVector3D::crossProduct(v1v2, v1v3).normalized();
-        float d = -QVector3D::dotProduct(normal, v1);
-        planeCollider pl(normal, d, 0.95f);
-        vec.push_back(pl);
-    }
-
 }
