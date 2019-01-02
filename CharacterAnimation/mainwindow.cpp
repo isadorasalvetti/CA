@@ -9,6 +9,14 @@ MainWindow::MainWindow(QWidget *parent) :
     gl = ui->openGLWidget;
 }
 
+void MainWindow::on_ChangeAerial_toggled(bool status){
+    ui->openGLWidget->setViewType(AERIAL);
+}
+
+void MainWindow::on_ChangeFollow_toggled(bool status){
+    ui->openGLWidget->setViewType(FP);
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;

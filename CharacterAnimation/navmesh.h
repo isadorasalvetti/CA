@@ -57,7 +57,7 @@ class NavMesh{
     };
 
     private:
-    float Mz = 1.5; //arbitrary wall hight
+    float Mz = 0.2; //arbitrary wall hight
     vector<iiPair> possibleObjectives;
     array<int, Mj*Mi> floorPlan = {
           //0  1  2  3  4  5  6  7  8  9  10 11 12 13

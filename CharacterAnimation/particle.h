@@ -33,10 +33,10 @@ public:
     int meshId;
 
     cilinderCollider myCollision; //Collision information
+    void setFPModelView(QOpenGLShaderProgram *prog);
 
     float m_Radius; //size of the particle
 
-    iiPair positionInGrid;
     vector<QVector3D> myPath;
     int currPathCoord = 0;
     QVector3D nextObjective;

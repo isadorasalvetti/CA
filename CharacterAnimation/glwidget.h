@@ -17,6 +17,8 @@ class QOpenGLVertexArrayObject;
 
 QT_END_NAMESPACE
 
+enum viewType{FP, AERIAL};
+
 class GLWidget : public QOpenGLWidget, protected QOpenGLFunctions
 {
 
@@ -29,6 +31,10 @@ public:
     QVector<triangleCollider> triColliders;
     QVector<sphereCollider> sphereColliders;
 
+
+    void setViewType(viewType t);
+
+    void setFPModelView();
     void Reset();
 
 protected:
@@ -41,9 +47,7 @@ protected:
 
 private:
     void setProjection(float aspect);
-    void setModelview();
-    //QMatrix4x4 projectionMatrix;
-    //QMatrix4x4 modelviewMatrix;
+    void setAerialModelview();
     float angleX, translationX, distance;
     QPoint lastMousePos;
 

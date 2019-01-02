@@ -121,8 +121,8 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
 }
 
 
-
 //****************************************************
+
 
 Particle::Particle(QVector3D position, QOpenGLShaderProgram *prog){
     currPosition = position;

@@ -68,10 +68,14 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_ChangeAerial_toggled(bool status);
+    void on_ChangeFollow_toggled(bool status);
+
+
 private:
     Ui::MainWindow *ui;
     GLWidget *gl;
-    bool solverStatus = false;
 };
 
 #endif // MAINWINDOW_H

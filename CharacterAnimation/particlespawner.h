@@ -19,7 +19,7 @@ public:
     void getNewPath(int i);
 
     bool solver; //true = euler, false= verlet
-    void updateMarkerMatrices(QVector3D o, QVector3D d);
+    void updateMarkerMatrices(vector<QVector3D> o, QVector3D d);
     void renderMarkers(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog);
 
 private:

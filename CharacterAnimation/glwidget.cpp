@@ -17,6 +17,8 @@ const float maxRotationCamera = 75.0f;
 const float minDistanceCamera = 1.0f;
 const float maxDistanceCamera = 3.0f;
 
+bool frstPerson = false;
+
 GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), angleX(0.0f), translationX(0.0f), distance(2.0f)
 {
     program = nullptr;
@@ -70,20 +72,17 @@ void GLWidget::resizeGL(int w, int h)
 {
     glViewport(0,0,w,h);
     setProjection((float)w/h);
-    setModelview();
+    setAerialModelview();
 }
 
 void GLWidget::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    program->bind();
     //Rendering
+    if (frstPerson) setFPModelView();
     glDisable(GL_CULL_FACE);
     myMesh.renderStatic(*this, program);
     glEnable(GL_CULL_FACE);
-    //objectColliders.render(*this, program);
-    program->release();
-
     mySpawner.renderParticles(*this, program);
 
 }
@@ -112,7 +111,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     lastMousePos = event->pos();
 
     makeCurrent();
-    setModelview();
+    //setAerialModelview();
     doneCurrent();
     update();
 }
@@ -130,10 +129,8 @@ void GLWidget::setProjection(float aspect)
     program_particle->release();
 }
 
-void GLWidget::setModelview()
-{
+void GLWidget::setAerialModelview(){
     QMatrix4x4 viewMatrix;
-
     viewMatrix.translate(0.0f, 0.0f, -8);
     viewMatrix.rotate(45, 1.0f, 0.0f, 0.0f);
     viewMatrix.rotate(angleX, 1.0f, 0.0f, 0.0f);
@@ -150,10 +147,33 @@ void GLWidget::setModelview()
 
 }
 
+void GLWidget::setFPModelView(){
+    QVector3D position = mySpawner.particles[0]->currPosition
+            //- QVector3D(0, 0, -0.9f);
+            - mySpawner.particles[0]->forwardDirection;
+    QVector3D camHeight = QVector3D(0, 1.0f, 0);
+    QVector3D orientation = mySpawner.particles[0]->forwardDirection;
+    QMatrix4x4 viewMatrix;
+
+    float turnAngle = atan2(orientation.x(), orientation.z());
+    viewMatrix.rotate(180, QVector3D(0, 1, 0));
+    viewMatrix.rotate(-turnAngle*57.3f, QVector3D(0, 1, 0));
+    viewMatrix.translate(-(position+camHeight));
+
+    program->bind();
+    program->setUniformValue("view", viewMatrix);
+    program->setUniformValue("normalMatrix", viewMatrix.normalMatrix());
+    program->release();
+}
+
 //************************************
 //Interface
 //************************************
 
-void GLWidget::Reset(){
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+void GLWidget::setViewType(viewType t){
+    if (t == FP) frstPerson = true;
+    else if (t == AERIAL){
+        frstPerson = false;
+        setAerialModelview();
+    }
 }

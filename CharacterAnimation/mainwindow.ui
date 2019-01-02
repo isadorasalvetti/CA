@@ -67,8 +67,8 @@
          <enum>Qt::LeftToRight</enum>
         </property>
         <property name="text">
-         <string>Current
- Solver:</string>
+         <string>Change 
+ View:</string>
         </property>
         <property name="textFormat">
          <enum>Qt::AutoText</enum>
@@ -98,9 +98,22 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="SolverButton">
+       <widget class="QRadioButton" name="ChangeAerial">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="text">
-         <string>Verlet</string>
+         <string>Aerial</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="ChangeFollow">
+        <property name="text">
+         <string>Follow</string>
         </property>
        </widget>
       </item>

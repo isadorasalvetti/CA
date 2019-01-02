@@ -251,7 +251,7 @@ void RenderMesh::renderCharacter(QOpenGLFunctions &gl, QOpenGLShaderProgram *pro
 
 
 void RenderMesh::renderStatic(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, QMatrix4x4 model) {
-
+    program->bind();
     program->setUniformValue("color", color);
     program->setUniformValue("useLight", false);
     program->setUniformValue("model", model);
@@ -259,6 +259,7 @@ void RenderMesh::renderStatic(QOpenGLFunctions &gl, QOpenGLShaderProgram *progra
     VAO.bind();
     gl.glDrawElements(GL_TRIANGLES, triangles.size(), GL_UNSIGNED_INT, nullptr);
     VAO.release();
+    program->release();
 }
 
 void RenderMesh::updateCharacterAnimation(float dt){

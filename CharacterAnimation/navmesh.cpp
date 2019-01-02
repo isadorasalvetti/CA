@@ -127,7 +127,7 @@ void computePath(const iiPair &goal, map<iiPair,iiPair> &parent, vector<iiPair> 
 
 vector<iiPair> NavMesh::findPath(node originNode, node objectiveNode) {
     auto cmp = [](const node &left, const node &right) {
-            return left.cost < right.cost;
+            return left.cost > right.cost;
     };
     priority_queue<node, vector<node>, decltype(cmp)> toVisit(cmp);
 
@@ -144,8 +144,7 @@ vector<iiPair> NavMesh::findPath(node originNode, node objectiveNode) {
         vector<node> candidates = getNodeNeighboorhoord(currentNode);
         for (node candidate : candidates) {
             if (parentNode.find(candidate.coords) == parentNode.end()){
-                candidate.cost = max(abs(candidate.coords.first - objectiveNode.coords.first),
-                                     abs(candidate.coords.second - objectiveNode.coords.second));
+                candidate.cost = abs(candidate.coords.first - objectiveNode.coords.first) + abs(candidate.coords.second - objectiveNode.coords.second);
                 toVisit.push(candidate);
                 parentNode[candidate.coords] = currentNode.coords;
             }
@@ -181,7 +180,8 @@ vector<node> NavMesh::getNodeNeighboorhoord(node myNode){
                 iiPair q = p2;
                 q.first += i;
                 q.second += j;
-                if (isInGrid(q, size) and floorPlan[grid2index(q, size)] == 0 or floorPlan[grid2index(q, size)] == 9)
+                if (isInGrid(q, size))
+                    if (floorPlan[grid2index(q, size)] == 0 or floorPlan[grid2index(q, size)] == 9)
                     neighbors.push_back(node(q));
             }
         }
@@ -196,6 +196,8 @@ QVector3D NavMesh::gridToWorldPos(iiPair gridPos){
 }
 
 iiPair NavMesh::worldToGridPos(QVector3D worldPos){
+    float posI = -worldPos.z()/scl+offsetI;
+    float posJ = (worldPos.x()/scl)+offsetJ;
     return iiPair((-worldPos.z()/scl+offsetI), (worldPos.x()/scl)+offsetJ);
 }
 
