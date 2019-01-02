@@ -35,27 +35,19 @@ public:
     planeCollider() {}
 };
 
-//2D only!
-class cilinderCollider{
-    public:
-    QVector3D c;
-    float r;
-    cilinderCollider(QVector3D C, float R): c(C), r(R) {}
-    cilinderCollider() {}
-};
 
 class Collider{
 public:
     static bool pointPlaneCollision(QVector3D p1, QVector3D p2, planeCollider plane);
     static bool pointTriCollision(QVector3D p1, QVector3D p2, triangleCollider tri);
     static bool pointSphereCollision(QVector3D p1, sphereCollider sphere);
-    static bool cilinderCilinderCollision(cilinderCollider c1, cilinderCollider c2);
     static std::pair<QVector3D, QVector3D> updateParticle(QVector3D p2, QVector3D v2, planeCollider plane);
     static std::pair<QVector3D, QVector3D> updateParticle(QVector3D p2, QVector3D v2, triangleCollider tri);
     static std::pair<QVector3D, QVector3D> updateParticle(QVector3D p2, QVector3D v2, sphereCollider tri);
-    static std::pair<QVector3D, QVector3D> updateParticleA(QVector3D p2, QVector3D v2, cilinderCollider cil);
 
     static float triangleArea(QVector3D a, QVector3D b, QVector3D c);
+
+    static bool cilinderCilinderIntersection(QVector3D c1, QVector3D c2, float r);
 };
 
 #endif // COLLIDER_H

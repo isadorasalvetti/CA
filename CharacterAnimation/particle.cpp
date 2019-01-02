@@ -6,6 +6,10 @@
 const QVector3D G(0, 0, 0);
 float speed = 0.6f;
 
+// Collision
+//****************************************************
+float collRadius = 0.5f;
+
 bool lessQVec3D(const QVector3D &v1, const QVector3D &v2, const float &error){
     //v1 < v2
     return (v1.x() < v2.x() + error
@@ -22,11 +26,19 @@ bool greaterQVec3D(const QVector3D &v1, const QVector3D &v2, const float &error)
 
 bool Particle::updateNcheckObjective(float dt){
     LastPosition = currPosition;
-
     nextforwardDirection = (nextObjective-currPosition).normalized();
-    if (forwardDirection == QVector3D(0,0,0)) forwardDirection = nextforwardDirection;
-    else if (forwardDirection != nextforwardDirection)
-        forwardDirection = forwardDirection*0.85f + nextforwardDirection*0.15f;
+
+    if(repulsionDirection == QVector3D(0,0,0)){
+        if (forwardDirection == QVector3D(0,0,0)) forwardDirection = nextforwardDirection;
+        else if (forwardDirection != nextforwardDirection)
+            forwardDirection = forwardDirection*0.85f + nextforwardDirection*0.15f;
+    } else{
+        repulsionDirection.normalize();
+        QVector3D LastDirection = forwardDirection;
+        forwardDirection = forwardDirection*0.50f + repulsionDirection*0.50f;
+        if (QVector3D::dotProduct(forwardDirection, LastDirection)<0.3f)
+            forwardDirection = QVector3D(0,0,0);
+    }
 
     Velocity = forwardDirection * speed;
     currPosition += dt * Velocity;
@@ -41,37 +53,18 @@ bool Particle::updateNcheckObjective(float dt){
     return false;
 }
 
-void Particle::collsionCheck(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres){
-    /*COLLISION CHECKS START HERE */
-    //planes
-    for (int i = 0; i<planes.size(); i++){
-        bool check = Collider::pointPlaneCollision(LastPosition, currPosition, planes[i]);
-        if (check) {
-            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(currPosition, Velocity, planes[i]);
-            currPosition = nD.first; Velocity = nD.second;
-        }
-    }
-    //triangles
-    for (int i = 0; i<triangles.size(); i++){
-        bool check = Collider::pointTriCollision(LastPosition, currPosition, triangles[i]);
-        if (check) {
-            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(currPosition, Velocity, triangles[i]);
-            currPosition = nD.first; Velocity = nD.second;
-        }
-    }
-
-    //sphere
-    for (int i = 0; i<spheres.size(); i++){
-        bool check = Collider::pointSphereCollision(currPosition, spheres[i]);
-        if (check) {
-            std::pair<QVector3D, QVector3D> nD = Collider::updateParticle(LastPosition, Velocity, spheres[i]);
-            currPosition = nD.first; Velocity = nD.second;
+void Particle::collisionCheck(QVector<Particle *> &p, int me){
+    for (int i = me; i < p.size(); i++){
+        if (i!=me){
+            if(Collider::cilinderCilinderIntersection(currPosition, p[i]->currPosition, collRadius)){
+                //There is a conflict between particle i and me.
+                QVector3D rp = (p[i]->forwardDirection - forwardDirection).normalized() * (p[i]->currPosition - currPosition).length();
+                repulsionDirection -= rp;
+                p[i]->repulsionDirection += rp;
+            }
         }
     }
 }
-
- /*COLLISION CHECKS END HERE */
-
 
 
 // Plane
@@ -127,16 +120,4 @@ bool Particle::BuildPlane(QOpenGLShaderProgram *program){
 Particle::Particle(QVector3D position, QOpenGLShaderProgram *prog){
     currPosition = position;
     m_Radius = 0.05f;
-
-    //if(!BuildPlane(prog)){
-    //    std::cout << "Could not create particle" << std::endl;
-    //};
-}
-
-
-/* DESTROY PARTICLE*/
-Particle::~Particle(){
-    //VAO->destroy();
-    coordBuffer->destroy();
-    indexBuffer->destroy();
 }

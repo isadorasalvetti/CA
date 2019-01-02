@@ -27,18 +27,9 @@ bool Collider::pointSphereCollision(QVector3D p1, sphereCollider sphere){
     return dist*dist <= sphere.r*sphere.r;
 }
 
-bool Collider::cilinderCilinderCollision(cilinderCollider c1, cilinderCollider c2){
-    /* 2D only!
-    TODO: should also take in consideration speed vector of particle.
-    check for collisions in the direction of particle movement.
-    */
-    float dist = c1.c.distanceToPoint(c2.c);
-    return dist < c1.r + c2.r;
-}
-
-std::pair<QVector3D, QVector3D> updateParticleA(QVector3D p2, QVector3D v2, cilinderCollider cil){
-    //Colculate tangent vector of particle velocity and collided particle. Add to particle speed + repulsion force. Add noise to avoid deadlocks.
-    //std::pair<QVector3D, QVector3D> update(pC, vC);
+bool Collider::cilinderCilinderIntersection(QVector3D c1, QVector3D c2, float r){
+    float dist = c1.distanceToPoint(c2);
+    return dist < r;
 }
 
 std::pair<QVector3D, QVector3D> Collider::updateParticle(QVector3D p2, QVector3D v2, sphereCollider sphere){

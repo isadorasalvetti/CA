@@ -1,9 +1,6 @@
 #include "particlespawner.h"
 #include <math.h> 
 
-const float particleRadius = 0.7f;
-QVector<cilinderCollider> particleColliders;
-
 const float baseSpeed = 0.025f;
 const float modSpeed = 0.005f;
 
@@ -26,27 +23,6 @@ void particleSpawner::init(QOpenGLShaderProgram *prog, NavMesh &nm){
         getNewPath(i);
     }
 }
-
-void particleSpawner::updateColliders(QVector<planeCollider> &p, QVector<triangleCollider> &ts, QVector<sphereCollider> &ss){
-    // Colliders received by other static objecs
-    planes = p;
-    tris = ts;
-    spheres = ss;
-}
-
-void particleSpawner::genParticleCollision() {
-
-    /*
-    Generates a 2D cilinder collision surroundeing the particle.
-    This is not static, must be updated.
-    */
-
-    for(int i = 0; i<particles.size(); i++){
-        cilinderCollider c(particles[i]->currPosition, particleRadius);
-        particles[i]->myCollision = c;
-    }
-}
-
 
 void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog){
    for(int i = 0; i<particles.size(); i++){
@@ -93,7 +69,6 @@ void particleSpawner::genParticle(){
     p->myPath.push_back(position);
     p->meshId = rand()%meshAmount;
 
-    genParticleCollision();
     particles.push_back(p);
 }
 
@@ -103,9 +78,15 @@ void particleSpawner::updateParticles(){
         if (particles[i]->updateNcheckObjective(speed[s])) //update position
             getNewPath(i); //updatePath
     }
+
+    //Repulsion forces
     for(int i = 0; i<particles.size(); i++){ //Check colision
-        //collsionCheck(particleColliders, i);
+        particles[i]->repulsionDirection = QVector3D(0,0,0);
     }
+    for(int i = 0; i<particles.size(); i++){ //Check colision
+        particles[i]->collisionCheck(particles, i);
+    }
+
     //Update animations
     for(int i = 0; i<meshAmount; i++) myMesh[i].updateCharacterAnimation(speed[i]);
 }

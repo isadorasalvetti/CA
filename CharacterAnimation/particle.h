@@ -18,7 +18,6 @@ typedef pair<int, int> iiPair;
 class Particle{
 public:
     Particle(QVector3D position, QOpenGLShaderProgram *prog);
-    ~Particle();
     bool characterGenerated = false;
 
     QVector3D currPosition; // Center point of particle
@@ -32,17 +31,16 @@ public:
 
     int meshId;
 
-    cilinderCollider myCollision; //Collision information
     void setFPModelView(QOpenGLShaderProgram *prog);
 
     float m_Radius; //size of the particle
+    QVector3D repulsionDirection = QVector3D(0,0,0);
 
     vector<QVector3D> myPath;
     int currPathCoord = 0;
     QVector3D nextObjective;
 
-    void collsionCheck(QVector<planeCollider> &planes, QVector<triangleCollider> &triangles, QVector<sphereCollider> &spheres); //Used for static objects (point based only!)
-    void collsionCheck(QVector<cilinderCollider> &cilinders); //Used for collision with other particles (if cilinder boundary has been added)
+    void collisionCheck(QVector<Particle*> &p, int me); //Used for static objects (point based only!)
     bool updateNcheckObjective(float dt); //returns false when particle needs new objective
 
 private:
