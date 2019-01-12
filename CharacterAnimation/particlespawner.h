@@ -16,9 +16,10 @@ public:
     void genParticleCollision();
     void updateParticles();
     void getNewPath(int i);
+    void rewritePath(int i);
 
     bool solver; //true = euler, false= verlet
-    void updateMarkerMatrices(vector<QVector3D> o, QVector3D d);
+    void updateMarkerMatrices(vector<QVector3D> o);
     void renderMarkers(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog);
 
 private:

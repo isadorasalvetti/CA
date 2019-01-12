@@ -18,7 +18,7 @@ void particleSpawner::init(QOpenGLShaderProgram *prog, NavMesh &nm){
     }
     if (!marker.init(prog)) cout << "Marker initialization failed" << endl;
 
-    for (unsigned int i = 0; i < 20; i++){
+    for (unsigned int i = 0; i < 30; i++){
         genParticle();
         getNewPath(i);
     }
@@ -37,6 +37,9 @@ void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram
         modelMatrix.rotate(-90, QVector3D(1, 0, 0));
         int m = particles[i]->meshId;
         if (i == 0){
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            particles[i]->cone.renderStatic(gl, prog);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             myMesh[m].color = QVector3D(1,0,1);
             myMesh[m].renderCharacter(gl, prog, modelMatrix);
             myMesh[m].color = QVector3D(1,1,1);
@@ -54,8 +57,8 @@ void particleSpawner::renderMarkers(QOpenGLFunctions &gl, QOpenGLShaderProgram *
         marker.renderStatic(gl, prog, pathMarkers[i]);
     }
 
-    marker.color = QVector3D(1,0,1);
-    marker.renderStatic(gl, prog, originMarker);
+//    marker.color = QVector3D(1,0,1);
+//    marker.renderStatic(gl, prog, originMarker);
 }
 
 void particleSpawner::genParticle(){
@@ -73,18 +76,21 @@ void particleSpawner::genParticle(){
 }
 
 void particleSpawner::updateParticles(){
+
     for(int i = 0; i<particles.size(); i++){
-        int s = particles[i]->meshId;
-        if (particles[i]->updateNcheckObjective(speed[s])) //update position
-            getNewPath(i); //updatePath
+        particles[i]->updateDirection();
     }
 
-    //Repulsion forces
-    for(int i = 0; i<particles.size(); i++){ //Check colision
-        particles[i]->repulsionDirection = QVector3D(0,0,0);
+    for(int i = 0; i<particles.size(); i++){
+        particles[i]->addBehaviourForces(particles, i);
     }
-    for(int i = 0; i<particles.size(); i++){ //Check colision
-        particles[i]->collisionCheck(particles, i);
+
+    for(int i = 0; i<particles.size(); i++){
+        int s = particles[i]->meshId;
+        int r = particles[i]->updatePosition(speed[s]);
+        if (r==1)
+            getNewPath(i); //updatePath
+        else if (r==2) rewritePath(i);
     }
 
     //Update animations
@@ -100,22 +106,52 @@ void particleSpawner::getNewPath(int i){
     if (i == 0) {
         int s = particles[i]->myPath.size();
         vector<QVector3D> pathCoords;
-        for (int j = 0; j < s-1; j++) pathCoords.push_back(particles[i]->myPath[j]);
-        updateMarkerMatrices(pathCoords, particles[i]->myPath[s-1]);
+        for (int j = 0; j < s; j++) pathCoords.push_back(particles[i]->myPath[j]);
+        updateMarkerMatrices(pathCoords);
     }
 }
 
-void particleSpawner::updateMarkerMatrices(vector<QVector3D> o, QVector3D d){
-    originMarker = destinationMarker;
-    pathMarkers.resize(o.size());
-    for (int i = 0; i < o.size(); i++){
+void particleSpawner::rewritePath(int i){
+    //problem if it starts on a wall
+    QVector3D lastDestination;
+    lastDestination = particles[i]->currPosition;
+    iiPair gridld = NavMesh::worldToGridPos(lastDestination);
+
+    //get closest valid grid position if this one is not
+    if (!NavMesh::isInGrid(gridld)
+        || (NavMesh::floorPlan[NavMesh::grid2index(gridld)] !=0
+        && NavMesh::floorPlan[NavMesh::grid2index(gridld)] !=9))
+        for (int j=-1; j<=1; j++) for (int k=-1; k<=1; k++) if (j != k){
+            QVector3D test = lastDestination + QVector3D (j, 0, k)*(NavMesh::scl/2);
+            gridld = NavMesh::worldToGridPos(test);
+            if (NavMesh::isInGrid(gridld)
+                && (NavMesh::floorPlan[NavMesh::grid2index(gridld)] == 0
+                || NavMesh::floorPlan[NavMesh::grid2index(gridld)] == 9)){
+                lastDestination = test;
+                break;
+            }
+        }
+
+    particles[i]->myPath = myNavMesh->getPathNObjective(lastDestination);
+    particles[i]->currPathCoord = 0;
+    particles[i]->nextObjective = particles[i]->myPath[0];
+    if (i == 0) {
+        int s = particles[i]->myPath.size();
+        vector<QVector3D> pathCoords;
+        for (int j = 0; j < s; j++) pathCoords.push_back(particles[i]->myPath[j]);
+        updateMarkerMatrices(pathCoords);
+    }
+}
+
+void particleSpawner::updateMarkerMatrices(vector<QVector3D> o){
+    pathMarkers.resize(o.size()-1);
+    for (int i = 0; i < o.size()-1; i++){
         pathMarkers[i].setToIdentity();
         pathMarkers[i].translate(o[i]);
         pathMarkers[i].scale(QVector3D(0.5f, 0.5f, 0.5f));
-
     }
     destinationMarker.setToIdentity();
-    destinationMarker.translate(d);
+    destinationMarker.translate(o[o.size()-1]);
 }
 
 particleSpawner::~particleSpawner(){

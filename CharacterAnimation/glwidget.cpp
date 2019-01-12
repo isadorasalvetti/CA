@@ -94,21 +94,21 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    // Rotation
-    if(event->buttons() & Qt::LeftButton)
-    {
-        angleX += rotationFactor * (event->y() - lastMousePos.y());
-        angleX = max(-maxRotationCamera, min(angleX, maxRotationCamera));
-        translationX += translationFactor * (event->x() - lastMousePos.x());
-    }
-    // Zoom
-    if(event->buttons() & Qt::RightButton)
-    {
-        distance += 0.01f * (event->y() - lastMousePos.y());
-        distance = max(minDistanceCamera, min(distance, maxDistanceCamera));
-    }
+//    // Rotation
+//    if(event->buttons() & Qt::LeftButton)
+//    {
+//        angleX += rotationFactor * (event->y() - lastMousePos.y());
+//        angleX = max(-maxRotationCamera, min(angleX, maxRotationCamera));
+//        translationX += translationFactor * (event->x() - lastMousePos.x());
+//    }
+//    // Zoom
+//    if(event->buttons() & Qt::RightButton)
+//    {
+//        distance += 0.01f * (event->y() - lastMousePos.y());
+//        distance = max(minDistanceCamera, min(distance, maxDistanceCamera));
+//    }
 
-    lastMousePos = event->pos();
+//    lastMousePos = event->pos();
 
     makeCurrent();
     //setAerialModelview();

@@ -24,6 +24,8 @@ public:
             float (&meshNormals)[90000], int &normCount,
             CalIndex (&meshFaces)[150000], int &facesCount);
 
+    void rewriteMesh(vector<float> vecs, vector<int> faces = vector<int>(1, -1));
+
     //GL VAO n VBO
     QOpenGLVertexArrayObject VAO;
     QOpenGLBuffer* coordBuffer;

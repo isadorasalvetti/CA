@@ -132,6 +132,13 @@ bool RenderMesh::init(QOpenGLShaderProgram *program, Character type) {
     return genBuffers(program);
 }
 
+void RenderMesh::rewriteMesh(vector<float> vecs, vector<int> faces){
+    vertices = vecs;
+    if (faces.size() > 1) triangles = faces;
+    buildNormals();
+    fillBuffers();
+}
+
 bool RenderMesh::genBuffers(QOpenGLShaderProgram *program){
     program->bind();
 

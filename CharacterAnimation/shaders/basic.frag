@@ -8,6 +8,6 @@ smooth in float normalColor;
 
 void main (void) {
    // write Total Color:
-    if (useLight) frag_color = vec4(color*normalColor, 1);
+    if (useLight) frag_color = vec4(color*0.6+color*normalColor*0.4, 1);
     else frag_color = vec4(color, 1);
 }

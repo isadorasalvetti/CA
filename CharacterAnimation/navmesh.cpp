@@ -2,7 +2,19 @@
 #include <map>
 #include <functional>
 
-const float scl = .7;
+array<int, NavMesh::Mj*NavMesh::Mi> NavMesh::floorPlan = {
+          //0  1  2  3  4  5  6  7  8  9  10 11 12 13
+            1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 1, 1, 1, 1,   //0
+            1, 9, 0, 0, 9, 1, 1, 1, 1, 0, 0, 0, 9, 1,   //1
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,   //2
+            1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1,   //3
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1,   //4
+            1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 9, 1,   //5
+            1, 9, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1,   //6
+            1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1,   //7
+            2, 2, 1, 1, 1, 9, 0, 0, 0, 0, 0, 0, 9, 1,   //8
+            2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   //9
+        }; //14x09 floor plan.
 
 void NavMesh::genData(){
    /*
@@ -159,19 +171,17 @@ vector<iiPair> NavMesh::findPath(node originNode, node objectiveNode) {
 }
 
 //Grid functions
-int grid2index(const iiPair &p, const iiPair &size) {
-    return p.second + p.first * size.second;
+int NavMesh::grid2index(const iiPair &p) {
+    return p.second + p.first * Mj;
 }
-bool isInGrid(const iiPair &p, const iiPair &size) {
+bool NavMesh::isInGrid(const iiPair &p) {
     return p.first >= 0 and p.second >= 0 and
-           p.first < size.first and p.second < size.second;
+           p.first < Mi and p.second < Mj;
 }
 
 vector<node> NavMesh::getNodeNeighboorhoord(node myNode){
     vector<node> neighbors;
 
-    //Ortogonal
-    const iiPair size (Mi, Mj);
     const iiPair p2 = myNode.coords;
 
     for (int i = -1; i <= 1; ++i) {
@@ -180,8 +190,8 @@ vector<node> NavMesh::getNodeNeighboorhoord(node myNode){
                 iiPair q = p2;
                 q.first += i;
                 q.second += j;
-                if (isInGrid(q, size))
-                    if (floorPlan[grid2index(q, size)] == 0 or floorPlan[grid2index(q, size)] == 9)
+                if (isInGrid(q))
+                    if (floorPlan[grid2index(q)] == 0 or floorPlan[grid2index(q)] == 9)
                     neighbors.push_back(node(q));
             }
         }
