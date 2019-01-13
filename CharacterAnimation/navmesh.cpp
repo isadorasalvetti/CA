@@ -161,43 +161,77 @@ vector<QVector3D> NavMesh::getPathNObjective(const QVector3D &currPosition){
 }
 
 
-void computePath(const iiPair &goal, map<iiPair,iiPair> &parent, vector<iiPair> &path) {
+void computePathF(const iiPair &goal, map<iiPair,iiPair> &parentFw, vector<iiPair> &path) {
     //from FINDPATH
-    const iiPair &p = parent[goal];
+    const iiPair &p = parentFw[goal];
     if (p != goal) {
-        computePath(p, parent, path);
+        computePathF(p, parentFw, path);
         path.push_back(goal);
     }
 }
 
+void computePathB(const iiPair &next, const iiPair &objective, map<iiPair,iiPair> &parentBk, vector<iiPair> &path) {
+    //from FINDPATH
+    if (next != objective){
+        path.push_back(parentBk[next]);
+        computePathB(parentBk[next], objective, parentBk, path);
+    }
+}
+
 vector<iiPair> NavMesh::findPath(node originNode, node objectiveNode) {
+    //BIDIRECTIONAL PATHFINDING
     auto cmp = [](const node &left, const node &right) {
             return left.cost > right.cost;
     };
-    priority_queue<node, vector<node>, decltype(cmp)> toVisit(cmp);
+    priority_queue<node, vector<node>, decltype(cmp)> toVisitForward(cmp);
+    priority_queue<node, vector<node>, decltype(cmp)> toVisitBackward(cmp);
 
     map<iiPair, iiPair> parentNodeForward;
     map<iiPair, iiPair> parentNodeBackward;
     // visited => exists in the map
 
+    //GOING FORWARD
     originNode.cost = 0;
-    toVisit.push(originNode);
+    toVisitForward.push(originNode);
     parentNodeForward[originNode.coords] = originNode.coords;
-    bool goal_found = false;
 
-    while(!toVisit.empty() and not goal_found){
-        //GOING FORWARD
-        node currentNode = toVisit.top(); toVisit.pop();
-        vector<node> candidates = getNodeNeighboorhoord(currentNode);
-        for (node candidate : candidates) {
+    //GOING BACKWARD
+    objectiveNode.cost = 0;
+    toVisitBackward.push(objectiveNode);
+    parentNodeBackward[objectiveNode.coords] = objectiveNode.coords;
+
+    //SEARCH LOOP
+    while(!toVisitForward.empty()
+      and !toVisitBackward.empty()){
+        node currentFwNode = toVisitForward.top(); toVisitForward.pop();
+        node currentBkNode = toVisitBackward.top(); toVisitBackward.pop();
+        vector<node> candidatesFw = getNodeNeighboorhoord(currentFwNode);
+        vector<node> candidatesBk = getNodeNeighboorhoord(currentBkNode);
+
+        for (node candidate : candidatesFw) {
             if (parentNodeForward.find(candidate.coords) == parentNodeForward.end()){
                 candidate.cost = abs(candidate.coords.first - objectiveNode.coords.first) + abs(candidate.coords.second - objectiveNode.coords.second);
-                toVisit.push(candidate);
-                parentNodeForward[candidate.coords] = currentNode.coords;
+                toVisitForward.push(candidate);
+                parentNodeForward[candidate.coords] = currentFwNode.coords;
             }
-            if ((goal_found = candidate.coords == objectiveNode.coords)) {
+            if (parentNodeBackward.find(candidate.coords) != parentNodeBackward.end()) {
                 vector<iiPair> path;
-                computePath(objectiveNode.coords, parentNodeForward, path);
+                computePathF(candidate.coords, parentNodeForward, path);
+                computePathB(candidate.coords, objectiveNode.coords, parentNodeBackward, path);
+                return path;
+            }
+        }
+
+        for (node candidate : candidatesBk) {
+            if (parentNodeBackward.find(candidate.coords) == parentNodeBackward.end()){
+                candidate.cost = abs(candidate.coords.first - originNode.coords.first) + abs(candidate.coords.second - objectiveNode.coords.second);
+                toVisitBackward.push(candidate);
+                parentNodeBackward[candidate.coords] = currentBkNode.coords;
+            }
+            if ((parentNodeForward.find(candidate.coords) != parentNodeForward.end())){
+                vector<iiPair> path;
+                computePathF(candidate.coords, parentNodeForward, path);
+                computePathB(candidate.coords, objectiveNode.coords, parentNodeBackward, path);
                 return path;
             }
         }
