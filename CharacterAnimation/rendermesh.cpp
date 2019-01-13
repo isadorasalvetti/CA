@@ -316,3 +316,7 @@ void RenderMesh::renderStatic(QOpenGLFunctions &gl, QOpenGLShaderProgram *progra
 void RenderMesh::updateCharacterAnimation(float dt){
     animChar.m_calModel->update(dt);
 }
+
+void RenderMesh::changeCharacterAnimation(int state){
+    animChar.setState(state, 0);
+}

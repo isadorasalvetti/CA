@@ -400,7 +400,7 @@ void AnimatedCharacter::setState(int st, float delay){
   // check if this is really a new state
   if(state != st)
   {
-    if(state == IDLE)
+    if(st == IDLE)
     {
       m_calModel->getMixer()->blendCycle(animationId[IDLE], 1.0f, delay);
       m_calModel->getMixer()->clearCycle(animationId[FANCY], delay);
@@ -409,7 +409,7 @@ void AnimatedCharacter::setState(int st, float delay){
       m_calModel->getMixer()->clearCycle(animationId[MOTION + 2], delay);
       state = IDLE;
     }
-    else if(state == FANCY)
+    else if(st == FANCY)
     {
       m_calModel->getMixer()->clearCycle(animationId[IDLE], delay);
       m_calModel->getMixer()->blendCycle(animationId[FANCY], 1.0f, delay);
@@ -418,7 +418,7 @@ void AnimatedCharacter::setState(int st, float delay){
       m_calModel->getMixer()->clearCycle(animationId[MOTION + 2], delay);
       state = FANCY;
     }
-    else if(state == MOTION)
+    else if(st == MOTION)
     {
       m_calModel->getMixer()->clearCycle(animationId[IDLE], delay);
       m_calModel->getMixer()->clearCycle(animationId[FANCY], delay);

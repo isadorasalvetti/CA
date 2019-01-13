@@ -11,7 +11,7 @@ public:
     QVector<Particle*> particles;
     ~particleSpawner();
     void init(QOpenGLShaderProgram *prog, NavMesh &nm);
-    void genParticle();
+    void genParticle(int i);
     void renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram *prog);
     void genParticleCollision();
     void updateParticles();
@@ -29,7 +29,7 @@ private:
      QVector<triangleCollider> tris;
      QVector<sphereCollider> spheres;
      QOpenGLShaderProgram *program;
-     static const int meshAmount = 4;
+     static const int meshAmount = 15;
      RenderMesh myMesh[meshAmount];
      float speed[meshAmount];
      bool characterCreated = false;

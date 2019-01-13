@@ -6,7 +6,7 @@
 //****************************************************
 const QVector3D G(0, 0, 0);
 float speed = 0.6f;
-float maxDistanceSqr = 2.3f*2.3f;
+float maxDistanceSqr = 1.4f*1.4f;
 
 // Collision
 //****************************************************
@@ -39,39 +39,69 @@ bool greaterQVec3D(const QVector3D &v1, const QVector3D &v2, const float &error)
 
 void Particle::updateDirection(){
     if (!stuckInWall){
+        QVector3D lastForwardDirection = forwardDirection;
         nextforwardDirection = (nextObjective-currPosition).normalized();
+
         if (forwardDirection == QVector3D(0,0,0)) forwardDirection = nextforwardDirection;
         else if (forwardDirection != nextforwardDirection){
             QVector3D directionChange = nextforwardDirection+behaviorDirection;
-            forwardDirection = forwardDirection*0.95f + directionChange*0.05f;
+
+            forwardDirection = forwardDirection*0.90f + directionChange*0.1f;
             forwardDirection.normalize();
+
+            if (QVector3D::dotProduct(forwardDirection, nextforwardDirection) < 0.9f){
+                if (QVector3D::dotProduct(forwardDirection, nextforwardDirection) < 0){
+                    //SLOW MOST IF GOING BACK
+                    forwardDirection = forwardDirection*0.8f + nextforwardDirection*0.2f;
+                    speed = max(speed*0.75f, baseSpeed*0.1f);
+                }
+                //SLOW MOVEMENT IF TURNING TOO MUCH
+                else speed = max(speed*0.85f, baseSpeed*0.6f);
+            }
+            else speed = speed*0.8f + baseSpeed*0.2f;
         }
+        else speed = speed*0.8f + baseSpeed*0.2f;
     }
     else{
+        //WALL COLLISION
+        //stop and turn to the direction of the closest objective by a fixed amout.
+
+        QVector3D ortogonalRef = QVector3D(nextforwardDirection.z(), 0, -nextforwardDirection.x());
+        float dirAngle = QVector3D::dotProduct(ortogonalRef, collisionDirection);
+
         QMatrix4x4 rotation;
-        rotation.rotate(5, QVector3D(0, 1, 0));
+        if (dirAngle > 0) rotation.rotate(-5, QVector3D(0, 1, 0));
+        else rotation.rotate(5, QVector3D(0, 1, 0));
+
         forwardDirection = rotation*forwardDirection;
+        speed = speed*0.9f;
     }
 }
 
-int Particle::updatePosition(float dt){
+int Particle::updatePosition(){
     LastPosition = currPosition;
-    stuckInWall = (!verifyNextPosition(dt));
+    stuckInWall = (!verifyNextPosition());
     if (!stuckInWall) Velocity = forwardDirection * speed;
     else Velocity = QVector3D (0, 0, 0);
-    currPosition += dt * Velocity;
+    currPosition += Velocity;
 
-    if (myType == PATHFINDING) return checkObjective(dt);
+    if (myType == PATHFINDING) return checkObjective();
     return false;
 }
 
-int Particle::checkObjective(float dt){
+int Particle::checkObjective(){
     //FOLLOWING PATH + SMOOTHNESS
     const float error = 0.3f;
-    if ((currPosition-nextObjective).lengthSquared() > maxDistanceSqr) return 2; //Chose a different path if too far from original path
+    if (currPathCoord != 0 && (currPosition-nextObjective).lengthSquared() > maxDistanceSqr) return 2; //Chose a different path if too far from original path
     if (lessQVec3D(currPosition, nextObjective, error) && greaterQVec3D(currPosition, nextObjective, error)){
         if (currPathCoord < myPath.size() - 1){//Compute a differnt path if end is reached
             currPathCoord += 1;
+            nextObjective = myPath[currPathCoord];
+        } else return 1; //End of path reached.
+    }
+    else if (lessQVec3D(currPosition, myPath[currPathCoord+1], error) && greaterQVec3D(currPosition, nextObjective, error)){
+        if (currPathCoord < myPath.size() - 2){//Compute a differnt path if end is reached
+            currPathCoord += 2;
             nextObjective = myPath[currPathCoord];
         } else return 1; //End of path reached.
     }
@@ -118,13 +148,15 @@ void Particle::addBehaviourForces(QVector<Particle *> &p, int me){
     }
 }
 
-bool Particle::verifyNextPosition(float dt){
+bool Particle::verifyNextPosition(){
     //is my next cell valid?
-    iiPair gridPos = NavMesh::worldToGridPos(currPosition + (forwardDirection * speed * dt));
+    iiPair gridPos = NavMesh::worldToGridPos(currPosition + (forwardDirection * speed));
     if (NavMesh::floorPlan[NavMesh::grid2index(gridPos)] == 0
      || NavMesh::floorPlan[NavMesh::grid2index(gridPos)] == 9){
+        if (collisionDirection == QVector3D(0,0,0)) collisionDirection = forwardDirection;
         return true;
     }
+    collisionDirection = QVector3D(0,0,0);
     return false;
 }
 

@@ -21,9 +21,13 @@ class Particle{
 public:
     Particle(QVector3D position, QOpenGLShaderProgram *prog);
     bool characterGenerated = false;
+    float baseSpeed;
+    float speed = 0;
 
     QVector3D currPosition; // Center point of particle
     QVector3D LastPosition;
+
+    QVector3D collisionDirection;
     bool stuckInWall = false;
 
     QVector3D Velocity; // Current particle velocity
@@ -32,8 +36,6 @@ public:
     QVector3D forwardDirection = QVector3D(0,0,0);
     QVector3D nextforwardDirection;
     QVector3D behaviorDirection;
-
-    int meshId;
 
     void setFPModelView(QOpenGLShaderProgram *prog);
 
@@ -46,14 +48,14 @@ public:
     int currPathCoord = 0;
     QVector3D nextObjective;
 
-    bool verifyNextPosition(float dt);
+    bool verifyNextPosition();
     void addBehaviourForces(QVector<Particle*> &p, int me); //Used for static objects (point based only!)
     QVector3D getRandomAvailableDirection();
-    int updatePosition(float dt); //returns false when particle needs new objective
+    int updatePosition(); //returns false when particle needs new objective
     void updateDirection();
 
     //PathFinding
-    int checkObjective(float dt);
+    int checkObjective();
 
     //Behaviors
     Behavior myType = PATHFINDING;

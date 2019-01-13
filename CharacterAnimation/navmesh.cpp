@@ -176,26 +176,28 @@ vector<iiPair> NavMesh::findPath(node originNode, node objectiveNode) {
     };
     priority_queue<node, vector<node>, decltype(cmp)> toVisit(cmp);
 
-    map<iiPair, iiPair> parentNode;
+    map<iiPair, iiPair> parentNodeForward;
+    map<iiPair, iiPair> parentNodeBackward;
     // visited => exists in the map
 
     originNode.cost = 0;
     toVisit.push(originNode);
-    parentNode[originNode.coords] = originNode.coords;
+    parentNodeForward[originNode.coords] = originNode.coords;
     bool goal_found = false;
 
     while(!toVisit.empty() and not goal_found){
+        //GOING FORWARD
         node currentNode = toVisit.top(); toVisit.pop();
         vector<node> candidates = getNodeNeighboorhoord(currentNode);
         for (node candidate : candidates) {
-            if (parentNode.find(candidate.coords) == parentNode.end()){
+            if (parentNodeForward.find(candidate.coords) == parentNodeForward.end()){
                 candidate.cost = abs(candidate.coords.first - objectiveNode.coords.first) + abs(candidate.coords.second - objectiveNode.coords.second);
                 toVisit.push(candidate);
-                parentNode[candidate.coords] = currentNode.coords;
+                parentNodeForward[candidate.coords] = currentNode.coords;
             }
             if ((goal_found = candidate.coords == objectiveNode.coords)) {
                 vector<iiPair> path;
-                computePath(objectiveNode.coords, parentNode, path);
+                computePath(objectiveNode.coords, parentNodeForward, path);
                 return path;
             }
         }

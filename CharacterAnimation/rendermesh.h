@@ -39,6 +39,7 @@ public:
     void renderCharacter(QOpenGLFunctions &gl, QOpenGLShaderProgram *program, QMatrix4x4 modelMatrix = identity);
 
     void updateCharacterAnimation(float dt);
+    void changeCharacterAnimation(int state);
     void addPlanarColision(QVector<planeCollider> &vec);
     static void buildNormals(vector<float> vertices, vector<int> triangles, vector<float> &normals);
     static void buildNormals(float vertices[], int kVertices, unsigned int triangles[], int kFaces, vector<float> &normals);
