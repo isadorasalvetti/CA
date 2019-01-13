@@ -17,9 +17,9 @@ typedef pair<float, float> ffPair;
 
 //Pathfinding
 struct node {
-    node(iiPair ii): coords(ii), cost(0) {}
+    node(iiPair ii): coords(ii), priority(0) {}
     iiPair coords;
-    float cost;
+    float priority;
 };
 
 

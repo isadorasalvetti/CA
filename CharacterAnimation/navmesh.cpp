@@ -181,22 +181,27 @@ void computePathB(const iiPair &next, const iiPair &objective, map<iiPair,iiPair
 vector<iiPair> NavMesh::findPath(node originNode, node objectiveNode) {
     //BIDIRECTIONAL PATHFINDING
     auto cmp = [](const node &left, const node &right) {
-            return left.cost > right.cost;
+            return left.priority > right.priority;
     };
     priority_queue<node, vector<node>, decltype(cmp)> toVisitForward(cmp);
     priority_queue<node, vector<node>, decltype(cmp)> toVisitBackward(cmp);
 
     map<iiPair, iiPair> parentNodeForward;
     map<iiPair, iiPair> parentNodeBackward;
+
+    map<iiPair, int> costSoFar;
+
     // visited => exists in the map
 
     //GOING FORWARD
-    originNode.cost = 0;
+    originNode.priority = 0;
+    costSoFar[originNode.coords] = 0;
     toVisitForward.push(originNode);
     parentNodeForward[originNode.coords] = originNode.coords;
 
     //GOING BACKWARD
-    objectiveNode.cost = 0;
+    objectiveNode.priority = 0;
+    costSoFar[objectiveNode.coords] = 0;
     toVisitBackward.push(objectiveNode);
     parentNodeBackward[objectiveNode.coords] = objectiveNode.coords;
 
@@ -209,12 +214,16 @@ vector<iiPair> NavMesh::findPath(node originNode, node objectiveNode) {
         vector<node> candidatesBk = getNodeNeighboorhoord(currentBkNode);
 
         for (node candidate : candidatesFw) {
-            if (parentNodeForward.find(candidate.coords) == parentNodeForward.end()){
-                candidate.cost = abs(candidate.coords.first - objectiveNode.coords.first) + abs(candidate.coords.second - objectiveNode.coords.second);
+            int newCost = costSoFar[currentFwNode.coords] + 1;
+            if (costSoFar.find(candidate.coords) == costSoFar.end()
+             || newCost < costSoFar[candidate.coords]){
+                candidate.priority = costSoFar[currentFwNode.coords] + abs(candidate.coords.first - objectiveNode.coords.first) + abs(candidate.coords.second - objectiveNode.coords.second);
                 toVisitForward.push(candidate);
                 parentNodeForward[candidate.coords] = currentFwNode.coords;
+                costSoFar[candidate.coords] = newCost;
             }
             if (parentNodeBackward.find(candidate.coords) != parentNodeBackward.end()) {
+                parentNodeForward[candidate.coords] = currentFwNode.coords;
                 vector<iiPair> path;
                 computePathF(candidate.coords, parentNodeForward, path);
                 computePathB(candidate.coords, objectiveNode.coords, parentNodeBackward, path);
@@ -223,12 +232,16 @@ vector<iiPair> NavMesh::findPath(node originNode, node objectiveNode) {
         }
 
         for (node candidate : candidatesBk) {
-            if (parentNodeBackward.find(candidate.coords) == parentNodeBackward.end()){
-                candidate.cost = abs(candidate.coords.first - originNode.coords.first) + abs(candidate.coords.second - objectiveNode.coords.second);
+            int newCost = costSoFar[currentBkNode.coords] + 1;
+            if (costSoFar.find(candidate.coords) == costSoFar.end()
+             || newCost < costSoFar[candidate.coords]){
+                candidate.priority = costSoFar[currentFwNode.coords] + abs(candidate.coords.first -  originNode.coords.first) + abs(candidate.coords.second - objectiveNode.coords.second);
                 toVisitBackward.push(candidate);
                 parentNodeBackward[candidate.coords] = currentBkNode.coords;
+                costSoFar[candidate.coords] = newCost;
             }
             if ((parentNodeForward.find(candidate.coords) != parentNodeForward.end())){
+                parentNodeBackward[candidate.coords] = currentBkNode.coords;
                 vector<iiPair> path;
                 computePathF(candidate.coords, parentNodeForward, path);
                 computePathB(candidate.coords, objectiveNode.coords, parentNodeBackward, path);
