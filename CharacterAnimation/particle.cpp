@@ -6,7 +6,7 @@
 //****************************************************
 const QVector3D G(0, 0, 0);
 float speed = 0.6f;
-float maxDistanceSqr = 1.3f*1.3f;
+float maxDistanceSqr = 2.3f*2.3f;
 
 // Collision
 //****************************************************
@@ -17,6 +17,11 @@ float collRadius = 0.4f;
 float coneRadius = 1.5f;
 float coneAlpha = atan2(2*collRadius, coneRadius);
 float cosineAlpha = cos(coneAlpha);
+
+//Smooth turning
+//****************************************************
+float maxTurnAngleCos = 0.9;
+
 
 bool lessQVec3D(const QVector3D &v1, const QVector3D &v2, const float &error){
     //v1 < v2
@@ -33,18 +38,27 @@ bool greaterQVec3D(const QVector3D &v1, const QVector3D &v2, const float &error)
 }
 
 void Particle::updateDirection(){
-    nextforwardDirection = (nextObjective-currPosition).normalized();
+    if (!stuckInWall){
+        nextforwardDirection = (nextObjective-currPosition).normalized();
         if (forwardDirection == QVector3D(0,0,0)) forwardDirection = nextforwardDirection;
         else if (forwardDirection != nextforwardDirection){
-            forwardDirection = forwardDirection*0.85f + (nextforwardDirection+behaviorDirection)*0.15f;
+            QVector3D directionChange = nextforwardDirection+behaviorDirection;
+            forwardDirection = forwardDirection*0.95f + directionChange*0.05f;
             forwardDirection.normalize();
         }
+    }
+    else{
+        QMatrix4x4 rotation;
+        rotation.rotate(5, QVector3D(0, 1, 0));
+        forwardDirection = rotation*forwardDirection;
+    }
 }
 
 int Particle::updatePosition(float dt){
     LastPosition = currPosition;
-
-    Velocity = forwardDirection * speed * computeCollisions(dt);
+    stuckInWall = (!verifyNextPosition(dt));
+    if (!stuckInWall) Velocity = forwardDirection * speed;
+    else Velocity = QVector3D (0, 0, 0);
     currPosition += dt * Velocity;
 
     if (myType == PATHFINDING) return checkObjective(dt);
@@ -52,18 +66,20 @@ int Particle::updatePosition(float dt){
 }
 
 int Particle::checkObjective(float dt){
-    const float error = speed/2;
-    if ((currPosition-nextObjective).lengthSquared() > maxDistanceSqr) return 2; //recalculate path from this position
+    //FOLLOWING PATH + SMOOTHNESS
+    const float error = 0.3f;
+    if ((currPosition-nextObjective).lengthSquared() > maxDistanceSqr) return 2; //Chose a different path if too far from original path
     if (lessQVec3D(currPosition, nextObjective, error) && greaterQVec3D(currPosition, nextObjective, error)){
-        if (currPathCoord < myPath.size() - 1){//end of path not reached. Get next node.
+        if (currPathCoord < myPath.size() - 1){//Compute a differnt path if end is reached
             currPathCoord += 1;
             nextObjective = myPath[currPathCoord];
         } else return 1; //End of path reached.
     }
-    return 0;
+    return 0; //Proceed normally
 }
 
 void Particle::addBehaviourForces(QVector<Particle *> &p, int me){
+    if (!stuckInWall){
     behaviorDirection = QVector3D(0,0,0);
 
     //get future point
@@ -81,7 +97,7 @@ void Particle::addBehaviourForces(QVector<Particle *> &p, int me){
         cone.rewriteMesh(cornerVertices);
     }
 
-
+    //OBSTACLE AVOIDANCE (other particles)
     for (int i = 0; i < p.size(); i++){
         if (i!=me){
             if(Collider::cilinderCilinderIntersection(coneCenter, p[i]->currPosition, coneRadius)){
@@ -99,9 +115,10 @@ void Particle::addBehaviourForces(QVector<Particle *> &p, int me){
     }
 
     if (behaviorDirection != QVector3D(0,0,0)) updateDirection();
+    }
 }
 
-bool Particle::computeCollisions(float dt){
+bool Particle::verifyNextPosition(float dt){
     //is my next cell valid?
     iiPair gridPos = NavMesh::worldToGridPos(currPosition + (forwardDirection * speed * dt));
     if (NavMesh::floorPlan[NavMesh::grid2index(gridPos)] == 0

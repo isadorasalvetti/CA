@@ -40,13 +40,14 @@ public:
 
     void updateCharacterAnimation(float dt);
     void addPlanarColision(QVector<planeCollider> &vec);
+    static void buildNormals(vector<float> vertices, vector<int> triangles, vector<float> &normals);
+    static void buildNormals(float vertices[], int kVertices, unsigned int triangles[], int kFaces, vector<float> &normals);
     QVector3D correctPosition();
 
 private:
     void addVertex(float v0, float v1, float v2);
     void addTriangle(int v0, int v1, int v2);
     void buildCube(float cubesize);
-    void buildNormals();
 
     AnimatedCharacter animChar;
 

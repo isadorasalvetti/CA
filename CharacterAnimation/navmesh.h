@@ -6,6 +6,10 @@
 #include <QVector3D>
 #include <algorithm>
 #include <iostream>
+#include <QOpenGLBuffer>
+#include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
+#include <QOpenGLVertexArrayObject>
 
 using namespace std;
 typedef pair<int, int> iiPair;
@@ -21,9 +25,10 @@ struct node {
 
 class NavMesh{
     public:
-    void genData();
-    vector<float> coords;
-    vector<int> faces;
+    void setProgram(QOpenGLShaderProgram *po);
+    void renderMesh(QOpenGLFunctions &gl);
+    //vector<float> coords;
+    //vector<int> faces;
     vector<node> getNodeNeighboorhoord(node myNode);
     vector<iiPair> findPath(node currentNode, node objectiveNode);
     node getRandomObjective();
@@ -38,7 +43,7 @@ class NavMesh{
     static const int Mj = 14;
     static const int Mi = 10;
 
-    constexpr static const float scl = .9;
+    constexpr static const float scl = .9f;
     constexpr static const float offsetI = Mi/2.0f;
     constexpr static const float offsetJ = Mj/2.0f;
 
@@ -66,5 +71,12 @@ class NavMesh{
     float Mz = 0.2; //arbitrary wall hight
     vector<iiPair> possibleObjectives;
 
+    void genCube();
+    void fillBuffers(GLfloat vertices[], GLuint faces[]);
+    QOpenGLShaderProgram* p;
+    QOpenGLVertexArrayObject VAO;
+    QOpenGLBuffer* coordBuffer;
+    QOpenGLBuffer* normBuffer;
+    QOpenGLBuffer* indexBuffer;
 };
 #endif // NAVMESH_H

@@ -1,6 +1,33 @@
 #include "navmesh.h"
+#include <rendermesh.h>
 #include <map>
 #include <functional>
+
+static float s = NavMesh::scl/2.5;
+static GLfloat vertices[] = {-s, -s, -s,
+                      s, -s, -s,
+                      s,  s, -s,
+                     -s,  s, -s,
+                     -s, -s,  s,
+                      s, -s,  s,
+                      s,  s,  s,
+                     -s,  s,  s
+                    };
+
+static GLuint faces[] = {3, 1, 0, //z pos
+                  3, 2, 1,
+                5, 6, 7, //z neg
+                  4, 5, 7,
+                7, 3, 0, //x pos
+                  0, 4, 7,
+                1, 2, 6, //x neg
+                  6, 5, 1,
+                0, 1, 4, //y pos
+                  5, 4, 1,
+                2, 3, 7, //y neg
+                  7, 6, 2
+              };
+
 
 array<int, NavMesh::Mj*NavMesh::Mi> NavMesh::floorPlan = {
           //0  1  2  3  4  5  6  7  8  9  10 11 12 13
@@ -16,91 +43,97 @@ array<int, NavMesh::Mj*NavMesh::Mi> NavMesh::floorPlan = {
             2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,   //9
         }; //14x09 floor plan.
 
-void NavMesh::genData(){
-   /*
-   For defining walls:
-   - Check if node (p) is meant to be a wall and has not yet been processed.
-     If it is, add it's corrensponding edge coordinates to the coords buffer:
-        (p0)(x, y, 0) and (p1)(x, y, z).
-        Keep track of index in floor plan to new vert array -> nodeToVert[i*Mx+j] = vertIndx
-        (For nodes that have not yet been processed, nodeToVert[i*Mx+j] = -1)
-   - Check surrounding nodes.
-        If there is a wall to the right and/or bellow (pr): add its edge coords to the buffer. Face is compleeted:
-        (Check/ update nodeToVert.)
-        face1 = (p1, p0, pr0, pr1)
-        face2 = (p0, p1, pr1, pr0) - add both front/back faces.
-   Walls to the left and above should have already been created, do not check.
-    */
+void NavMesh::setProgram(QOpenGLShaderProgram *po){
 
-   array<int, Mj*Mi> nodeToVert; //has the vertex fot this node been created?
-   array<int, Mj*Mi> nodeToFaces; //This is a closed structure. Each vert should have 2 adjacent faces. Have them been created?
-   nodeToVert.fill(-1);
-   nodeToFaces.fill(0);
+    for (int i = 0; i < Mi; i++){
+        for (int j = 0; j < Mj; j++){
+            int cellID = grid2index(iiPair(i, j));
+            int cell = floorPlan[cellID];
+            if (cell == 9){
+                possibleObjectives.push_back(iiPair(i, j));
+            }
+        }
+    }
 
-   Mz = Mz*scl;
-   for (int i = 0; i < Mi; i++){
-     for (int j = 0; j < Mj; j++){
-       int cellID = i*Mj+j;
-       int cell = floorPlan[cellID];
-       if (cell == 1){//generate vertex and faces for the museum walls
-       //new verts: Mx*scl, My*scl, Mz
-           int face0; int face1;
-           if (nodeToVert[cellID] == -1){//add verts if they have not been previously added
-           coords.push_back((j-offsetJ)*scl); coords.push_back(0); coords.push_back((-i+offsetI)*scl);
-           coords.push_back((j-offsetJ)*scl); coords.push_back(Mz); coords.push_back((-i+offsetI)*scl);
-           face0 = coords.size()/3 -2; face1 = coords.size()/3 -1;
-           nodeToVert[cellID] = face0; //position of the first cell added in the coords vector.
-           }else {//if they have, find its face vert IDs.
-              face0 = nodeToVert[cellID]; face1 = nodeToVert[cellID] + 1;
-           }
-       //Check surrounding faces.
-           int btID = (i+1)*Mj+j;
-           int cellBottom = floorPlan[btID];
+    p = po;
+    p->bind();
+    fillBuffers(vertices, faces);
+    p->release();
+}
 
-           if (cellBottom == 1){
-               int face0b; int face1b;
-               if (nodeToVert[btID] == -1){
-               coords.push_back((j-offsetJ)*scl); coords.push_back(0); coords.push_back((-i-1+offsetI)*scl);
-               coords.push_back((j-offsetJ)*scl); coords.push_back(Mz); coords.push_back((-i-1+offsetI)*scl);
-               face0b = coords.size()/3 -2; face1b = coords.size()/3 -1;
-               nodeToVert[btID] = face0b; //position of the first cell added in the coords vector.
-               } else {face0b = nodeToVert[btID]; face1b = nodeToVert[btID] +1;}
+void NavMesh::renderMesh(QOpenGLFunctions &gl){
+    p->bind();
+    VAO.bind();
+    p->setUniformValue("color", 0.4f, 0.6f, 0);
+    p->setUniformValue("useLight", true);
 
-               if(nodeToFaces[btID] < 2){
-               //New faces: (face1, face0, face0b, face1b) n (face0, face1, face1b, face0b)
-               faces.push_back(face1); faces.push_back(face0); faces.push_back(face1b);
-               faces.push_back(face1b); faces.push_back(face0); faces.push_back(face0b);
-               nodeToFaces[cellID] += 1;
-               nodeToFaces[btID] += 1;}
-           }
+    QMatrix4x4 model;
+    for (int i = 0; i < Mi; i++){
+        for (int j = 0; j < Mj; j++){
+            int cellID = grid2index(iiPair(i, j));
+            int cell = floorPlan[cellID];
+            if (cell == 1){
+                model.setToIdentity();
+                model.scale(QVector3D(1, 0.25, 1));
+                model.translate(gridToWorldPos(iiPair(i, j))+QVector3D(0, s/5, 0));
+                p->setUniformValue("model", model);
+                gl.glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, nullptr);
+            }
+        }
+    }
 
-           if (j == Mj-1) break;
-           int rgtID = i*Mj+j+1;
-           int cellRight = floorPlan[rgtID];
-           if (cellRight == 1){
-               int face0r; int face1r;
-               if(nodeToVert[rgtID] == -1){
-               coords.push_back((j+1-offsetJ)*scl); coords.push_back(0); coords.push_back((-i+offsetI)*scl);
-               coords.push_back((j+1-offsetJ)*scl); coords.push_back(Mz); coords.push_back((-i+offsetI)*scl);
-               face0r = coords.size()/3 -2; face1r = coords.size()/3 -1;
-               nodeToVert[rgtID] = face0r; //position of the first cell added in the coords vector.
-               } else {face0r = nodeToVert[rgtID]; face1r = nodeToVert[rgtID] +1;}
+    VAO.release();
+    p->release();
+}
 
-               if(nodeToFaces[rgtID] < 2){//new faces, if needed
-               //New faces: (face1, face0, face0b, face1b) n (face0, face1, face1b, face0b)
-               faces.push_back(face1); faces.push_back(face0); faces.push_back(face1r);
-               faces.push_back(face1r); faces.push_back(face0); faces.push_back(face0r);
-               nodeToFaces[cellID] += 1;
-               nodeToFaces[rgtID] += 1;}
-           }
-       }//END wall coord condition
+void NavMesh::fillBuffers(GLfloat vertices[24], GLuint faces[36]){
+    //My Buffers
+    VAO.destroy();
+    VAO.create();
+    if (!VAO.isCreated()) cout << "problem in navmesh vao creation" << endl;
+    VAO.bind();
 
-       else if (cell == 9){
-           possibleObjectives.push_back(iiPair(i, j));
-       }
-     }}//END Plan loop
+    coordBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    coordBuffer->destroy();
+    coordBuffer->create();
+    if (!coordBuffer->isCreated()) cout << "problem in navmesh buffer creation" << endl;
+    if (!coordBuffer->bind()) cout << "problem in navmesh buffer creation" << endl;
+    coordBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    p->enableAttributeArray(0);
+    p->setAttributeBuffer(0, GL_FLOAT, 0, 3, 0);
 
-   cout<<"End Labyrinth Generation"<<endl;
+    normBuffer = new QOpenGLBuffer(QOpenGLBuffer::VertexBuffer);
+    normBuffer->destroy();
+    normBuffer->create();
+    if (!normBuffer->isCreated()) cout << "problem in navmesh buffer creation" << endl;
+    if (!normBuffer->bind()) cout << "problem in navmesh buffer creation" << endl;
+    normBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+    p->enableAttributeArray(1);
+    p->setAttributeBuffer(1, GL_FLOAT, 0, 3, 0);
+
+    indexBuffer = new QOpenGLBuffer(QOpenGLBuffer::IndexBuffer);
+    indexBuffer->destroy();
+    indexBuffer->create();
+    if (!indexBuffer->isCreated()) cout << "problem in navmesh index buffer creation" << endl;
+    if (!indexBuffer->bind()) cout << "problem in navmesh index buffer creation" << endl;
+    indexBuffer->setUsagePattern(QOpenGLBuffer::StaticDraw);
+
+    VAO.release();
+
+    vector<float> normals;
+    RenderMesh::buildNormals(vertices, 24, faces, 36, normals);
+
+    //fill buffers
+    VAO.bind();
+    coordBuffer->bind();
+    coordBuffer->allocate(&vertices[0], sizeof(float) * 24);
+    normBuffer->bind();
+    normBuffer->allocate(&normals[0], sizeof(float) * 36);
+    indexBuffer->bind();
+    indexBuffer->allocate(&faces[0], sizeof(int) * 36);
+//    cout << coordBuffer->size() << endl;
+//    cout << indexBuffer->size() << endl;
+    VAO.release();
 }
 
 //**************************************************
@@ -186,7 +219,7 @@ vector<node> NavMesh::getNodeNeighboorhoord(node myNode){
 
     for (int i = -1; i <= 1; ++i) {
         for (int j = -1; j <= 1; ++j) {
-            if (not (i == 0 and j == 0)) { // actually moving
+            if (not (i == 0 and j == 0) and (i == 0 or j == 0)) { // actually moving
                 iiPair q = p2;
                 q.first += i;
                 q.second += j;
@@ -206,9 +239,9 @@ QVector3D NavMesh::gridToWorldPos(iiPair gridPos){
 }
 
 iiPair NavMesh::worldToGridPos(QVector3D worldPos){
-    float posI = -worldPos.z()/scl+offsetI;
-    float posJ = (worldPos.x()/scl)+offsetJ;
-    return iiPair((-worldPos.z()/scl+offsetI), (worldPos.x()/scl)+offsetJ);
+    float posI = roundf(-worldPos.z()/scl+offsetI);
+    float posJ = roundf((worldPos.x()/scl)+offsetJ);
+    return iiPair(posI, posJ);
 }
 
 node NavMesh::getRandomObjective(){

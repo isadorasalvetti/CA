@@ -24,6 +24,7 @@ public:
 
     QVector3D currPosition; // Center point of particle
     QVector3D LastPosition;
+    bool stuckInWall = false;
 
     QVector3D Velocity; // Current particle velocity
     QVector3D m_Color; // Particle color
@@ -45,8 +46,9 @@ public:
     int currPathCoord = 0;
     QVector3D nextObjective;
 
-    bool computeCollisions(float dt);
+    bool verifyNextPosition(float dt);
     void addBehaviourForces(QVector<Particle*> &p, int me); //Used for static objects (point based only!)
+    QVector3D getRandomAvailableDirection();
     int updatePosition(float dt); //returns false when particle needs new objective
     void updateDirection();
 

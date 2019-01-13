@@ -55,7 +55,7 @@ void RenderMesh::buildCube(float cubesize)
         addTriangle(faces[3*i], faces[3*i+1], faces[3*i+2]);
 }
 
-void RenderMesh::buildNormals() {
+void RenderMesh::buildNormals(vector<float> vertices, vector<int> triangles, vector<float> &normals) {
   const int kFaces = triangles.size();
   std::vector<float> face_normals(kFaces, 0);
 
@@ -101,28 +101,72 @@ void RenderMesh::buildNormals() {
   }
 }
 
+void RenderMesh::buildNormals(float vertices[], int kVertices, unsigned int triangles[], int kFaces, vector<float> &normals) {
+  std::vector<float> face_normals(kFaces, 0);
+
+  for (int i = 0; i < kFaces; i += 3) {
+    QVector3D v1(vertices[triangles[i] * 3], vertices[triangles[i] * 3 + 1],
+                       vertices[triangles[i] * 3 + 2]);
+    QVector3D v2(vertices[triangles[i + 1] * 3],
+                       vertices[triangles[i + 1] * 3 + 1],
+                       vertices[triangles[i + 1] * 3 + 2]);
+    QVector3D v3(vertices[triangles[i + 2] * 3],
+                       vertices[triangles[i + 2] * 3 + 1],
+                       vertices[triangles[i + 2] * 3 + 2]);
+    QVector3D v1v2 = v2 - v1;
+    QVector3D v1v3 = v3 - v1;
+    QVector3D normal = QVector3D::crossProduct(v1v2, v1v3);
+
+    normal.normalize();
+    for (int j = 0; j < 3; ++j) face_normals[i + j] = normal[j];
+}
+  normals.resize(kVertices, 0);
+  for (int i = 0; i < kFaces; i += 3) {
+    for (int j = 0; j < 3; ++j) {
+      int idx = triangles[i + j];
+      QVector3D v1(vertices[triangles[i + j] * 3],
+                         vertices[triangles[i + j] * 3 + 1],
+                         vertices[triangles[i + j] * 3 + 2]);
+      QVector3D v2(vertices[triangles[i + (j + 1) % 3] * 3],
+                         vertices[triangles[i + (j + 1) % 3] * 3 + 1],
+                         vertices[triangles[i + (j + 1) % 3] * 3 + 2]);
+      QVector3D v3(vertices[triangles[i + (j + 2) % 3] * 3],
+                         vertices[triangles[i + (j + 2) % 3] * 3 + 1],
+                         vertices[triangles[i + (j + 2) % 3] * 3 + 2]);
+
+      QVector3D v1v2 = v2 - v1;
+      QVector3D v1v3 = v3 - v1;
+      double angle = acos(QVector3D::dotProduct(v1v2, v1v3) / (v1v2.length() * v1v3.length()));
+
+      for (int k = 0; k < 3; ++k) {
+      normals[idx * 3 + k] += face_normals[i + k] * angle;
+      }
+    }
+  }
+}
+
 bool RenderMesh::init(QOpenGLShaderProgram *program){
     buildCube(0.2f);
-    buildNormals();
+    buildNormals(vertices, triangles, normals);
     return (genBuffers(program) && fillBuffers());
 }
 
-bool RenderMesh::init(QOpenGLShaderProgram *program, NavMesh &myNavMesh) {
-    //Create labyrinth structure and normals.
-    myNavMesh.genData();
-    color = QVector3D(0, 0.2f, 0.3f);
-    vertices = myNavMesh.coords;
-    triangles = myNavMesh.faces;
-//    //Append floor coords and indices
-//    for (int i = 0; i < 4*3; i++){
-//        vertices.push_back(myNavMesh.coordsFloor[i]);
-//    }
-//    for (int i = 0; i < 2*3; i++){
-//        triangles.push_back(myNavMesh.facesFloor[i]+vertices.size());
-//    }
-    buildNormals();
-    return (genBuffers(program) && fillBuffers());
-}
+//bool RenderMesh::init(QOpenGLShaderProgram *program, NavMesh &myNavMesh) {
+//    //Create labyrinth structure and normals.
+//    myNavMesh.renderMesh();
+//    color = QVector3D(0, 0.2f, 0.3f);
+//    vertices = myNavMesh.coords;
+//    triangles = myNavMesh.faces;
+////    //Append floor coords and indices
+////    for (int i = 0; i < 4*3; i++){
+////        vertices.push_back(myNavMesh.coordsFloor[i]);
+////    }
+////    for (int i = 0; i < 2*3; i++){
+////        triangles.push_back(myNavMesh.facesFloor[i]+vertices.size());
+////    }
+//    buildNormals();
+//    return (genBuffers(program) && fillBuffers());
+//}
 
 bool RenderMesh::init(QOpenGLShaderProgram *program, Character type) {
     amIChar = true;
@@ -135,7 +179,7 @@ bool RenderMesh::init(QOpenGLShaderProgram *program, Character type) {
 void RenderMesh::rewriteMesh(vector<float> vecs, vector<int> faces){
     vertices = vecs;
     if (faces.size() > 1) triangles = faces;
-    buildNormals();
+    buildNormals(vertices, triangles, normals);
     fillBuffers();
 }
 

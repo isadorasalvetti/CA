@@ -19,10 +19,11 @@ const float maxDistanceCamera = 3.0f;
 
 bool frstPerson = false;
 
-GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), angleX(0.0f), translationX(0.0f), distance(2.0f)
+GLWidget::GLWidget(QWidget *parent) : QOpenGLWidget(parent), angleX(0.0f),
+    translationX(0.0f), distance(2.0f)
 {
-    program = nullptr;
-    program_particle = nullptr;
+    program = new QOpenGLShaderProgram();
+    program_particle = new QOpenGLShaderProgram();
 }
 
 GLWidget::~GLWidget()
@@ -36,12 +37,10 @@ void GLWidget::initializeGL()
 {
     QOpenGLFunctions::initializeOpenGLFunctions();
 
-    program = new QOpenGLShaderProgram();
     program->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/basic.vert");
     program->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/basic.frag");
     program->link();
 
-    program_particle = new QOpenGLShaderProgram();
     program_particle->addShaderFromSourceFile(QOpenGLShader::Vertex, "shaders/particle.vert");
     program_particle->addShaderFromSourceFile(QOpenGLShader::Fragment, "shaders/particle.frag");
     program_particle->link();
@@ -53,7 +52,8 @@ void GLWidget::initializeGL()
             QApplication::quit();
     }
 
-    myMesh.init(program, myNavMesh);
+    //myMesh.init(program, myNavMesh);
+    myNavMesh.setProgram(program);
     mySpawner.init(program_particle, myNavMesh);
     timer = new Timer(this, &mySpawner);
 
@@ -80,11 +80,8 @@ void GLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     //Rendering
     if (frstPerson) setFPModelView();
-    glDisable(GL_CULL_FACE);
-    myMesh.renderStatic(*this, program);
-    glEnable(GL_CULL_FACE);
     mySpawner.renderParticles(*this, program);
-
+    myNavMesh.renderMesh(*this);
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
@@ -131,7 +128,7 @@ void GLWidget::setProjection(float aspect)
 
 void GLWidget::setAerialModelview(){
     QMatrix4x4 viewMatrix;
-    viewMatrix.translate(0.0f, 0.0f, -8);
+    viewMatrix.translate(0.0f, 0.0f, -10);
     viewMatrix.rotate(45, 1.0f, 0.0f, 0.0f);
     viewMatrix.rotate(angleX, 1.0f, 0.0f, 0.0f);
     //viewMatrix.rotate(angleY, 0.0f, 1.0f, 0.0f);

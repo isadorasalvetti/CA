@@ -44,7 +44,18 @@ void particleSpawner::renderParticles(QOpenGLFunctions &gl, QOpenGLShaderProgram
             myMesh[m].renderCharacter(gl, prog, modelMatrix);
             myMesh[m].color = QVector3D(1,1,1);
         } else myMesh[m].renderCharacter(gl, prog, modelMatrix);
+
+//        int gridPos = myNavMesh->grid2index(myNavMesh->worldToGridPos(particles[i]->currPosition));
+//        if (myNavMesh->floorPlan[gridPos]==0
+//         || myNavMesh->floorPlan[gridPos]==9) myMesh[m].color = QVector3D(1,1,1);
+//        else myMesh[m].color = QVector3D(1,1,0);
+
+        iiPair gridPos = iiPair(1, 4);
+        QVector3D worldPos = myNavMesh->gridToWorldPos(gridPos);
+        iiPair testGridPos = myNavMesh->worldToGridPos(worldPos);
+        float stop = 0;
     }
+
    renderMarkers(gl, prog);
 }
 
@@ -56,9 +67,6 @@ void particleSpawner::renderMarkers(QOpenGLFunctions &gl, QOpenGLShaderProgram *
         marker.color = QVector3D(1,1,0);
         marker.renderStatic(gl, prog, pathMarkers[i]);
     }
-
-//    marker.color = QVector3D(1,0,1);
-//    marker.renderStatic(gl, prog, originMarker);
 }
 
 void particleSpawner::genParticle(){
